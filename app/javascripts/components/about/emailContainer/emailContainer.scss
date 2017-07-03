@@ -1,0 +1,126 @@
+.emailComponent {
+  height: 100vh;
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/casinoBackground.png");
+  background-size: cover;
+  background-position: center bottom;
+}
+
+.emailContainer {
+  position: relative;
+  width: 730px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.emailTitle {
+  text-align: center;
+  color: #fff;
+  font-size: 36px;
+  line-height: 1.4;
+  font-weight: 300;
+  letter-spacing: 1px;
+  position: relative;
+  margin-bottom: 15px;
+
+  span {
+    font-weight: 400;
+  }
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -72px;
+    width: 720px;
+    height: 160px;
+    background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
+    background-size: cover;
+  }
+}
+
+.subTitle {
+  height: 60px;
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1.84;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #8280bd;
+  margin-bottom: 34.5px;
+
+  span {
+    font-weight: 400;
+  }
+}
+
+.emailInput {
+  font-size: 18px;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-color: #fff;
+  padding-left: 23px;
+  border: none;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+}
+
+.emailForm {
+  display: flex;
+  justify-content: center;
+}
+
+.subscribeBtn {
+  font-weight: 300;
+  position: absolute;
+  right: 0;
+  width: 143.2px;
+  font-size: 18px;
+  text-align: center;
+  color: #fff;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
+  box-shadow: 2px 3px 24px 0 #2b1c45;
+  cursor: pointer;
+}
+
+.linkBlock {
+  margin: 50px auto 0 auto;
+  height: 50px;
+  text-align: center;
+  cursor: pointer;
+
+  .snsBtn {
+    margin: 0 10px;
+    width: 51px;
+    height: 51px;
+    display: inline-block;
+    object-fit: contain;
+  }
+}
+
+.mouseIcon {
+  position: absolute;
+  width: 20px;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+
+  div {
+    margin-top: 10px;
+    font-size: 10px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+  }
+}

@@ -1,0 +1,46 @@
+.footer {
+  padding: 15px 0;
+  background: #fefffe;
+  font-family: Roboto;
+  height: 120px;
+}
+
+.innerContainer {
+  width: 960px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.footerContent {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.45;
+  letter-spacing: 0.6px;
+  color: #959595;
+  display: inline-block;
+}
+
+.btnContainer {
+  display: inline-block;
+  margin-right: 20px;
+  cursor: pointer;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.rightBtns {
+  position: absolute;
+  right: 0;
+  display: inline-block;
+  text-align: right;
+}
+
+.snsBtn {
+  svg {
+    width: 51px;
+    height: 51.5px;
+    display: inline-block;
+    object-fit: contain;
+  }
+}

@@ -1,0 +1,65 @@
+.container {
+  width: 100%;
+  height: calc(100vh - 120px);
+  background-color: #222135;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .innerContainer {
+    width: 960px;
+    position: relative;
+    padding: 0px 0;
+    margin: 0 auto;
+  }
+}
+
+.image {
+  position: relative;
+  height: 189px;
+  margin-bottom: 23.2px;
+  text-align: center;
+  svg {
+    margin: 0 0;
+    height: 189px;
+    width: 425px;
+    object-fit: contain;
+  }
+}
+
+.content {
+  font-size: 25.2px;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 59.4px;
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+}
+
+.homeBtn {
+  position: relative;
+  width: 172.4px;
+  height: 43.2px;
+  vertical-align: center;
+  text-align: center;
+  border-radius: 87.5px;
+  background-image: linear-gradient(117deg, #7a48ca, #60aedc);
+  box-shadow: 2px 2px 6px 0 #2a143e;
+  padding-top: 11.9px;
+  padding-bottom: 12.3px;
+}
+
+.btnContent {
+  font-weight: 400;
+  font-size: 16.2px;
+}

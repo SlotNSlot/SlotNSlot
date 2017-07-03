@@ -1,0 +1,81 @@
+.roadmapContainer {
+  width: 100%;
+  height: 470px;
+  background-image: radial-gradient(circle at 50% 15%, #33324c, #232237);
+  color: white;
+
+  .innerContainer {
+    width: 960px;
+    position: relative;
+    padding: 40px 0;
+    margin: 0 auto;
+  }
+}
+
+.roadmapTitle {
+  font-size: 30px;
+  letter-spacing: 0.9px;
+  font-weight: 300;
+  color: #fff;
+  padding-bottom: 50px;
+  text-align: center;
+}
+
+.bubbleBlock {
+  position: relative;
+  height: 300px;
+  background: url(http://slot-n-slot-assets.s3.amazonaws.com/about/time-line.png) no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.roadmapBubble {
+  position: absolute;
+  width: 240px;
+  height: 130px;
+
+  .bubbleContext {
+    position: absolute;
+    top: 18px;
+    left: 36px;
+
+    .bubbleTitle {
+      color: #7654cc;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .bubbleText {
+      font-size: 14px;
+      color: #7a7a7a;
+      line-height: 1.33;
+      letter-spacing: 0.4px;
+      font-weight: 300;
+    }
+  }
+
+  &:nth-child(1) {
+    top: 27px;
+    left: calc(0% - 5px);
+  }
+  &:nth-child(2) {
+    top: 27px;
+    left: calc(50% - 5px);
+  }
+  &:nth-child(3) {
+    top: 144px;
+    left: calc(25% - 5px);
+  }
+  &:nth-child(4) {
+    top: 144px;
+    left: calc(75% - 5px);
+  }
+}
+
+.roadmapBubble.roadmapBubbleDown {
+  .bubbleContext {
+    top: 48px;
+  }
+}

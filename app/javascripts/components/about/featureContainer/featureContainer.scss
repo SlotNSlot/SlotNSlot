@@ -1,0 +1,61 @@
+.featureContainer {
+  width: 100%;
+  height: 700px;
+  background-color: #fff;
+  background: url(https://d1qh7kd1bid312.cloudfront.net/about/section-3-bacground.png) no-repeat;
+  background-size: cover;
+  background-position: center bottom;
+
+  .innerContainer {
+    position: relative;
+    text-align: center;
+    width: 960px;
+    margin: 0 auto;
+    padding-top: 60px;
+
+    .featureTitle {
+      font-size: 30px;
+      font-weight: 300;
+      line-height: 1.53;
+      color: #7363cf;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+    }
+
+    .featureSubTitle {
+      font-size: 24px;
+      color: #959595;
+      line-height: 1.25;
+      letter-spacing: 0.3px;
+      margin-bottom: 50px;
+    }
+
+    .featureWrapper {
+      display: flex;
+      flex-wrap: wrap;
+
+      .featureBlock {
+        width: 320px;
+        margin-bottom: 60px;
+
+        .blockTitle {
+          font-size: 24px;
+          height: 50px;
+          line-height: 1.92;
+          letter-spacing: 0.3px;
+          color: #232237;
+          margin-bottom: 12px;
+        }
+
+        .blockText {
+          font-size: 18px;
+          line-height: 1.5;
+          letter-spacing: 0.1px;
+          color: #868688;
+          font-weight: 100;
+          padding: 0 12px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+.makeGameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.makeGameForm {
+  width: 600px;
+  margin-top: 100px;
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+  }
+}
+
+.makeGameFormInput {
+  height: 40px;
+  line-height: 40px;
+  width: 100%;
+}
+
+.inputRow {
+  margin: 40px 0;
+}
+
+.inputLabel {
+  margin-bottom: 5px;
+  font-size: 18px;
+  color: #333;
+}
+
+.submitBtn {
+  display: block;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50px;
+  margin: 0 auto;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+.warningMessage {
+  color: #e02121;
+  font-weight: bold;
+}

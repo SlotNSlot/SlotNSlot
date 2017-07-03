@@ -1,0 +1,18 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+dst.zip
+version
+dst
+dst-sls
+temp
+tmp
+build
+node_modules
+yarn-error.log
+.idea/
+.DS_Store

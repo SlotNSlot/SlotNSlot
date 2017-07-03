@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "dst-sls",
+    "strictNullChecks": true
+  },
+  "include": [
+    "sls/**/*"
+  ],
+  "exclude":[
+    "node_modules/**/*"
+  ]
+}

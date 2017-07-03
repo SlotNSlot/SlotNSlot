@@ -1,0 +1,75 @@
+.mailingContainer {
+  padding: 108px 0;
+  width: 100%;
+  height: 430px;
+  background: url("http://slot-n-slot-assets.s3.amazonaws.com/about/coin-black.png");
+  background-color: #3b2e47;
+  background-position: 50% 11%;
+  background-size: 150%;
+  background-repeat: no-repeat;
+  font-family: Roboto;
+  color: #fefffe;
+}
+
+.innerContainer {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.mailingTitle {
+  font-size: 30px;
+  line-height: 1.33;
+  letter-spacing: 0.8px;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.mailingSubTitle {
+  height: 56px;
+  font-size: 20px;
+  font-weight: 100;
+  line-height: 1.4;
+  letter-spacing: 0.7px;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 45.8px;
+}
+
+.emailInput {
+  font-size: 18px;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-color: #fff;
+  padding-left: 23px;
+  border: none;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+}
+
+.emailForm {
+  display: flex;
+  justify-content: center;
+}
+
+.subscribeBtn {
+  font-weight: 300;
+  position: absolute;
+  right: 0;
+  width: 143.2px;
+  font-size: 18px;
+  text-align: center;
+  color: #fff;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
+  box-shadow: 2px 3px 24px 0 #2b1c45;
+  cursor: pointer;
+}

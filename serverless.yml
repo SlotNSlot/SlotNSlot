@@ -1,0 +1,69 @@
+service: slot-n-slot-lambda
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod # You can override this at CLI
+  # environment: ${file(./env/${opt:stage}.yml)}
+  iamRoleStatements:
+   - Effect: "Allow"
+     Action:
+       - "s3:*"
+     Resource: "arn:aws:s3:::slot-n-slot-home/*"
+   - Effect: Allow
+     Action:
+       - 'cloudwatch:PutMetricData'
+     Resource: '*'
+
+package:
+  artifact: dst.zip
+
+functions:
+  slotFrontendRender:
+    handler: handlers.frontRender
+    timeout: 10
+    events:
+      - http:
+          path: frontRender
+          method: get
+
+resources:
+  Resources:
+    SlotFrontendRenderLogGroup:
+      Properties:
+        RetentionInDays: "30"
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          DefaultRootObject: ''
+          Enabled: true
+          DefaultCacheBehavior:
+            DefaultTTL: 300
+            MaxTTL: 300
+            MinTTL: 300
+            AllowedMethods:
+              - GET
+              - HEAD
+            CachedMethods:
+              - HEAD
+              - GET
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - original-uri
+                - User-Agent
+                - X-Forwarded-For
+            TargetOriginId: "${self:service}-${self:provider.stage}-api-gateway"
+            ViewerProtocolPolicy: redirect-to-https
+          Aliases:
+            - slotnslot.com
+            - www.slotnslot.com
+          Origins:
+          - CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+            DomainName:
+              "Fn::Join": ["", [{"Ref": "ApiGatewayRestApi"}, ".execute-api.${self:provider.region}.amazonaws.com"]]
+            Id: "${self:service}-${self:provider.stage}-api-gateway"
+            OriginPath: /${self:provider.stage}/frontRender

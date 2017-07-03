@@ -1,0 +1,31 @@
+{
+  "parser": "babel-eslint",
+    "extends": [
+      "standard",
+      "airbnb"
+    ],
+    "plugins": [
+      "react",
+      "babel"
+    ],
+    "globals": {
+      "alert": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    },
+    "rules": {
+      "semi"                 : [2, "always"],
+      "space-before-function-paren": 0,
+      "react/prop-types": 0,
+      "key-spacing"          : 0,
+      "max-len"              : [2, 120, 2],
+      "object-curly-spacing" : [2, "always"],
+      "class-methods-use-this": 0,
+      "react/sort-comp": 0
+    }
+}

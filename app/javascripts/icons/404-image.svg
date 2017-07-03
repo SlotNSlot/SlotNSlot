@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="737" height="303" viewBox="0 0 737 303">
+    <defs>
+        <filter id="a_404_image" width="139.9%" height="123.6%" x="-19.9%" y="-11.8%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="8.29096817e-16 13.5401786"/>
+        </filter>
+        <path id="b_404_image" d="M36 0h200.146c19.882 0 36 16.118 36 36v217.65c0 19.882-16.118 36-36 36H36c-19.882 0-36-16.118-36-36V36C0 16.118 16.118 0 36 0z"/>
+        <linearGradient id="c_404_image" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#EEE"/>
+            <stop offset="100%" stop-color="#FFF"/>
+        </linearGradient>
+        <filter id="d_404_image" width="124.2%" height="112.9%" x="-12.1%" y="-6.5%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="-0.0548251518 8.21131251"/>
+        </filter>
+        <filter id="f_404_image" width="124.2%" height="112.9%" x="-12.1%" y="-6.5%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="-0.0548251518 8.21131251"/>
+        </filter>
+        <path id="g_404_image" d="M36 0h200.146c19.882 0 36 16.118 36 36v271.621c0 19.883-16.118 36-36 36H36c-19.882 0-36-16.117-36-36V36C0 16.118 16.118 0 36 0z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <text fill="#FFF" filter="url(#a_404_image)" font-family="Montserrat-Regular, Montserrat" font-size="288" transform="translate(518.076 -40.668)">
+            <tspan x="49.046" y="315.383">4</tspan>
+        </text>
+        <g transform="translate(231.243 6.107)">
+            <mask id="e_404_image" fill="#fff">
+                <use xlink:href="#b_404_image"/>
+            </mask>
+            <text fill="url(#c_404_image)" filter="url(#d_404_image)" font-family="Montserrat-Regular, Montserrat" font-size="288" mask="url(#e_404_image)">
+                <tspan x="47.247" y="151.668">0</tspan>
+            </text>
+            <text fill="#FFF" filter="url(#f_404_image)" font-family="Montserrat-Regular, Montserrat" font-size="288" mask="url(#e_404_image)" opacity=".376">
+                <tspan x="47.247" y="462.907">0</tspan>
+            </text>
+        </g>
+        <g transform="translate(-56.033 -28.075)">
+            <mask id="h_404_image" fill="#fff">
+                <use xlink:href="#g_404_image"/>
+            </mask>
+            <text fill="#FFF" font-family="Montserrat-Regular, Montserrat" font-size="288" mask="url(#h_404_image)">
+                <tspan x="47.247" y="259.612">4</tspan>
+            </text>
+        </g>
+        <path stroke="#575473" stroke-linecap="square" stroke-width="4" d="M205 2.916V296.3M529 2.916V296.3"/>
+    </g>
+</svg>

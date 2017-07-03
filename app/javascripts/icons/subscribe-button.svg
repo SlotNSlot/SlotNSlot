@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="231" height="126" viewBox="0 0 231 126">
+    <defs>
+        <linearGradient id="c_subscribe_button" x1="-18.449%" x2="118.701%" y1="-53.272%" y2="220.499%">
+            <stop offset="0%" stop-color="#851DC2"/>
+            <stop offset="100%" stop-color="#51E9E7"/>
+        </linearGradient>
+        <rect id="b_subscribe_button" width="169.203" height="61.333" x="313.463" rx="13.333"/>
+        <filter id="a_subscribe_button" width="159.1%" height="263%" x="-27.8%" y="-75%" filterUnits="objectBoundingBox">
+            <feOffset dx="3" dy="4" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="16"/>
+            <feColorMatrix in="shadowBlurOuter1" values="0 0 0 0 0.168232932 0 0 0 0 0.110041492 0 0 0 0 0.270700468 0 0 0 1 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd" transform="translate(-285.333 28.333)">
+        <use fill="#000" filter="url(#a_subscribe_button)" xlink:href="#b_subscribe_button"/>
+        <use fill="url(#c_subscribe_button)" xlink:href="#b_subscribe_button"/>
+    </g>
+</svg>

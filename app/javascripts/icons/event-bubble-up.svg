@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="321" height="173" viewBox="0 0 321 173">
+    <defs>
+        <path id="b_event_bubble_up" d="M17.42 120.844L0 138V30.61C0 13.707 13.703.004 30.606.004h221.788C269.297.004 283 13.707 283 30.61v59.628c0 16.903-13.703 30.606-30.606 30.606H17.421z"/>
+        <filter id="a_event_bubble_up" width="125.1%" height="151.5%" x="-12.5%" y="-15.6%" filterUnits="objectBoundingBox">
+            <feOffset dy="14" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="9.5"/>
+            <feColorMatrix in="shadowBlurOuter1" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.38708673 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd" transform="translate(19 5)">
+        <use fill="#000" filter="url(#a_event_bubble_up)" xlink:href="#b_event_bubble_up"/>
+        <use fill="#F6F4F4" xlink:href="#b_event_bubble_up"/>
+    </g>
+</svg>

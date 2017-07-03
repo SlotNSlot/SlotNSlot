@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 6 6">
+    <defs>
+        <linearGradient id="a_oval" x1="4.125%" x2="97.322%" y1="4.084%" y2="96.368%">
+            <stop offset="0%" stop-color="#755BCE"/>
+            <stop offset="100%" stop-color="#5CBFE0"/>
+        </linearGradient>
+    </defs>
+    <ellipse cx="681.713" cy="46.555" fill="url(#a_oval)" fill-rule="evenodd" rx="2.537" ry="2.539" transform="translate(-679 -44)"/>
+</svg>

@@ -1,9 +1,11 @@
 import * as PIXI from 'pixi.js';
 
 const ENTIRE_REEL_COUNT = 5;
-const ITEM_PER_ENTIRE_REEL = 10;
+const ITEM_PER_ENTIRE_REEL = 12;
 const ITEMS_PER_HALF_REEL = ITEM_PER_ENTIRE_REEL / 2;
 const ALL_SYMBOL_COUNT = 13;
+const SYMBOL_WIDTH = 100;
+const SYMBOL_HEIGHT = 100;
 
 export default class SlotGame {
   constructor(canvasElement) {
@@ -45,6 +47,7 @@ export default class SlotGame {
         reels[idx].push(Math.floor(Math.random() * ALL_SYMBOL_COUNT));
       }
     }
+
     const reelContainer = new PIXI.Container();
     const UIContainer = new PIXI.Container();
 
@@ -68,20 +71,19 @@ export default class SlotGame {
         for (let i = 1; i <= ALL_SYMBOL_COUNT; i += 1) {
           const imglist = [];
           for (let j = 0; j < spritesNum[i - 1]; j += 1) {
-            const val = j < ITEM_PER_ENTIRE_REEL ? `0${j}` : j;
+            const val = j < 10 ? `0${j}` : j;
             const frame = PIXI.Texture.fromFrame(`Symbol${i}_${val}.png`);
             imglist.push(frame);
           }
           symbols[i - 1] = imglist;
         }
-
         reels = reels.map(reel => reel.map(e => new PIXI.extras.AnimatedSprite(symbols[e])));
 
         for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
           for (let idx = 0; idx < reels[reelNum].length; idx += 1) {
             const symbol = reels[reelNum][idx];
-            symbol.width = 100;
-            symbol.height = 100;
+            symbol.width = SYMBOL_WIDTH;
+            symbol.height = SYMBOL_HEIGHT;
             symbol.x = 0;
 
             symbol.y = idx < ITEMS_PER_HALF_REEL ? symbol.height * idx : symbol.height * (idx - ITEMS_PER_HALF_REEL);
@@ -99,9 +101,9 @@ export default class SlotGame {
 
           // set reel group position
           this.reelGroup[reelNum * 2].y = 0;
-          this.reelGroup[reelNum * 2 + 1].y = 500;
-          this.reelGroup[reelNum * 2].x = 100 * reelNum;
-          this.reelGroup[reelNum * 2 + 1].x = 100 * reelNum;
+          this.reelGroup[reelNum * 2 + 1].y = SYMBOL_HEIGHT * ITEMS_PER_HALF_REEL;
+          this.reelGroup[reelNum * 2].x = SYMBOL_WIDTH * reelNum;
+          this.reelGroup[reelNum * 2 + 1].x = SYMBOL_WIDTH * reelNum;
         }
 
         reelContainer.x = 150;
@@ -144,7 +146,7 @@ export default class SlotGame {
   }
 
   loopStart() {
-    this.reelGroup.forEach(reel => (reel.vy = 80));
+    this.reelGroup.forEach(reel => (reel.vy = 50));
     this.spinStatus.fill(true);
   }
 

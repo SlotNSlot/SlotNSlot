@@ -4,6 +4,8 @@ import "./SlotMachineStorage.sol";
 
 library SlotLib {
 
+    event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
+
     //create new slotmachine
     function createSlotMachine (address _slotmachineStorage, address _provider,  uint _decider, uint _minBet, uint _maxBet) {
         SlotMachineStorage(_slotmachineStorage).createSlotMachine(_provider, _decider, _minBet, _maxBet);
@@ -18,6 +20,7 @@ library SlotLib {
             SlotMachineStorage(_slotmachineStorage).setSlotMachine(i, SlotMachineStorage(_slotmachineStorage).getSlotMachine(i + 1));
         }
         SlotMachineStorage(_slotmachineStorage).deleteSlotMachine(totalnum - 1);
+        slotMachineRemoved(msg.sender, _slotmachineStorage, _idx);
     }
     //return 5 slotmachines from _idx
     function getSlotMachine (address _slotmachineStorage, uint _idx) returns (address[5]){

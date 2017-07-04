@@ -9,6 +9,9 @@ contract SlotMachineManager {
     using LibInterface for address;
     address private slotmachineStorage;
 
+    event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
+
+
     function SlotMachineManager () {
         slotmachineStorage = new SlotMachineStorage();
     }

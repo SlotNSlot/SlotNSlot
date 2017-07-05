@@ -43,29 +43,6 @@ $top-navbar-height: 75px;
     height: 100%;
     cursor: pointer;
   }
-
-  &:last-of-type {
-    margin-right: 0;
-    width: 150px;
-    height: 40px;
-    font-style: italic;
-    border: solid 1px #7363cf;
-    border-radius: 80px;
-
-    a {
-      display: inline-block;
-      width: 100%;
-      line-height: 38px;
-    }
-  }
-
-  &:last-of-type:hover {
-    border-width: 0px;
-    background-image: linear-gradient(125deg, #7a48ca, #60aedc);
-    a {
-      line-height: 40px;
-    }
-  }
 }
 
 .logo {

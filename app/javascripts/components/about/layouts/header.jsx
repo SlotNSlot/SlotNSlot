@@ -43,7 +43,7 @@ class Header extends React.PureComponent {
         className={styles.header}
       >
         <div className={styles.navbarContainer}>
-          <Link exact to="/" className={styles.item}>
+          <Link to="/" className={styles.item}>
             <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
           </Link>
           <ul className={styles.rightNavItemsWrapper}>

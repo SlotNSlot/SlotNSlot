@@ -25,6 +25,9 @@ functions:
       - http:
           path: frontRender
           method: get
+      - http:
+          path: frontRender/{proxy+}
+          method: any
 
 resources:
   Resources:

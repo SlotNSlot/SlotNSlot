@@ -67,16 +67,6 @@ class Header extends React.PureComponent {
                 White Paper
               </a>
             </li>
-            <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                onClick={() => {
-                  window.open('http://blog.com', '', '');
-                }}
-              >
-                Blog
-              </a>
-            </li>
           </ul>
         </div>
       </div>

@@ -13,7 +13,7 @@ const Footer = () =>
         <a
           className={styles.btnContainer}
           onClick={() => {
-            window.open('https://github.com', '', '');
+            window.open('https://github.com/SlotNSlot/SlotNSlot', '', '');
           }}
         >
           <Icon className={styles.snsBtn} icon="GITHUB_FOR_FOOTER" />

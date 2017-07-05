@@ -19,12 +19,14 @@ export default class SlotGame {
     this.loopStart = this.loopStart.bind(this);
     this.stopSpin = this.stopSpin.bind(this);
     this.stopStart = this.stopStart.bind(this);
-
+    this.spinning = false;
+    this.filter = new PIXI.filters.BlurYFilter(20);
     // spinStatus Array initializes to true
     // true means spinning, false means stopped.
     this.spinStatus = new Array(ENTIRE_REEL_COUNT).fill(true);
+    this.rotateStatus = new Array(ENTIRE_REEL_COUNT).fill(false);
     // Set Entire Canvas Properties
-    this.renderer = PIXI.autoDetectRenderer(940, 660, {
+    this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: canvasElement,
       antialias: true,
       transparent: false,
@@ -51,7 +53,7 @@ export default class SlotGame {
     const reelContainer = new PIXI.Container();
     const UIContainer = new PIXI.Container();
 
-    this.reelGroup = new Array(ITEM_PER_ENTIRE_REEL).fill(1);
+    this.reelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
     this.reelGroup.forEach((reelItem, index) => {
       this.reelGroup[index] = new PIXI.Container();
       this.reelGroup[index].vy = 0;
@@ -84,8 +86,9 @@ export default class SlotGame {
             const symbol = reels[reelNum][idx];
             symbol.width = SYMBOL_WIDTH;
             symbol.height = SYMBOL_HEIGHT;
+            // anchor to center
+            symbol.anchor.set(0.5, 0.5);
             symbol.x = 0;
-
             symbol.y = idx < ITEMS_PER_HALF_REEL ? symbol.height * idx : symbol.height * (idx - ITEMS_PER_HALF_REEL);
 
             symbol.animationSpeed = 0.3;
@@ -146,23 +149,40 @@ export default class SlotGame {
   }
 
   loopStart() {
-    this.reelGroup.forEach(reel => (reel.vy = 50));
-    this.spinStatus.fill(true);
+    // It start when it is not spinning
+    if (!this.spinning) {
+      this.spinning = true;
+      this.reelGroup.forEach(reel => {
+        reel.filters = [this.filter];
+        reel.vy = 50;
+      });
+      this.spinStatus.fill(true);
+    }
   }
 
   gameLoop() {
     console.log('is gameLoop ing...');
     window.requestAnimationFrame(this.gameLoop);
-    this.reelGroup.forEach((reel, index) => {
-      reel.y += reel.vy;
+    if (this.spinning) {
+      this.reelGroup.forEach((reel, index) => {
+        reel.y += reel.vy;
+        if (reel.y > reel.height) {
+          reel.y -= reel.height * 2;
+        }
 
-      if (!this.spinStatus[Math.floor(index / 2)]) {
-        reel.vy = reel.vy > 0 ? reel.vy - 0.4 : 0;
-      }
-      if (reel.y > reel.height) {
-        reel.y -= reel.height * 2;
-      }
-    });
+        // Spin is being stopped
+        if (!this.spinStatus[Math.floor(index / 2)]) {
+          reel.vy = reel.vy > 0 ? reel.vy - 0.4 : 0;
+          reel.filters = [];
+        }
+        // Spin is being stopped
+        if (this.rotateStatus[Math.floor(index / 2)]) {
+          reel.children.forEach(i => {
+            i.rotation += 0.2;
+          });
+        }
+      });
+    }
     // Render the stage to see the animation
     this.renderer.render(this.stage);
   }
@@ -175,8 +195,13 @@ export default class SlotGame {
 
   stopStart(reelNum) {
     return new Promise(resolve => {
+      this.spinStatus[reelNum] = false;
+      this.rotateStatus[reelNum] = true;
       setTimeout(() => {
-        this.spinStatus[reelNum] = false;
+        this.rotateStatus[reelNum] = false;
+        if (reelNum === ENTIRE_REEL_COUNT - 1) {
+          this.spinning = false;
+        }
         resolve(reelNum);
       }, 2000);
     });

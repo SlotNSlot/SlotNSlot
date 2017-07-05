@@ -37,7 +37,7 @@ library SlotLib2 {
 
     //return information of slotmachine
     function getSlotMachineDecider (address _slotmachineStorage, uint _idx) constant returns (uint){
-        return SlotMachineStorage(_slotmachineStorage).getSlotMachineDecider(_idx);
+        return SlotMachineStorage(_slotmachineStorage).getSlotMachineDecider(_idx)*10;
     }
 
     function getSlotMachineInfo (address _slotmachineStorage, uint _idx) constant returns (uint, uint, uint){

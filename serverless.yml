@@ -63,18 +63,16 @@ resources:
             ForwardedValues:
               QueryString: true
               Headers:
-                - original-uri
-                - User-Agent
-                - X-Forwarded-For
+                - *
             TargetOriginId: "${self:service}-${self:provider.stage}-api-gateway"
-            ViewerProtocolPolicy: redirect-to-https
+            ViewerProtocolPolicy: allow-all
           Aliases:
             - slotnslot.com
             - www.slotnslot.com
           Origins:
           - CustomOriginConfig:
               HTTPSPort: 443
-              OriginProtocolPolicy: match-viewer
+              OriginProtocolPolicy: https-only
             DomainName:
               "Fn::Join": ["", [{"Ref": "ApiGatewayRestApi"}, ".execute-api.${self:provider.region}.amazonaws.com"]]
             Id: "${self:service}-${self:provider.stage}-api-gateway"

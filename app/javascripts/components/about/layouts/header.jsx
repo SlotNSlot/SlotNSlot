@@ -48,23 +48,26 @@ class Header extends React.PureComponent {
           </Link>
           <ul className={styles.rightNavItemsWrapper}>
             <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                onClick={() => {
-                  window.open('https://github.com/SlotNSlot/SlotNSlot', '', '');
-                }}
-              >
+              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
                 GitHub
               </a>
             </li>
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
-                onClick={() => {
-                  window.open('http://whitepaper.com', '', '');
-                }}
+                href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
+                target="_blank"
               >
                 White Paper
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
+              <a
+                className={styles.item}
+                href="https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link"
+                target="_blank"
+              >
+                Chat
               </a>
             </li>
           </ul>

@@ -56,33 +56,23 @@ class EmailContainer extends React.PureComponent {
             </form>
 
             <div className={styles.linkBlock}>
-              <a
-                className={styles.btnContainer}
-                onClick={() => {
-                  window.open('https://github.com/SlotNSlot/SlotNSlot', '', '');
-                }}
-              >
+              <a className={styles.btnContainer} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
                 <Icon className={styles.snsBtn} icon="GITHUB" />
               </a>
               <a
                 className={styles.btnContainer}
                 onClick={() => {
-                  window.open('https://reddit.com', '', '');
+                  alert('The Reddit will be ready soon!');
                 }}
               >
                 <Icon className={styles.snsBtn} icon="REDDIT" />
               </a>
               <a
                 className={styles.btnContainer}
-                onClick={() => {
-                  window.open(
-                    'https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link',
-                    '',
-                    '',
-                  );
-                }}
+                href="https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link"
+                target="_blank"
               >
-                <Icon className={styles.snsBtn} icon="SLACK" />
+                <Icon className={styles.snsBtn} icon="HIPCHAT" />
               </a>
             </div>
           </div>

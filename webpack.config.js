@@ -90,6 +90,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './app/index.ejs',
       inject: false,
+      NODE_ENV: 'development',
     }),
   ],
 };

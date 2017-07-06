@@ -51,35 +51,21 @@ class Header extends React.PureComponent {
               <a
                 className={styles.item}
                 onClick={() => {
-                  window.open('http://whitepaper.com', '', '');
+                  window.open('https://github.com/SlotNSlot/SlotNSlot', '', '');
                 }}
               >
-                White Paper
+                GitHub
               </a>
             </li>
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
                 onClick={() => {
-                  window.open('http://blog.com', '', '');
+                  window.open('http://whitepaper.com', '', '');
                 }}
               >
-                Blog
+                White Paper
               </a>
-            </li>
-
-            <li className={styles.rightNavItem}>
-              <NavLink exact to="/" className={styles.item} activeClassName="active">
-                FAQ
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <NavLink exact to="/slot" className={styles.item} activeClassName="active">
-                Prototype
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <a className={styles.contributionBtn}>contribution</a>
             </li>
           </ul>
         </div>

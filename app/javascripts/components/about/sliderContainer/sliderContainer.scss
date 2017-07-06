@@ -6,7 +6,7 @@
 
 .innerContainer {
   position: relative;
-  width: 960px;
+  max-width: 960px;
   height: 100%;
   margin: 0 auto;
   background: url('https://d1qh7kd1bid312.cloudfront.net/about/mobilePhone.png') no-repeat;
@@ -51,6 +51,9 @@
         width: 176px;
       }
     }
+    @media (max-width: 800px) {
+      display: none;
+    }
   }
 
   .rightBlock {
@@ -72,6 +75,9 @@
       line-height: 1.25;
       letter-spacing: 0.7px;
       color: #727272;
+    }
+    @media (max-width: 800px) {
+      display: none;
     }
   }
 }

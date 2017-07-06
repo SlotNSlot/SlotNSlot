@@ -13,7 +13,7 @@ $top-navbar-height: 75px;
 .navbarContainer {
   position: relative;
   margin: 0 auto;
-  width: 960px;
+  max-width: 960px;
 }
 
 .rightNavItemsWrapper {

@@ -84,6 +84,7 @@
     },
     "dependencies": {
         "axios": "^0.16.2",
+        "babel-runtime": "^6.23.0",
         "bignumber.js": "^4.0.2",
         "history": "^4.6.2",
         "immutable": "^3.8.1",

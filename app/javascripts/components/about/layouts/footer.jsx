@@ -29,7 +29,11 @@ const Footer = () =>
         <a
           className={styles.btnContainer}
           onClick={() => {
-            window.open('https://slack.com', '', '');
+            window.open(
+              'https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link',
+              '',
+              '',
+            );
           }}
         >
           <Icon className={styles.snsBtn} icon="SLACK_FOR_FOOTER" />

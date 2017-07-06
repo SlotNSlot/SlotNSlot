@@ -13,7 +13,9 @@ class EmailContainer extends React.PureComponent {
       alert('Please input valid e-mail');
     } else {
       try {
-        await Axios.post(`https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`);
+        await Axios.post(
+          `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
+        );
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {
@@ -27,21 +29,21 @@ class EmailContainer extends React.PureComponent {
         <div className={styles.emailContainer}>
           <div>
             <div className={styles.emailTitle}>
-              The World First online <span>slot machine platform</span>, running on Ethereum
+              The World First online <span>Slot Machine Platform</span>, running on <span>Ethereum</span>
             </div>
             <div className={styles.subTitle}>
               Make <span>your own Slots</span>! Play others and ruin them!
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={e => {
                 this.subscribeEmail(e);
               }}
               className={styles.emailForm}
             >
               <div className={styles.emailInputWrapper}>
                 <input
-                  ref={(c) => {
+                  ref={c => {
                     this.emailInput = c;
                   }}
                   className={styles.emailInput}
@@ -73,18 +75,15 @@ class EmailContainer extends React.PureComponent {
               <a
                 className={styles.btnContainer}
                 onClick={() => {
-                  window.open('https://slack.com', '', '');
+                  window.open(
+                    'https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link',
+                    '',
+                    '',
+                  );
                 }}
               >
                 <Icon className={styles.snsBtn} icon="SLACK" />
               </a>
-            </div>
-
-            <div className={styles.mouseIcon}>
-              <Icon icon="MOUSE_ICON" />
-              <div>
-                &#x25cf;<br />&#x25cf;<br />&#x25cf;
-              </div>
             </div>
           </div>
         </div>

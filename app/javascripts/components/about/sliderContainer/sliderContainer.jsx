@@ -15,7 +15,7 @@ const sliderContainer = () =>
         <a
           className={styles.googlePlayLink}
           onClick={() => {
-            window.open('https://google.com', '', '');
+            alert('SlotNSlot application will be available soon!');
           }}
         >
           <img src="https://d1qh7kd1bid312.cloudfront.net/about/google-play-download.png" alt="google-play-download" />

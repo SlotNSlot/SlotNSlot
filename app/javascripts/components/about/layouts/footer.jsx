@@ -28,6 +28,9 @@ const Footer = () =>
         >
           <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />
         </a>
+        <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
+          <Icon className={styles.snsBtn} icon="TWITTER_FOR_FOOTER" />
+        </a>
       </div>
     </div>
   </div>;

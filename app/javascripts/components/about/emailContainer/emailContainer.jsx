@@ -74,6 +74,9 @@ class EmailContainer extends React.PureComponent {
               >
                 <Icon className={styles.snsBtn} icon="HIPCHAT" />
               </a>
+              <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
+                <Icon className={styles.snsBtn} icon="TWITTER" />
+              </a>
             </div>
           </div>
         </div>

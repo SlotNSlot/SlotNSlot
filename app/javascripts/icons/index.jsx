@@ -18,6 +18,8 @@ const ICONS = {
   S_8_FRAME: require('./s-8-frame.svg'),
   HIPCHAT_FOR_FOOTER: require('./hipchat-for-footer.svg'),
   HIPCHAT: require('./hipchat.svg'),
+  TWITTER_FOR_FOOTER: require('./twitter-for-footer.svg'),
+  TWITTER: require('./twitter.svg'),
   SLOT_N_SLOT_LOGO_NON_SHADOW: require('./slot-n-slot-logo-non-shadow.svg'),
   SLOT_N_SLOT_LOGO: require('./slot-n-slot-logo.svg'),
   SUBSCRIBE_BUTTON: require('./subscribe-button.svg'),

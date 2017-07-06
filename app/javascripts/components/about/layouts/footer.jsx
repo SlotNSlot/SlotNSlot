@@ -21,11 +21,7 @@ const Footer = () =>
         >
           <Icon className={styles.snsBtn} icon="REDDIT_FOR_FOOTER" />
         </a>
-        <a
-          className={styles.btnContainer}
-          href="https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link"
-          target="_blank"
-        >
+        <a className={styles.btnContainer} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
           <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />
         </a>
         <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">

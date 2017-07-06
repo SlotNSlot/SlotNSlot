@@ -9,9 +9,7 @@ const sliderContainer = () =>
         <div className={styles.logoTitle}>
           <Icon icon="SLOT_N_SLOT_LOGO_NON_SHADOW" />
         </div>
-        <div className={styles.subTitle}>Android Mobile App</div>
-
-        <div className={styles.guide}>Install Now!</div>
+        <div className={styles.subTitle}>We also Mobile App</div>
         <a
           className={styles.googlePlayLink}
           onClick={() => {
@@ -25,7 +23,7 @@ const sliderContainer = () =>
         <div className={styles.title}>Play from everywhere</div>
         <div className={styles.context}>
           By offering mobile apps, users can enjoy games more easily. <br />
-          Create and play slots in the mobile app!
+          You can play and even make slots in the mobile app!
         </div>
       </div>
     </div>

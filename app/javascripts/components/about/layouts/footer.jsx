@@ -10,33 +10,26 @@ const Footer = () =>
         team@slotnslot.com
       </div>
       <div className={styles.rightBtns}>
-        <a
-          className={styles.btnContainer}
-          onClick={() => {
-            window.open('https://github.com/SlotNSlot/SlotNSlot', '', '');
-          }}
-        >
+        <a href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
           <Icon className={styles.snsBtn} icon="GITHUB_FOR_FOOTER" />
         </a>
         <a
           className={styles.btnContainer}
           onClick={() => {
-            window.open('https://reddit.com', '', '');
+            alert('The Reddit will be ready soon!');
           }}
         >
           <Icon className={styles.snsBtn} icon="REDDIT_FOR_FOOTER" />
         </a>
         <a
           className={styles.btnContainer}
-          onClick={() => {
-            window.open(
-              'https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link',
-              '',
-              '',
-            );
-          }}
+          href="https://slotnslot.hipchat.com/invite/724322/12a777b2ffc3582ba011d9c656f0e7b0?utm_campaign=company_room_link"
+          target="_blank"
         >
-          <Icon className={styles.snsBtn} icon="SLACK_FOR_FOOTER" />
+          <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />
+        </a>
+        <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
+          <Icon className={styles.snsBtn} icon="TWITTER_FOR_FOOTER" />
         </a>
       </div>
     </div>

@@ -1,18 +1,24 @@
 import React from 'react';
+import Axios from 'axios';
 import styles from './emailContainer.scss';
 import Icon from '../../../icons';
 
 class EmailContainer extends React.PureComponent {
-  subscribeEmail(e) {
+  async subscribeEmail(e) {
     e.preventDefault();
     const emailInput = this.emailInput.value;
-    console.log(emailInput);
     // e-mail validation by regular expression
     const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!reg.test(emailInput)) {
       alert('Please input valid e-mail');
     } else {
-      // TODO MAKE EMAIL SUBSCRIBE FUNCTION
+      try {
+        await Axios.post(`https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`);
+        alert('You are on the subscribe list now');
+        this.emailInput.value = '';
+      } catch (err) {
+        alert(`Failed: ${err.response.data.error}`);
+      }
     }
   }
   render() {
@@ -20,12 +26,6 @@ class EmailContainer extends React.PureComponent {
       <div className={styles.emailComponent}>
         <div className={styles.emailContainer}>
           <div>
-            {/*<img
-              src="https://d1qh7kd1bid312.cloudfront.net/about/main-theme@2x.png"
-              alt="main-theme"
-              className={styles.mainTheme}
-            />*/}
-
             <div className={styles.emailTitle}>
               The World First online <span>slot machine platform</span>, running on Ethereum
             </div>
@@ -34,14 +34,14 @@ class EmailContainer extends React.PureComponent {
             </div>
 
             <form
-              onSubmit={e => {
+              onSubmit={(e) => {
                 this.subscribeEmail(e);
               }}
               className={styles.emailForm}
             >
               <div className={styles.emailInputWrapper}>
                 <input
-                  ref={c => {
+                  ref={(c) => {
                     this.emailInput = c;
                   }}
                   className={styles.emailInput}

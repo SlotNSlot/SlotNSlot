@@ -26,4 +26,11 @@ export function getHistoryObject() {
 
 const router = routerMiddleware(getHistoryObject());
 
-export const store = createStore(rootReducer, applyMiddleware(thunk, router, logger));
+let middleWare;
+if (EnvChecker.isDev()) {
+  middleWare = applyMiddleware(thunk, router, logger);
+} else {
+  middleWare = applyMiddleware(thunk, router);
+}
+
+export const store = createStore(rootReducer, middleWare);

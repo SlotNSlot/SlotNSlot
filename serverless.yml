@@ -2,7 +2,6 @@ service: slot-n-slot-lambda
 provider:
   name: aws
   runtime: nodejs6.10
-  stage: prod # You can override this at CLI
   environment: ${file(./env/${opt:stage}.yml)}
   iamRoleStatements:
    - Effect: "Allow"
@@ -63,17 +62,19 @@ resources:
             ForwardedValues:
               QueryString: true
               Headers:
-                - *
-            TargetOriginId: "${self:service}-${self:provider.stage}-api-gateway"
+                - original-uri
+                - User-Agent
+                - X-Forwarded-For
+            TargetOriginId: "${self:service}-${opt:stage}-api-gateway"
             ViewerProtocolPolicy: allow-all
           Aliases:
-            - slotnslot.com
-            - www.slotnslot.com
+            - ${file(./env/${opt:stage}.yml):DNS_ALIAS1}
+            - ${file(./env/${opt:stage}.yml):DNS_ALIAS2}
           Origins:
           - CustomOriginConfig:
               HTTPSPort: 443
               OriginProtocolPolicy: https-only
             DomainName:
               "Fn::Join": ["", [{"Ref": "ApiGatewayRestApi"}, ".execute-api.${self:provider.region}.amazonaws.com"]]
-            Id: "${self:service}-${self:provider.stage}-api-gateway"
-            OriginPath: /${self:provider.stage}/frontRender
+            Id: "${self:service}-${opt:stage}-api-gateway"
+            OriginPath: /${opt:stage}/frontRender

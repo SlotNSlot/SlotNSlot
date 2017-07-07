@@ -6,6 +6,7 @@ pipeline {
     tools {
         nodejs 'nodejs 8.1.3'
     }
+
     stages {
         stage('SCM CHECKOUT') {
             stpes {
@@ -20,10 +21,10 @@ pipeline {
         }
 
         stage('BUILD & DEPLOY') {
-            withCredentials([
-                [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
-            ]) {
-                stpes {
+            stpes {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
+                ]) {
                     sh 'npm run deploy:stage'
                 }
             }

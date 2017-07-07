@@ -12,7 +12,7 @@ node {
                 scm: [
                     $class: 'GitSCM',
                     branches: [
-                        [name: "refs/heads/${env.BRANCH_NAME}"]
+                        [name: env.BRANCH_NAME]
                     ],
                     extensions: [
                         [$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeTarget: MAIN_BRANCH]]
@@ -22,7 +22,7 @@ node {
             )
         }
 
-        echo 'DONE'
+        echo env.BRANCH_NAME
     })
 }
 

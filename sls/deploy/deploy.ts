@@ -9,11 +9,12 @@ function deploy() {
   const NEW_TAG: string = (new Date()).toISOString().replace(/:/g, '-');
   fs.writeFileSync('./version', NEW_TAG);
 
-  pushToS3(NEW_TAG)
+  return pushToS3(NEW_TAG)
     .then(() => copyJsToRoot(NEW_TAG))
     .then(() => addGitTag(NEW_TAG))
     .then(() => pushGitTag())
-    .then(() => console.log('ALL TASKS ARE DONE!'));
 }
 
-deploy();
+deploy().then(() => {
+  console.log("DONE!");
+});

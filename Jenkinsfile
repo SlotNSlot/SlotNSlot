@@ -11,8 +11,8 @@ pipeline {
         stage('SCM CHECKOUT') {
             steps {
                 checkout scm
-                    sh 'git config user.email "sushi.otoro@outlook.com" && git config user.name "fish-sushi"'
-                    sh 'git remote -v'
+                sh 'git config user.email "sushi.otoro@outlook.com" && git config user.name "fish-sushi"'
+                sh 'git remote -v'
             }
         }
 
@@ -34,10 +34,13 @@ pipeline {
 
         stage('TAGGING') {
             steps {
-                tag = readFile('version').trim()
-                echo tag
-                sh 'git tag -a ${tag} -m "Trying to deploy to S3" && git tag -af stage -m "Trying to deploy to S3'
-                sh 'git push origin --tags -f'
+                script {
+                    def GITTAG = readFile('version').trim()
+                    echo GITTAG
+                    sh "git tag -a ${GITTAG} -m 'Trying to deploy to S3' && git tag -af stage -m 'Trying to deploy to S3'"
+                    sh 'git remote -v'
+                    sh 'git push origin --tags -f'
+                }
             }
         }
     }

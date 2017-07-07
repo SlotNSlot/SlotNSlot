@@ -16,7 +16,7 @@ node {
                     extensions: [
                         [$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeTarget: MAIN_BRANCH]]
                     ],
-                    userRemoteConfigs: [[credentialsId: 'GITHUB_USERNAME_PASSWORD', url: 'https://github.com/SlotNSlot/SlotNSlot']]])
+                    userRemoteConfigs: [[credentialsId: 'GITHUB_USERNAME_PASSWORD', url: 'https://github.com/SlotNSlot/SlotNSlot']]
                 ]
             )
         }

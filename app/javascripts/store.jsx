@@ -15,7 +15,6 @@ export function getHistoryObject() {
   if (history) {
     return history;
   }
-
   if (EnvChecker.isDev()) {
     history = createHashHistory();
   } else {

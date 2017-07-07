@@ -13,7 +13,6 @@ function deploy() {
     .then(() => copyJsToRoot(NEW_TAG))
     .then(() => addGitTag(NEW_TAG))
     .then(() => pushGitTag())
-    .then(() => recordGitTag(NEW_TAG))
     .then(() => console.log('ALL TASKS ARE DONE!'));
 }
 

@@ -9,24 +9,24 @@ pipeline {
 
     stages {
         stage('SCM CHECKOUT') {
-            stpes {
+            steps {
                 checkout scm
             }
         }
 
         stage('NPM INSTALL') {
-            stpes {
+            steps {
                 sh 'npm install'
             }
         }
 
         stage('BUILD & DEPLOY') {
-            stpes {
+            steps {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
                     sh 'npm run deploy:stage'
-                }
+
             }
         }
     }

@@ -1,4 +1,5 @@
-IS_STAGE_BUILD = (env.BRANCH_NAME == 'master')
+MAIN_BRANCH = 'master'
+IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 
 node {
     handleStageFailure('SCM Checkout', {

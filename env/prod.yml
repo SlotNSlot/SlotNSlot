@@ -1,0 +1,3 @@
+MAILCHIMP_API_KEY: ${env:MAILCHIMP_API_KEY}
+DNS_ALIAS1: slotnslot.com
+DNS_ALIAS2: www.slotnslot.com

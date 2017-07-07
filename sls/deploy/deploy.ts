@@ -5,14 +5,14 @@ import pushGitTag from './helpers/pushGitTag';
 import recordGitTag from './helpers/recordGitTag';
 import copyJsToRoot from './helpers/copyJsToRoot';
 
-function deploy() {
+async function deploy() {
   const NEW_TAG: string = (new Date()).toISOString().replace(/:/g, '-');
   fs.writeFileSync('./version', NEW_TAG);
 
-  return pushToS3(NEW_TAG)
-    .then(() => copyJsToRoot(NEW_TAG))
-    .then(() => addGitTag(NEW_TAG))
-    .then(() => pushGitTag())
+  await pushToS3(NEW_TAG);
+  await copyJsToRoot(NEW_TAG);
+  await addGitTag(NEW_TAG);
+  await pushGitTag();
 }
 
 deploy().then(() => {

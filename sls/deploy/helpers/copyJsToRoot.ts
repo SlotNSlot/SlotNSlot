@@ -40,6 +40,7 @@ export default async function copyJsToRoot(NEW_TAG: string) {
           console.error('copy to root has failed!', err);
           reject(err);
         } else {
+          console.log('Copy object SUCCESS');
           resolve();
         }
       });

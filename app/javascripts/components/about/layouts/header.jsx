@@ -62,11 +62,7 @@ class Header extends React.PureComponent {
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                href="https://gitter.im/SlotNSlot/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link"
-                target="_blank"
-              >
+              <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
                 Chat
               </a>
             </li>

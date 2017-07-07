@@ -1,6 +1,5 @@
 import Web3 from 'web3';
 import contract from 'truffle-contract';
-import metacoinArtifacts from '../../../build/contracts/MetaCoin.json';
 
 class Web3Service {
   constructor() {
@@ -31,7 +30,7 @@ class Web3Service {
 
   getMetaCoinContract() {
     if (!this.MetaCoin) {
-      this.MetaCoin = contract(metacoinArtifacts);
+      // this.MetaCoin = contract(metacoinArtifacts);
     }
     return this.MetaCoin;
   }

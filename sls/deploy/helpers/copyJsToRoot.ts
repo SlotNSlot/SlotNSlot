@@ -19,30 +19,31 @@ export default function copyJsToRoot(NEW_TAG: string) {
           console.error('copy to root has failed!', err);
           reject(err);
         } else {
-          resolve();
-        }
-      });
-    });
-  } else {
-    return new Promise((resolve, reject) => {
-      const s3Client = s3.createClient(DeployConfig.S3_CLIENT_OPTIONS);
-
-      console.log('copySource', `${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/bundle.js`);
-      const params = {
-        Bucket: DeployConfig.AWS_S3_BUCKET,
-        CopySource: `${DeployConfig.AWS_S3_BUCKET}/${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/bundle.js`,
-        Key: "stage/bundle.js",
-        ACL: 'public-read'
-      };
-
-      s3Client.copyObject(params, (err: Error, res: any) => {
-        if (err) {
-          console.error('copy to root has failed!', err);
-          reject(err);
-        } else {
-          resolve();
+          resolve(res);
         }
       });
     });
   }
+  return new Promise((resolve, reject) => {
+    console.log('stage object');
+    const s3Client = s3.createClient(DeployConfig.S3_CLIENT_OPTIONS);
+
+    console.log('copySource', `${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/stage/bundle.js`);
+    const params = {
+      Bucket: DeployConfig.AWS_S3_BUCKET,
+      CopySource: `${DeployConfig.AWS_S3_BUCKET}/${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/bundle.js`,
+      Key: "stage/bundle.js",
+      ACL: 'public-read'
+    };
+
+    s3Client.copyObject(params, (err: Error, res: any) => {
+      if (err) {
+        console.error('copy to root has failed!', err);
+        reject(err);
+      } else {
+        console.log('Copy object SUCCESS');
+        resolve();
+      }
+    });
+  });
 }

@@ -3,15 +3,15 @@ IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 
 pipeline {
     agent any
+    tools {
+        nodejs 'Node 8.1.2'
+    }
     stages {
-        handleStageFailure('SCM CHECKOUT', {
-            checkout scm
-            echo 'DONE'
-        })
-
-        handleStageFailure('NPM INSTALL', {
-            sh 'npm install'
-        })
+        stage('Example') {
+            steps {
+                sh 'npm --version'
+            }
+        }
     }
 }
 

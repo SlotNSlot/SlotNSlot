@@ -2,9 +2,13 @@ MAIN_BRANCH = 'master'
 IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 
 node {
-    handleStageFailure('SCM Checkout', {
+    handleStageFailure('SCM CHECKOUT', {
         checkout scm
         echo 'DONE'
+    })
+
+    handleStageFailure('NPM INSTALL', {
+        sh 'npm install'
     })
 }
 

@@ -1,19 +1,18 @@
 MAIN_BRANCH = 'master'
 IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 
-node {
-    tools {
-        nodejs 'Node 8.1.2'
+pipeline {
+    agent any
+    stages {
+        handleStageFailure('SCM CHECKOUT', {
+            checkout scm
+            echo 'DONE'
+        })
+
+        handleStageFailure('NPM INSTALL', {
+            sh 'npm install'
+        })
     }
-
-    handleStageFailure('SCM CHECKOUT', {
-        checkout scm
-        echo 'DONE'
-    })
-
-    handleStageFailure('NPM INSTALL', {
-        sh 'npm install'
-    })
 }
 
 private def handleStageFailure(String stageName, Closure stageDefinition) {

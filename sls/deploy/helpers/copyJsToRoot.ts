@@ -1,9 +1,9 @@
 import * as DeployConfig from "./config";
 const s3 = require("s3");
 
-export default function copyJsToRoot(NEW_TAG: string) {
+export default async function copyJsToRoot(NEW_TAG: string) {
   if (process.env.NODE_ENV === "production") {
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const s3Client = s3.createClient(DeployConfig.S3_CLIENT_OPTIONS);
 
       console.log('copySource', `${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/bundle.js`);
@@ -24,7 +24,7 @@ export default function copyJsToRoot(NEW_TAG: string) {
       });
     });
   } else {
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const s3Client = s3.createClient(DeployConfig.S3_CLIENT_OPTIONS);
 
       console.log('copySource', `${DeployConfig.AWS_S3_FOLDER_PREFIX}/${NEW_TAG}/stage/bundle.js`);

@@ -1,7 +1,12 @@
 MAIN_BRANCH = 'master'
 IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
+DOCKER_IMAGE_NAME = 'node:8.1'
 
 node {
+    withEnv(["PATH+NODE=${tool name: 'node-8.1.2', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'}/bin"]) {
+        sh 'node -v'
+    }
+
     handleStageFailure('SCM CHECKOUT', {
         checkout scm
         echo 'DONE'

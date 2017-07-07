@@ -13,6 +13,7 @@ pipeline {
                 checkout scm
                     sh 'git config --global user.email "sushi.otoro@outlook.com"'
                     sh 'git config --global user.name "fish-sushi"'
+                    sh 'git remote -v'
             }
         }
 

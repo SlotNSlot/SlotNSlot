@@ -3,26 +3,8 @@ IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 
 node {
     handleStageFailure('SCM Checkout', {
-        if (IS_STAGE_BUILD) {
-            checkout scm
-        } else {
-            checkout(
-                changelog: true,
-                poll: false,
-                scm: [
-                    $class: 'GitSCM',
-                    branches: [
-                        [name: env.BRANCH_NAME]
-                    ],
-                    extensions: [
-                        [$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeTarget: MAIN_BRANCH]]
-                    ],
-                    userRemoteConfigs: [[credentialsId: 'GITHUB_USERNAME_PASSWORD', url: 'https://github.com/SlotNSlot/SlotNSlot']]
-                ]
-            )
-        }
-
-        echo env.BRANCH_NAME
+        checkout scm
+        echo 'DONE'
     })
 }
 

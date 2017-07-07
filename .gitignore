@@ -4,7 +4,6 @@ jspm_packages
 
 # Serverless directories
 .serverless
-env
 dst.zip
 version
 dst

@@ -10,9 +10,9 @@ async function deploy() {
   fs.writeFileSync('./version', NEW_TAG);
 
   await pushToS3(NEW_TAG);
-  await copyJsToRoot(NEW_TAG);
   await addGitTag(NEW_TAG);
   await pushGitTag();
+  await copyJsToRoot(NEW_TAG);
 }
 
 deploy().then(() => {

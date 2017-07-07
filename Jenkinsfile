@@ -4,7 +4,7 @@ IS_STAGE_BUILD = (env.BRANCH_NAME == MAIN_BRANCH)
 pipeline {
     agent any
     tools {
-        nodejs 'Node 8.1.3'
+        nodejs 'nodejs 8.1.3'
     }
     stages {
         stage('Example') {

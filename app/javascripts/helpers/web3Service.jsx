@@ -21,7 +21,7 @@ class Web3Service {
     }
 
     // Set MetaCoin Provider
-    this.getMetaCoinContract().setProvider(this.web3.currentProvider);
+    // this.getMetaCoinContract().setProvider(this.web3.currentProvider);
   }
 
   getWeb3() {

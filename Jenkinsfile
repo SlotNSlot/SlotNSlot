@@ -11,8 +11,8 @@ pipeline {
         stage('SCM CHECKOUT') {
             steps {
                 checkout scm
-                    sh 'git config --global user.email "all@slotnslot.com"'
-                    sh 'git config --global user.name "SlotNSlot-CI"'
+                    sh 'git config --global user.email "sushi.otoro@outlook.com"'
+                    sh 'git config --global user.name "fish-sushi"'
             }
         }
 

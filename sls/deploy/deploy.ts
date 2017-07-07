@@ -9,12 +9,16 @@ async function deploy() {
   const NEW_TAG: string = (new Date()).toISOString().replace(/:/g, '-');
   fs.writeFileSync('./version', NEW_TAG);
 
-  await addGitTag(NEW_TAG);
-  await pushGitTag();
-  await pushToS3(NEW_TAG);
-  await recordGitTag(NEW_TAG);
-  await copyJsToRoot(NEW_TAG);
-  console.log('ALL TASKS ARE DONE!');
+  try {
+    await addGitTag(NEW_TAG);
+    await pushGitTag();
+    await pushToS3(NEW_TAG);
+    await recordGitTag(NEW_TAG);
+    await copyJsToRoot(NEW_TAG);
+    console.log('ALL TASKS ARE DONE!');
+  } catch (err) {
+    throw err;
+  }
 }
 
 deploy();

@@ -31,6 +31,15 @@ pipeline {
                 }
             }
         }
+
+        stage('TAGGING') {
+            steps {
+                tag = readFile('version').trim()
+                echo tag
+                sh 'git tag -a ${tag} -m "Trying to deploy to S3" && git tag -af stage -m "Trying to deploy to S3'
+                sh 'git push origin --tags -f'
+            }
+        }
     }
 }
 

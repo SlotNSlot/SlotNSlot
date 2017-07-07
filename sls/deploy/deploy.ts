@@ -1,8 +1,5 @@
 import * as fs from 'fs';
-import addGitTag from './helpers/addGitTag';
 import pushToS3 from './helpers/pushToS3';
-import pushGitTag from './helpers/pushGitTag';
-import recordGitTag from './helpers/recordGitTag';
 import copyJsToRoot from './helpers/copyJsToRoot';
 
 async function deploy() {
@@ -10,8 +7,6 @@ async function deploy() {
   fs.writeFileSync('./version', NEW_TAG);
 
   await pushToS3(NEW_TAG);
-  await addGitTag(NEW_TAG);
-  await pushGitTag();
   await copyJsToRoot(NEW_TAG);
 }
 

@@ -18,17 +18,9 @@ export function setCoinBalance(balance) {
 
 export function refreshBalance(account) {
   return dispatch => {
-    Web3Service.getMetaCoinContract()
-      .deployed()
-      .then(instance => {
-        return instance.getBalance.call(account, { from: account });
-      })
-      .then(value => {
-        dispatch(setCoinBalance(value.valueOf()));
-      })
-      .catch(e => {
-        console.error(e);
-      });
+    const balance = Web3Service.getWeb3().eth.getBalance(account);
+    const ethBalance = Web3Service.getWeb3().fromWei(balance, 'ether').valueOf();
+    dispatch(setCoinBalance(ethBalance));
   };
 }
 
@@ -53,6 +45,7 @@ export function setAccount() {
             account: accs[0],
           },
         });
+
         dispatch(refreshBalance(accs[0]));
       }
     });

@@ -16,6 +16,10 @@ pipeline {
             }
         }
 
+        stage('CLEAN ENV') {
+            sh 'rm -rf node_modules && npm cache clean -f && npm install'
+        }
+
         stage('NPM INSTALL') {
             steps {
                 sh 'npm install'
@@ -27,7 +31,7 @@ pipeline {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
-                    sh 'npm run deploy:stage'
+                    sh 'npm run deploy:prod'
                 }
             }
         }
@@ -38,7 +42,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'GITHUB_USERNAME_PASSWORD', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         def GITTAG = readFile('version').trim()
                         echo GITTAG
-                        sh "git tag -a ${GITTAG} -m 'Trying to deploy to S3' && git tag -af stage -m 'Trying to deploy to S3'"
+                        sh "git tag -a ${GITTAG} -m 'Trying to deploy to S3' && git tag -af production -m 'Trying to deploy to S3'"
                         sh 'git remote -v'
                         sh 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/SlotNSlot/SlotNSlot.git --tags -f'
                     }

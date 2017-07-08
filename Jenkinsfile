@@ -16,6 +16,10 @@ pipeline {
             }
         }
 
+        stage('CLEAN ENV') {
+            sh 'rm -rf node_modules && npm cache clean -f && npm install'
+        }
+
         stage('NPM INSTALL') {
             steps {
                 sh 'npm install'

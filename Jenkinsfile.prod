@@ -28,6 +28,12 @@ pipeline {
             }
         }
 
+        stage('TEST') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
         stage('BUILD & DEPLOY') {
             steps {
                 withCredentials([

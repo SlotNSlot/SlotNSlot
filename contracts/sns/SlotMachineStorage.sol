@@ -59,33 +59,7 @@ contract SlotMachineStorage is Ownable {
       return slotMachines[_provider][_idx];
     }
 
-    /*function getSlotMachineDecider(uint _idx) onlyOwner constant returns (uint){
-        return (SlotMachine(slotMachines[_idx]).mDecider());
-    }
 
-    function getSlotMachineInfo(uint _idx) onlyOwner constant returns (uint, uint, uint){
-      return (SlotMachine(slotMachines[_idx]).getInfo());
-    }*/
-
-
-        /*function getSlotMachine(uint _idx) onlyOwner constant returns (address) {
-            if (_idx >= slotMachines.length)
-              return 0x0;
-            else
-              return slotMachines[_idx];
-        }*/
-
-        /*function addSlotMachine(address _newslotMachine) onlyOwner {
-            slotMachines.push(_newslotMachine);
-        }*/
-
-        /*function setSlotMachine(uint _idx, address _newslotMachine) onlyOwner {
-            slotMachines[_idx] = _newslotMachine;
-        }*/
-        /*function deleteSlotMachine(uint _idx) onlyOwner {
-            delete slotMachines[_idx];
-            slotMachines.length--;
-        }*/
 
 
 }

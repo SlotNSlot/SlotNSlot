@@ -5,10 +5,10 @@ import styles from './header.scss';
 const Header = () =>
   <div className={styles.header}>
     <h1 className={styles.title}> SLOT & SLOT </h1>
-    <NavLink exact to="/slot/play" className={styles.item} activeClassName="active">
+    <NavLink to="/slot/play" className={styles.item} activeClassName="active">
       PLAY
     </NavLink>
-    <NavLink exact to="/slot/make" className={styles.item} activeClassName="active">
+    <NavLink to="/slot/make" className={styles.item} activeClassName="active">
       MAKE
     </NavLink>
     <div className={styles.walletStatus}> Your balence : 0.02342 ETH</div>

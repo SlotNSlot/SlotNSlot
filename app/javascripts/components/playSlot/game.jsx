@@ -69,6 +69,7 @@ export default class SlotGame {
     this.gameLoop = this.gameLoop.bind(this);
     this.loopStart = this.loopStart.bind(this);
     this.stopSpin = this.stopSpin.bind(this);
+    this.drawUI = this.drawUI.bind(this);
     this.stopReel = this.stopReel.bind(this);
     this.changeSlot = this.changeSlot.bind(this);
     this.drawLine = this.drawLine.bind(this);
@@ -109,8 +110,9 @@ export default class SlotGame {
       }
     }
 
+    this.UIContainer = new PIXI.Container();
+    const tempContainer = new PIXI.Container();
     this.reelContainer = new PIXI.Container();
-    const UIContainer = new PIXI.Container();
 
     this.reelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
     this.newReelGroup = null;
@@ -122,12 +124,14 @@ export default class SlotGame {
     // Add the canvas to the HTML document
     PIXI.loader
       .add('assets/images/symbolsMap.json')
+      .add('assets/images/slotMap.json')
       .on('progress', (loader, resource) => {
         console.log(loader);
         console.log(resource);
         console.log('LOADING...');
       })
       .load(() => {
+        this.drawUI();
         // Make frame list from spriteSheets symbol by symbol.
         const spritesNum = [9, 7, 6, 7, 6, 9, 24, 19, 23, 24, 24, 24, 24];
         for (let i = 1; i <= ALL_SYMBOL_COUNT; i += 1) {
@@ -186,7 +190,7 @@ export default class SlotGame {
         spinBtn.interactive = true;
         spinBtn.buttonMode = true;
         spinBtn.on('pointerdown', this.loopStart);
-        UIContainer.addChild(spinBtn);
+        tempContainer.addChild(spinBtn);
 
         const stopBtn = new PIXI.Graphics();
         stopBtn.beginFill(0xcc0000, 1);
@@ -197,9 +201,12 @@ export default class SlotGame {
         stopBtn.y = 525;
         stopBtn.interactive = true;
         stopBtn.buttonMode = true;
+
         stopBtn.on('pointerdown', this.stopSpin);
-        UIContainer.addChild(stopBtn);
-        this.stage.addChild(UIContainer);
+        tempContainer.addChild(stopBtn);
+
+        this.stage.addChild(tempContainer);
+        this.stage.addChild(this.UIContainer);
         // Tell the `renderer` to `render` the `stage`
         this.renderer.render(this.stage);
         // When load function is ended, then start gameLoop
@@ -325,6 +332,78 @@ export default class SlotGame {
         resolve(reelNum);
       }, 2000);
     });
+  }
+
+  drawUI() {
+    const TextureCache = PIXI.utils.TextureCache;
+    const Sprite = PIXI.Sprite;
+
+    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    mergedBackground.position.set(0, 0);
+    mergedBackground.width = 940;
+    mergedBackground.height = 660;
+
+    const slotBackground = new Sprite(TextureCache['slot-background.png']);
+    slotBackground.position.set(43, 120);
+    slotBackground.width = 855;
+    slotBackground.height = 461;
+
+    const ribbon = new Sprite(TextureCache['ribbon.png']);
+    ribbon.position.set(132, 77);
+    ribbon.width = 675.6;
+    ribbon.height = 491.3;
+
+    const yourStake = new Sprite(TextureCache['your-stake.png']);
+    yourStake.position.set(41.8, 12.3);
+    yourStake.width = 351;
+    yourStake.height = 60;
+
+    const bankRoll = new Sprite(TextureCache['bank-roll.png']);
+    bankRoll.position.set(547, 12);
+    bankRoll.width = 352;
+    bankRoll.height = 61;
+
+    const betAmount = new Sprite(TextureCache['bat-amount.png']);
+    betAmount.position.set(42, 580);
+    betAmount.width = 149;
+    betAmount.height = 65;
+
+    const betSize = new Sprite(TextureCache['bet-size.png']);
+    betSize.position.set(190, 580);
+    betSize.width = 185;
+    betSize.height = 65;
+
+    const maxBet = new Sprite(TextureCache['max-bet.png']);
+    maxBet.position.set(375, 580);
+    maxBet.width = 63;
+    maxBet.height = 65;
+
+    const lineNum = new Sprite(TextureCache['line.png']);
+    lineNum.position.set(436, 580);
+    lineNum.width = 186;
+    lineNum.height = 65;
+
+    const spinBtn = new Sprite(TextureCache['spin.png']);
+    spinBtn.position.set(620, 580);
+    spinBtn.width = 186;
+    spinBtn.height = 65;
+
+    const autoBtn = new Sprite(TextureCache['auto.png']);
+    autoBtn.position.set(804, 580);
+    autoBtn.width = 93;
+    autoBtn.height = 65;
+
+    this.stage.addChild(slotBackground);
+    this.UIContainer.addChild(mergedBackground);
+    this.UIContainer.addChild(ribbon);
+    this.UIContainer.addChild(yourStake);
+    this.UIContainer.addChild(bankRoll);
+    this.UIContainer.addChild(betAmount);
+    this.UIContainer.addChild(betSize);
+    this.UIContainer.addChild(maxBet);
+    this.UIContainer.addChild(lineNum);
+    this.UIContainer.addChild(spinBtn);
+    this.UIContainer.addChild(autoBtn);
   }
 
   changeSlot() {

@@ -1,12 +1,12 @@
 {
     "parser": "babel-eslint",
     "extends": [
-        "standard",
         "airbnb"
     ],
     "plugins": [
         "react",
-        "babel"
+        "babel",
+        "prettier"
     ],
     "globals": {
         "alert": 1,
@@ -23,12 +23,21 @@
         "experimentalObjectRestSpread": true
     },
     "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true,
+                "trailingComma": "all",
+                "jsxBracketSameLine": true
+            }
+        ],
         "semi": [
             2,
             "always"
         ],
         "space-before-function-paren": 0,
         "no-param-reassign": 0,
+        "no-mixed-operators": 0,
         "react/prop-types": 0,
         "key-spacing": 0,
         "max-len": [

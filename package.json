@@ -6,13 +6,17 @@
         "lint": "eslint ./",
         "clean": "rm -rf dst && rm -rf dst-sls && rm -rf temp && rm -f dst.zip && mkdir dst",
         "build": "webpack --config webpack.prod.config.js -p",
+        "build:stage": "webpack --config webpack.stage.config.js -p",
         "build-sls": "tsc",
-        "pack": "rm -f dst.zip && cp version dst-sls/version && cp sls/package.json dst-sls/package.json && cd dst-sls && npm install --production && zip -r ../dst.zip . ** && cd ..",
+        "pack": "rm -f dst.zip && cp version dst-sls/version && cp sls/package.json dst-sls/package.json && cd dst-sls && npm install --production && zip -q -r ../dst.zip . ** && cd ..",
         "dev": "webpack-dev-server --content-base app/ --hot --progress --colors --host 0.0.0.0",
         "deploy": "node dst-sls/deploy/deploy.js",
-        "deploy:prod": "npm run clean && npm run build && npm run build-sls && npm run deploy && npm run pack && serverless deploy -s prod && ts-node ./sls/deploy/helpers/expireCloudFrontCache",
+        "deploy:stage": "npm run clean && npm run build:stage && npm run build-sls && NODE_ENV=stage npm run deploy && npm run pack && serverless deploy -s stage && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
+        "deploy:prod": "npm run clean && npm run build && npm run build-sls && NODE_ENV=production npm run deploy && npm run pack && serverless deploy -s prod && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
         "precommit": "lint-staged",
-        "prepush": "truffle compile"
+        "prepush": "truffle compile",
+        "test": "jest --no-cache",
+        "test:watch": "jest --watch --no-cache"
     },
     "lint-staged": {
         "{app,__{tests,mocks}__}/**/*.{js,jsx,scss}": [
@@ -20,7 +24,7 @@
             "git add"
         ]
     },
-    "author": "Douglas von Kohorn",
+    "author": "Slot N Slot",
     "license": "MIT",
     "devDependencies": {
         "@types/fs-extra": "^3.0.3",
@@ -30,6 +34,7 @@
         "babel-cli": "^6.24.1",
         "babel-core": "^6.25.0",
         "babel-eslint": "^7.0.0",
+        "babel-jest": "^20.0.3",
         "babel-loader": "^6.4.1",
         "babel-plugin-syntax-async-functions": "^6.13.0",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
@@ -45,6 +50,7 @@
         "babel-register": "^6.24.1",
         "copy-webpack-plugin": "^4.0.1",
         "css-loader": "^0.26.4",
+        "enzyme": "^2.9.1",
         "eslint": "^3.2.2",
         "eslint-config-airbnb": "^15.0.1",
         "eslint-config-standard": "^6.2.1",
@@ -59,6 +65,7 @@
         "fs-extra": "^3.0.1",
         "html-webpack-plugin": "^2.28.0",
         "husky": "^0.14.1",
+        "jest": "^20.0.4",
         "json-loader": "^0.5.4",
         "lint-staged": "^4.0.0",
         "node-sass": "^4.5.3",
@@ -67,6 +74,7 @@
         "precss": "^1.4.0",
         "prettier": "^1.5.2",
         "raw-loader": "^0.5.1",
+        "react-test-renderer": "^15.6.1",
         "s3": "^4.4.0",
         "sass-loader": "^6.0.6",
         "serverless": "^1.16.1",
@@ -84,6 +92,7 @@
     },
     "dependencies": {
         "axios": "^0.16.2",
+        "babel-runtime": "^6.23.0",
         "bignumber.js": "^4.0.2",
         "history": "^4.6.2",
         "immutable": "^3.8.1",
@@ -106,5 +115,30 @@
         "truffle-contract": "^1.1.11",
         "web3": "^0.19.0",
         "zeppelin-solidity": "^1.0.7"
+    },
+    "jest": {
+        "automock": true,
+        "transform": {
+            "^.+\\.jsx$": "babel-jest",
+            "^.+\\.scss$": "<rootDir>/app/javascripts/__tests__/preprocessor.js",
+            "^.+\\.svg$": "<rootDir>/app/javascripts/__tests__/preprocessor.js"
+        },
+        "verbose": true,
+        "rootDir": "",
+        "moduleFileExtensions": [
+            "js",
+            "jsx"
+        ],
+        "moduleDirectories": [
+            "node_modules"
+        ],
+        "testRegex": "__tests__/.*_spec.jsx$",
+        "unmockedModulePathPatterns": [
+            "<rootDir>/node_modules",
+            "/.*\\.scss$"
+        ],
+        "setupFiles": [
+            "<rootDir>/app/javascripts/__tests__/preload.jsx"
+        ]
     }
 }

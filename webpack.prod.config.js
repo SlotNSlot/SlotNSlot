@@ -63,7 +63,7 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
         options: {
-          cacheDirectory: true,
+          plugins: ['transform-runtime'],
           presets: ['es2015', 'react', 'stage-0', 'stage-2'],
         },
       },
@@ -71,14 +71,16 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }    
     }),
+    new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       template: './app/index.ejs',
       inject: false,
-      NODE_ENV: 'PRODUCTION',
     }),
   ],
 };

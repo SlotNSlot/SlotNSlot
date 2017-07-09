@@ -6,7 +6,7 @@
 }
 
 .innerContainer {
-  width: 960px;
+  max-width: 960px;
   margin: 0 auto;
   position: relative;
 }
@@ -22,7 +22,6 @@
 
 .btnContainer {
   display: inline-block;
-  margin-right: 20px;
   cursor: pointer;
   &:last-child {
     margin-right: 0;
@@ -34,6 +33,12 @@
   right: 0;
   display: inline-block;
   text-align: right;
+
+  a {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+  }
 }
 
 .snsBtn {

@@ -1,7 +1,12 @@
 const AWS = require('aws-sdk');
 
 const cloudfront = new AWS.CloudFront();
-const cloudfrontProductionId = 'E2P9PNNPXVN2HE';
+let cloudfrontProductionId: string;
+if (process.env.NODE_ENV === "production") {
+  cloudfrontProductionId = 'E2P9PNNPXVN2HE';
+} else {
+  cloudfrontProductionId = 'E364NRMOU35TBS';
+}
 
 function expireCloudFrontCache() {
   return new Promise(function(resolve, reject) {
@@ -44,3 +49,4 @@ function expireCloudFrontCache() {
 expireCloudFrontCache().then(() => {
   console.log('Every cache has been expired');
 })
+

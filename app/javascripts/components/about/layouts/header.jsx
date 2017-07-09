@@ -43,43 +43,28 @@ class Header extends React.PureComponent {
         className={styles.header}
       >
         <div className={styles.navbarContainer}>
-          <Link exact to="/" className={styles.item}>
+          <Link to="/" className={styles.item}>
             <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
           </Link>
           <ul className={styles.rightNavItemsWrapper}>
             <li className={styles.rightNavItem}>
+              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+                GitHub
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
-                onClick={() => {
-                  window.open('http://whitepaper.com', '', '');
-                }}
+                href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
+                target="_blank"
               >
                 White Paper
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                onClick={() => {
-                  window.open('http://blog.com', '', '');
-                }}
-              >
-                Blog
+              <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
+                Chat
               </a>
-            </li>
-
-            <li className={styles.rightNavItem}>
-              <NavLink exact to="/" className={styles.item} activeClassName="active">
-                FAQ
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <NavLink exact to="/slot" className={styles.item} activeClassName="active">
-                Prototype
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <a className={styles.contributionBtn}>contribution</a>
             </li>
           </ul>
         </div>

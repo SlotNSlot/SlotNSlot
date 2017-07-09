@@ -131,8 +131,7 @@ export default class SlotGame {
         console.log('LOADING...');
       })
       .load(() => {
-
-      this.drawUI();
+        this.drawUI();
         // Make frame list from spriteSheets symbol by symbol.
         const spritesNum = [9, 7, 6, 7, 6, 9, 24, 19, 23, 24, 24, 24, 24];
         for (let i = 1; i <= ALL_SYMBOL_COUNT; i += 1) {
@@ -158,7 +157,6 @@ export default class SlotGame {
             symbol.anchor.set(0.5, 0.5);
             symbol.x = 0;
             symbol.y = idx < ITEMS_PER_HALF_REEL ? symbol.height * idx : symbol.height * (idx - ITEMS_PER_HALF_REEL);
-            symbol.zOrder = 1;
 
             symbol.animationSpeed = 0.3;
             symbol.play();
@@ -204,11 +202,9 @@ export default class SlotGame {
         stopBtn.interactive = true;
         stopBtn.buttonMode = true;
 
-
-
         stopBtn.on('pointerdown', this.stopSpin);
         tempContainer.addChild(stopBtn);
-      
+
         this.stage.addChild(tempContainer);
         this.stage.addChild(this.UIContainer);
         // Tell the `renderer` to `render` the `stage`
@@ -342,16 +338,6 @@ export default class SlotGame {
     const TextureCache = PIXI.utils.TextureCache;
     const Sprite = PIXI.Sprite;
 
-    // const pinkBackground = new Sprite(TextureCache['pink-background.png']);
-    // pinkBackground.position.set(0, 0);
-    // pinkBackground.width = 940;
-    // pinkBackground.height = 660;
-
-    // const slotBackground = new Sprite(TextureCache['slot-background.png']);
-    // slotBackground.position.set(43, 120);
-    // slotBackground.width = 855;
-    // slotBackground.height = 461;
-
     const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
     mergedBackground.position.set(0, 0);
     mergedBackground.width = 940;
@@ -386,7 +372,6 @@ export default class SlotGame {
     betSize.position.set(190, 580);
     betSize.width = 185;
     betSize.height = 65;
-    betSize.zOrder = 100;
 
     const maxBet = new Sprite(TextureCache['max-bet.png']);
     maxBet.position.set(375, 580);
@@ -408,29 +393,19 @@ export default class SlotGame {
     autoBtn.width = 93;
     autoBtn.height = 65;
 
-    // const edgeBackground = new Sprite(TextureCache['edge.png']);
-    // edgeBackground.position.set(44, 568);
-    // edgeBackground.width = 854;
-    // edgeBackground.height = 78;
-
-    // this.UIContainer.addChild(pinkBackground);
-    // this.UIContainer.addChild(slotBackground);
     this.stage.addChild(slotBackground);
     this.UIContainer.addChild(mergedBackground);
     this.UIContainer.addChild(ribbon);
     this.UIContainer.addChild(yourStake);
     this.UIContainer.addChild(bankRoll);
-    // this.UIContainer.addChild(vsSprite);
     this.UIContainer.addChild(betAmount);
     this.UIContainer.addChild(betSize);
     this.UIContainer.addChild(maxBet);
     this.UIContainer.addChild(lineNum);
     this.UIContainer.addChild(spinBtn);
     this.UIContainer.addChild(autoBtn);
-    // this.UIContainer.addChild(edgeBackground);
-    // this.stage.addChildAt(this.UIContainer, 1);
   }
-  
+
   changeSlot() {
     this.newReelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
     this.newReelGroup.forEach((reelItem, index) => {

@@ -26,7 +26,26 @@ contract SlotMachineManager {
         newslot = slotmachineStorage.createSlotMachine(msg.sender, _decider, _minBet, _maxBet);
         /*userdata[msg.sender].push(newslot);*/
     }
+    function removeSlotMachine(uint _idx) {
+        slotmachineStorage.removeSlotMachine(msg.sender, _idx);
 
+      }
+    function getNumofSlotMachine() constant returns (uint) {
+        return slotmachineStorage.getNumofSlotMachine(msg.sender);
+    }
+
+    function getSlotMachines(uint _idx) constant returns (address[5]) {
+        return slotmachineStorage.getSlotMachine(msg.sender, _idx);
+    }
+
+    function getSlotMachineDecider(uint _idx) constant returns (uint) {
+        return slotmachineStorage.getSlotMachineDecider(msg.sender, _idx);
+    }
+
+    function getSlotMachineInfo(uint _idx) constant returns (uint, uint, uint) {
+        return slotmachineStorage.getSlotMachineInfo(msg.sender, _idx);
+    }
+    /*
     function removeSlotMachine(uint _idx) {
         slotmachineStorage.removeSlotMachine(_idx);
     }
@@ -45,7 +64,7 @@ contract SlotMachineManager {
 
     function getSlotMachineInfo(uint _idx) constant returns (uint, uint, uint) {
         return slotmachineStorage.getSlotMachineInfo(_idx);
-    }
+    }*/
 
     /*function getSlotList(address _useraddr) constant returns (address[5]){
         return userdata[_useraddr][0];

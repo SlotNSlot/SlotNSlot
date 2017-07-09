@@ -9,8 +9,6 @@ const SlotMachineManager = artifacts.require("./sns/SlotMachineManager.sol");
 const SlotLib2 = artifacts.require("./sns/SlotLib2.sol");
 const SlotMachineStorage = artifacts.require("./sns/SlotMachineStorage.sol");
 
-
-
 contract('TestProxyLibrary', () => {
   describe('test', () => {
     it('works', () => {
@@ -20,8 +18,6 @@ contract('TestProxyLibrary', () => {
 
       SlotMachineManager.deployed().then(function(instance) {
         slotManager = instance;
-        // return slotManager.getNumofSlotMachine();
-        // return;
       })
       .then(() => {
         console.log('setting up event watcher...');
@@ -46,14 +42,6 @@ contract('TestProxyLibrary', () => {
           }
         });
       })
-      // .then(() => {
-      //   numberevent = slotManager.slotMachineNumber();
-      //   numberevent.watch(function(error, result){
-      //     if(!error){
-      //       console.log('Event Log : \n \tNumber of slotmachine in storage : ', result.args._num);
-      //     }
-      //   });
-      // })
       .then(() => {
         console.log('event watcher setting completed');
         return  slotManager.getNumofSlotMachine();
@@ -121,7 +109,7 @@ contract('TestProxyLibrary', () => {
         console.log('new result is ', result);
         assert.equal(result, 20, 'Decider should be 20, new library linking failed');
         console.log('new library linking test completed successfully');
-      //  return slotManager.getSlotList('0x7cb2752c4da2f607addeaeb1e694dd49411e7787');
+       return slotManager.getSlotMachineDecider(0);
       })
       .then(result => {
         console.log('first slot of user : ', result);

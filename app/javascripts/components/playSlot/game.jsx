@@ -146,6 +146,7 @@ export default class SlotGame {
         tempContainer.addChild(stopBtn);
 
         this.stage.addChild(tempContainer);
+        this.stage.addChild(this.UIContainer);
         // Tell the `renderer` to `render` the `stage`
         this.renderer.render(this.stage);
         // When load function is ended, then start gameLoop
@@ -216,10 +217,21 @@ export default class SlotGame {
   drawUI() {
     const TextureCache = PIXI.utils.TextureCache;
     const Sprite = PIXI.Sprite;
-    const pinkBackground = new Sprite(TextureCache['pink-background.png']);
-    pinkBackground.position.set(0, 0);
-    pinkBackground.width = 940;
-    pinkBackground.height = 660;
+
+    // const pinkBackground = new Sprite(TextureCache['pink-background.png']);
+    // pinkBackground.position.set(0, 0);
+    // pinkBackground.width = 940;
+    // pinkBackground.height = 660;
+
+    // const slotBackground = new Sprite(TextureCache['slot-background.png']);
+    // slotBackground.position.set(43, 120);
+    // slotBackground.width = 855;
+    // slotBackground.height = 461;
+
+    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    mergedBackground.position.set(0, 0);
+    mergedBackground.width = 940;
+    mergedBackground.height = 660;
 
     const slotBackground = new Sprite(TextureCache['slot-background.png']);
     slotBackground.position.set(43, 120);
@@ -240,11 +252,6 @@ export default class SlotGame {
     bankRoll.position.set(547, 12);
     bankRoll.width = 352;
     bankRoll.height = 61;
-
-    const vsSprite = new Sprite(TextureCache['vs.png']);
-    vsSprite.position.set(450, 25);
-    vsSprite.width = 45;
-    vsSprite.height = 37;
 
     const betAmount = new Sprite(TextureCache['bat-amount.png']);
     betAmount.position.set(42, 580);
@@ -277,26 +284,27 @@ export default class SlotGame {
     autoBtn.width = 93;
     autoBtn.height = 65;
 
-    const edgeBackground = new Sprite(TextureCache['edge.png']);
-    edgeBackground.position.set(44, 568);
-    edgeBackground.width = 854;
-    edgeBackground.height = 78;
+    // const edgeBackground = new Sprite(TextureCache['edge.png']);
+    // edgeBackground.position.set(44, 568);
+    // edgeBackground.width = 854;
+    // edgeBackground.height = 78;
 
-    this.UIContainer.addChild(pinkBackground);
-    this.UIContainer.addChild(slotBackground);
+    // this.UIContainer.addChild(pinkBackground);
+    // this.UIContainer.addChild(slotBackground);
+    this.stage.addChild(slotBackground);
+    this.UIContainer.addChild(mergedBackground);
     this.UIContainer.addChild(ribbon);
     this.UIContainer.addChild(yourStake);
     this.UIContainer.addChild(bankRoll);
-    this.UIContainer.addChild(vsSprite);
+    // this.UIContainer.addChild(vsSprite);
     this.UIContainer.addChild(betAmount);
     this.UIContainer.addChild(betSize);
     this.UIContainer.addChild(maxBet);
     this.UIContainer.addChild(lineNum);
     this.UIContainer.addChild(spinBtn);
     this.UIContainer.addChild(autoBtn);
-    this.UIContainer.addChild(edgeBackground);
-    // this.stage.addChild(this.UIContainer);
-    this.stage.addChildAt(this.UIContainer, 1);
+    // this.UIContainer.addChild(edgeBackground);
+    // this.stage.addChildAt(this.UIContainer, 1);
   }
 
   removeCurrentGame() {

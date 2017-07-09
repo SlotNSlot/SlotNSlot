@@ -1,5 +1,5 @@
 .emailComponent {
-  height: 100vh;
+  height: 720px;
   background-image: url("https://d1qh7kd1bid312.cloudfront.net/casinoBackground.png");
   background-size: cover;
   background-position: center bottom;
@@ -7,11 +7,12 @@
 
 .emailContainer {
   position: relative;
-  width: 730px;
+  max-width: 720px;
   margin: 0 auto;
   height: 100%;
   display: flex;
   align-items: center;
+  padding-top: 30px;
 }
 
 .emailTitle {
@@ -33,7 +34,7 @@
     display: block;
     position: absolute;
     top: -72px;
-    width: 720px;
+    width: 100%;
     height: 160px;
     background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
     background-size: cover;
@@ -41,14 +42,13 @@
 }
 
 .subTitle {
-  height: 60px;
   font-size: 30px;
   font-weight: 300;
   line-height: 1.84;
   letter-spacing: 1.5px;
   text-align: center;
   color: #8280bd;
-  margin-bottom: 34.5px;
+  margin-bottom: 40px;
 
   span {
     font-weight: 400;
@@ -104,23 +104,5 @@
     height: 51px;
     display: inline-block;
     object-fit: contain;
-  }
-}
-
-.mouseIcon {
-  position: absolute;
-  width: 20px;
-  bottom: 30px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-
-  div {
-    margin-top: 10px;
-    font-size: 10px;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.3);
-    text-align: center;
   }
 }

@@ -1,0 +1,102 @@
+{"frames": {
+
+"auto.png":
+{
+	"frame": {"x":125,"y":0,"w":186,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":186,"h":128},
+	"sourceSize": {"w":186,"h":128},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"bank-roll.png":
+{
+	"frame": {"x":0,"y":130,"w":703,"h":120},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":703,"h":120},
+	"sourceSize": {"w":703,"h":120},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"bat-amount.png":
+{
+	"frame": {"x":311,"y":0,"w":298,"h":130},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":298,"h":130},
+	"sourceSize": {"w":298,"h":130},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"bet-size.png":
+{
+	"frame": {"x":1351,"y":0,"w":371,"h":130},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":130},
+	"sourceSize": {"w":371,"h":130},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"line.png":
+{
+	"frame": {"x":980,"y":0,"w":371,"h":130},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":130},
+	"sourceSize": {"w":371,"h":130},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"max-bet.png":
+{
+	"frame": {"x":0,"y":0,"w":125,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":125,"h":128},
+	"sourceSize": {"w":125,"h":128},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"mergedImage.png":
+{
+	"frame": {"x":0,"y":1182,"w":1880,"h":1319},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1880,"h":1319},
+	"sourceSize": {"w":1880,"h":1319},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"slot-background.png":
+{
+	"frame": {"x":0,"y":250,"w":1721,"h":932},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1721,"h":932},
+	"sourceSize": {"w":1721,"h":932},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"spin.png":
+{
+	"frame": {"x":609,"y":0,"w":371,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":128},
+	"sourceSize": {"w":371,"h":128},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"your-stake.png":
+{
+	"frame": {"x":703,"y":130,"w":703,"h":120},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":703,"h":120},
+	"sourceSize": {"w":703,"h":120},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "slotMap.png",
+	"format": "RGBA8888",
+	"size": {"w":1880,"h":2501},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:315c18726ce757303f69f82f0f7d3bf0:7b37c331c0cf7b63db9653a3c1226849:c8ffcd594389b51bc7721eeaa8a8061f$"
+}
+}

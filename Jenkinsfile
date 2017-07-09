@@ -18,13 +18,19 @@ pipeline {
 
         stage('CLEAN ENV') {
             steps {
-                sh 'rm -rf node_modules && npm cache clean -f && npm install'            
+                sh 'rm -rf node_modules && npm cache clean -f && npm install'
             }
         }
 
         stage('NPM INSTALL') {
             steps {
                 sh 'npm install'
+            }
+        }
+
+        stage('TEST') {
+            steps {
+                sh 'npm test'
             }
         }
 

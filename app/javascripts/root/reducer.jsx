@@ -2,7 +2,8 @@ import { fromJS } from 'immutable';
 import { ACTION_TYPES } from './actions';
 
 export const ROOT_INITIAL_STATE = fromJS({
-  loading: false,
+  isLoading: false,
+  hasError: false,
   accounts: null,
   account: null,
   balance: 0,
@@ -11,7 +12,9 @@ export const ROOT_INITIAL_STATE = fromJS({
 export function reducer(state = ROOT_INITIAL_STATE, action) {
   switch (action.type) {
     case ACTION_TYPES.START_TO_GET_ACCOUNT: {
-      return state.set('loading', true);
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
     }
 
     case ACTION_TYPES.FETCH_ACCOUNT: {
@@ -24,7 +27,9 @@ export function reducer(state = ROOT_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.FAILED_TO_GET_ACCOUNT: {
-      return state.set('loading', false);
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
+      });
     }
 
     case ACTION_TYPES.SET_TOTAL_COIN_BALANCE: {

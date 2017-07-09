@@ -8,8 +8,6 @@ import PlaySlot from '../playSlot';
 import Status404 from '../404';
 
 function mapStateToProps(appState) {
-  console.log(appState.root.get('account'), "appState.root.get('account')");
-  console.log(appState.root.get('balance'), "appState.root.get('balance')");
   return {
     rootState: appState.root,
   };

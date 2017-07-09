@@ -12,7 +12,7 @@ const Header = ({ rootState }) =>
       MAKE
     </NavLink>
     <div className={styles.walletStatus}>
-      {' '}Your Balance : {rootState.get('balance')} ETH
+      Your Balance : {rootState.get('balance')} ETH
     </div>
     <button className={styles.accountBtn}>Your Account</button>
   </div>;

@@ -6,8 +6,10 @@ import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
     address[] private slotMachines;
+    address[] private useraddress;
+    /*mapping (address => address[]) slotMachines;*/
 
-    event slotMachineCreated(address provider, uint decider, uint minBet, uint maxBet);
+    //event slotMachineCreated(address provider, uint decider, uint minBet, uint maxBet);
 
     function SlotMachineStorage (){
 
@@ -17,10 +19,15 @@ contract SlotMachineStorage is Ownable {
       return owner;
     }
 
-    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet) onlyOwner {
+
+    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet) onlyOwner returns (address){
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
+        /*slotMachines[_provider].push(newslot);*/
         slotMachines.push(newslot);
-        slotMachineCreated(_provider, _decider, _minBet, _maxBet);
+        return newslot;
+      //  slotMachineCreated(_provider, _decider, _minBet, _maxBet);
+
+
     }
 
     function getSlotMachine(uint _idx) onlyOwner constant returns (address) {

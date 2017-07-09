@@ -8,9 +8,10 @@ import "./LibInterface.sol";
 contract SlotMachineManager {
     using LibInterface for address;
     address private slotmachineStorage;
+    /*mapping (address => address[]) userdata;*/
 
+    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum);
     event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
-
 
     function SlotMachineManager () {
         slotmachineStorage = new SlotMachineStorage();
@@ -21,7 +22,9 @@ contract SlotMachineManager {
     }
 
     function createSlotMachine(address _provider,  uint _decider, uint _minBet, uint _maxBet) {
-        slotmachineStorage.createSlotMachine(_provider, _decider, _minBet, _maxBet);
+        address newslot;
+        newslot = slotmachineStorage.createSlotMachine(msg.sender, _decider, _minBet, _maxBet);
+        /*userdata[msg.sender].push(newslot);*/
     }
 
     function removeSlotMachine(uint _idx) {
@@ -43,5 +46,9 @@ contract SlotMachineManager {
     function getSlotMachineInfo(uint _idx) constant returns (uint, uint, uint) {
         return slotmachineStorage.getSlotMachineInfo(_idx);
     }
+
+    /*function getSlotList(address _useraddr) constant returns (address[5]){
+        return userdata[_useraddr][0];
+    }*/
 
 }

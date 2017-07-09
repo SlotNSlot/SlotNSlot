@@ -15,9 +15,8 @@ const Footer = () =>
         </a>
         <a
           className={styles.btnContainer}
-          onClick={() => {
-            alert('The Reddit will be ready soon!');
-          }}
+          href="https://www.reddit.com/r/ethereum/comments/6m6eu0/slotnslot_make_and_play_slots_on_ethereum_needs/?st=j4wgacux&sh=9bfabdf4"
+          target="_blank"
         >
           <Icon className={styles.snsBtn} icon="REDDIT_FOR_FOOTER" />
         </a>

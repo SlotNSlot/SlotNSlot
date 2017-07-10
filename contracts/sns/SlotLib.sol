@@ -12,6 +12,7 @@ library SlotLib {
     function createSlotMachine (address _slotmachineStorage, address _provider,  uint _decider, uint _minBet, uint _maxBet) returns (address) {
         address newslot = address(SlotMachineStorage(_slotmachineStorage).createSlotMachine(_provider, _decider, _minBet, _maxBet));
         slotMachineCreated(msg.sender, _decider, _minBet, _maxBet, SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider));
+
         return newslot;
 
     }

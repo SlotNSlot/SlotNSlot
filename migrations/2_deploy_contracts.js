@@ -1,6 +1,6 @@
  //
- // var ConvertLib = artifacts.require("./ConvertLib.sol");
- // var MetaCoin = artifacts.require("./MetaCoin.sol");
+ var ConvertLib = artifacts.require("./ConvertLib.sol");
+ var MetaCoin = artifacts.require("./MetaCoin.sol");
  // var MetaCoinLib = artifacts.require("./sns/MetaCoinLib.sol");
 
 
@@ -13,7 +13,10 @@ var DispatcherStorage = artifacts.require("./DispatcherStorage.sol");
 
 
 module.exports = function(deployer) {
-
+  // deployer.deploy(ConvertLib);
+  // deployer.link(ConvertLib,MetaCoin);
+  // deployer.deploy(MetaCoin);
+    var slotmanager;
     deployer.deploy(SlotLib).then(function() {
       console.log('SlotLib address : ', SlotLib.address);
       return deployer.deploy(DispatcherStorage, SlotLib.address);
@@ -29,17 +32,23 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log('unlinked_binary : ', Dispatcher.unlinked_binary);
+      deployer.deploy(SlotMachineStorage).then(function() {
+        console.log('SlotMachineStorage address : ', SlotMachineStorage.address);
+      });
     })
     .then(function () {
       return deployer.deploy(Dispatcher).then(function (){
         console.log('Dispatcher address : ', Dispatcher.address);
         SlotMachineManager.link('LibInterface', Dispatcher.address);
-        return deployer.deploy(SlotMachineManager).then(function () {
+        return deployer.deploy(SlotMachineManager, SlotMachineStorage.address).then(function (instance) {
           console.log('SlotMachineManager address : ', SlotMachineManager.address);
+        //  instance.setStorage(SlotMachineStorage.address);
           return;
-        });
+        })
+
       });
     });
+
 
     deployer.deploy(SlotLib2).then(function() {
       console.log('SlotLib2 address : ', SlotLib2.address);

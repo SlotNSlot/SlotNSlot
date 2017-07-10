@@ -11,16 +11,33 @@ contract SlotMachineStorage is Ownable {
     uint private slotMachinesTotalnum;
     //event slotMachineCreated(address provider, uint decider, uint minBet, uint maxBet);
 
+    event userAdded(address _user);
+
     function SlotMachineStorage (){
 
     }
 
     function getOwner() constant returns (address) {
-      return owner;
+        return owner;
     }
 
+    function addUser(address _user) {
+        useraddress.push(_user);
+        userAdded(_user);
+    }
 
-    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet) onlyOwner returns (address){
+    function removeUser(uint _idx) {
+        uint totalnum = useraddress.length;
+
+    }
+
+    function getNumofUser() returns (uint) {
+        return useraddress.length;
+    }
+
+    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet)
+      onlyOwner
+      returns (address) {
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
         slotMachines[_provider].push(newslot);
         slotMachinesTotalnum++;
@@ -31,7 +48,9 @@ contract SlotMachineStorage is Ownable {
 
     }
 
-    function removeSlotMachine(address _provider, uint _idx) onlyOwner {
+    function removeSlotMachine(address _provider, uint _idx)
+      onlyOwner
+    {
         delete slotMachines[_provider][_idx];
         slotMachines[_provider].length--;
     }
@@ -39,13 +58,16 @@ contract SlotMachineStorage is Ownable {
         slotMachines[_provider][_idx] = _newslotMachine;
     }
 
-    function getNumofSlotMachine(address _provider) onlyOwner constant returns (uint)  {
+    function getNumofSlotMachine(address _provider)
+      onlyOwner
+      constant returns (uint)  {
         return slotMachines[_provider].length;
     }
 
     function getTotalNumofSlotMachine() onlyOwner constant returns (uint) {
         return slotMachinesTotalnum;
-    }
+    }        /*slotMachines.push(newslot);*/
+
 
     function getSlotMachineDecider(address _provider, uint _idx) onlyOwner constant returns (uint){
         return (SlotMachine(slotMachines[_provider][_idx]).mDecider());

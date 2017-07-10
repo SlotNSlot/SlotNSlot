@@ -16,8 +16,13 @@ contract('TestProxyLibrary', () => {
       var dispatcherStorage;
       var creationevent, removalevent, numberevent;
 
+
       SlotMachineManager.deployed().then(function(instance) {
         slotManager = instance;
+        SlotMachineStorage.deployed().then(function(instance) {
+          instance.transferOwnership(slotManager.address);
+          console.log('SlotMachineStorage Owner changed to ', slotManager.address);
+        });
       })
       .then(() => {
         console.log('setting up event watcher...');
@@ -28,7 +33,8 @@ contract('TestProxyLibrary', () => {
               'decider : ', result.args._decider,
               'minBet : ', result.args._minBet,
               'maxBet : ', result.args._maxBet,
-              'slot totalnum : ', result.args._totalnum);
+              'slot totalnum : ', result.args._totalnum,
+              'slot address : ', result.args._slotaddr);
           }
         })
       })
@@ -50,11 +56,11 @@ contract('TestProxyLibrary', () => {
         console.log('initializing test, # of slotmachine should be 0');
         assert.equal(result,0,'initializing test failed');
         console.log('initializing test completed successfully');
-        slotManager.createSlotMachine(0x0, 1, 1000, 10000);
-        slotManager.createSlotMachine(0x0, 2, 2000, 20000);
-        slotManager.createSlotMachine(0x0, 3, 3000, 30000);
-        slotManager.createSlotMachine(0x0, 4, 4000, 40000);
-        slotManager.createSlotMachine(0x0, 5, 5000, 50000);
+        slotManager.createSlotMachine(1, 1000, 10000);
+        slotManager.createSlotMachine(2, 2000, 20000);
+        slotManager.createSlotMachine(3, 3000, 30000);
+        slotManager.createSlotMachine(4, 4000, 40000);
+        slotManager.createSlotMachine(5, 5000, 50000);
         return slotManager.getNumofSlotMachine();
       })
       .then(result => {
@@ -75,6 +81,7 @@ contract('TestProxyLibrary', () => {
 
       })
       .then(result => {
+        console.log(result);
         assert.equal(result[0], 2, 'Decider should be 2, multiple return test failed');
         assert.equal(result[1], 2000, 'Decider should be 2000, multiple return test failed');
         assert.equal(result[2], 20000, 'Decider should be 20000, multiple return test failed');

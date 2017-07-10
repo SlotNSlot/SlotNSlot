@@ -4,14 +4,15 @@ import "./SlotMachineStorage.sol";
 
 library SlotLib2 {
 
-    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum);
+    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
 
 
     //create new slotmachine
     function createSlotMachine (address _slotmachineStorage, address _provider,  uint _decider, uint _minBet, uint _maxBet) returns (address) {
         address newslot = address(SlotMachineStorage(_slotmachineStorage).createSlotMachine(_provider, _decider, _minBet, _maxBet));
-        slotMachineCreated(msg.sender, _decider, _minBet, _maxBet, SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider));
+        slotMachineCreated(msg.sender, _decider, _minBet, _maxBet, SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider),newslot);
+        /*SlotMachineStorage(_slotmachineStorage).*/
         return newslot;
 
     }
@@ -25,11 +26,10 @@ library SlotLib2 {
         SlotMachineStorage(_slotmachineStorage).removeSlotMachine(_provider, totalnum - 1);
         slotMachineRemoved(msg.sender, _slotmachineStorage, _idx);
     }
-    function getSlotMachine (address _slotmachineStorage, address _provider, uint _idx) returns (address[5]){
-        address[5] memory return_slotmachines;
-        for (uint i = _idx; i < _idx + 5; i++){
-          return_slotmachines[i - _idx] = SlotMachineStorage(_slotmachineStorage).getSlotMachine(_provider, i);
-        }
+
+    //return 5 slotmachines of user : _provider
+    function getSlotMachines (address _slotmachineStorage, address _provider, uint _idx) returns (address[5]){
+        return SlotMachineStorage(_slotmachineStorage).getSlotMachines(_provider, _idx);
     }
 
     //return number of slotmachines

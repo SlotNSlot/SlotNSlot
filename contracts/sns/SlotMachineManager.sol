@@ -10,7 +10,7 @@ contract SlotMachineManager {
     address private slotmachineStorage;
     /*mapping (address => address[]) userdata;*/
 
-    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum);
+    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
 
     function SlotMachineManager (address _storageaddr) {
@@ -25,11 +25,12 @@ contract SlotMachineManager {
         return slotmachineStorage;
     }
 
-    function createSlotMachine(address _provider,  uint _decider, uint _minBet, uint _maxBet) {
+    function createSlotMachine(uint _decider, uint _minBet, uint _maxBet) returns (address) {
         address newslot;
         newslot = slotmachineStorage.createSlotMachine(msg.sender, _decider, _minBet, _maxBet);
-        /*userdata[msg.sender].push(newslot);*/
+        return newslot;
     }
+
     function removeSlotMachine(uint _idx) {
         slotmachineStorage.removeSlotMachine(msg.sender, _idx);
 
@@ -39,7 +40,7 @@ contract SlotMachineManager {
     }
 
     function getSlotMachines(uint _idx) constant returns (address[5]) {
-        return slotmachineStorage.getSlotMachine(msg.sender, _idx);
+        return slotmachineStorage.getSlotMachines(msg.sender, _idx);
     }
 
     function getSlotMachineDecider(uint _idx) constant returns (uint) {

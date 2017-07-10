@@ -5,7 +5,6 @@ import '../zeppelin/ownership/Ownable.sol';
 import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
-    /*address[] private slotMachines;*/
     address[] private useraddress;
     mapping (address => address[]) slotMachines;
     uint private slotMachinesTotalnum;
@@ -25,63 +24,107 @@ contract SlotMachineStorage is Ownable {
         useraddress.push(_user);
         userAdded(_user);
     }
+    function getUser(uint _idx) constant returns (address) {
+        return useraddress[_idx];
+    }
+
+    function isUserexist(address _user) constant returns (bool){
+        if (slotMachines[_user].length == 0) {
+          return false;
+        }
+        else {
+          return true;
+        }
+    }
+
+    function getUserSlot(address _user) constant returns (uint) {
+      return slotMachines[_user].length;
+    }
 
     function removeUser(uint _idx) {
         uint totalnum = useraddress.length;
-
     }
 
-    function getNumofUser() returns (uint) {
+    function getNumofUser() constant returns (uint) {
         return useraddress.length;
     }
 
     function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet)
-      onlyOwner
-      returns (address) {
+      //  onlyOwner
+    returns (address)
+    {
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
+        if (!isUserexist(_provider)){
+          addUser(_provider);
+        }
         slotMachines[_provider].push(newslot);
         slotMachinesTotalnum++;
-        /*slotMachines.push(newslot);*/
         return newslot;
-      //  slotMachineCreated(_provider, _decider, _minBet, _maxBet);
-
-
     }
 
     function removeSlotMachine(address _provider, uint _idx)
-      onlyOwner
+      //  onlyOwner
     {
         delete slotMachines[_provider][_idx];
         slotMachines[_provider].length--;
+        slotMachinesTotalnum--;
     }
-    function setSlotMachine(address _provider, uint _idx, address _newslotMachine) onlyOwner {
+    function setSlotMachine(address _provider, uint _idx, address _newslotMachine)
+      //onlyOwner
+    {
         slotMachines[_provider][_idx] = _newslotMachine;
     }
 
     function getNumofSlotMachine(address _provider)
-      onlyOwner
-      constant returns (uint)  {
+  //    onlyOwner
+        constant returns (uint)
+    {
         return slotMachines[_provider].length;
     }
 
-    function getTotalNumofSlotMachine() onlyOwner constant returns (uint) {
+    function getTotalNumofSlotMachine()
+    //onlyOwner
+        constant returns (uint)
+    {
         return slotMachinesTotalnum;
     }        /*slotMachines.push(newslot);*/
 
 
-    function getSlotMachineDecider(address _provider, uint _idx) onlyOwner constant returns (uint){
+    function getSlotMachineDecider(address _provider, uint _idx)
+    //  onlyOwner
+        constant returns (uint)
+    {
         return (SlotMachine(slotMachines[_provider][_idx]).mDecider());
     }
 
-    function getSlotMachineInfo(address _provider, uint _idx) onlyOwner constant returns (uint, uint, uint){
-      return (SlotMachine(slotMachines[_provider][_idx]).getInfo());
+    //  onlyOwner
+    function getSlotMachineInfo(address _provider, uint _idx)
+        constant returns (uint, uint, uint)
+    {
+        return (SlotMachine(slotMachines[_provider][_idx]).getInfo());
     }
 
-    function getSlotMachine(address _provider, uint _idx) onlyOwner constant returns(address) {
-      return slotMachines[_provider][_idx];
+    function getSlotMachine(address _provider, uint _idx)
+    //  onlyOwner
+        constant returns(address)
+    {
+        if (_idx < slotMachines[_provider].length) {
+          return slotMachines[_provider][_idx];
+        }
+        else {
+          return 0x0;
+        }
     }
 
-
+    function getSlotMachines(address _provider, uint _idx)
+        constant returns(address[5])
+    {
+        address[5] memory returnslots;
+        for (uint i = _idx; i < _idx + 5; i++){
+          returnslots[i - _idx] = getSlotMachine(_provider, i);
+        }
+        return returnslots;
+    }
 
 
 }

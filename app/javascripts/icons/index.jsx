@@ -23,6 +23,7 @@ const ICONS = {
   SLOT_N_SLOT_LOGO_NON_SHADOW: require('./slot-n-slot-logo-non-shadow.svg'),
   SLOT_N_SLOT_LOGO: require('./slot-n-slot-logo.svg'),
   SUBSCRIBE_BUTTON: require('./subscribe-button.svg'),
+  TRIANGLE_DOWN: require('./triangle-down.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

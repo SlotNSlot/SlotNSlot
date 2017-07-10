@@ -51,6 +51,9 @@ class PlaySlot extends React.PureComponent {
   render() {
     return (
       <div>
+        <div>
+          My Balance <span id="your-balance">{root.get('balance')}</span>
+        </div>
         <canvas
           ref={canvas => {
             this.canvas = canvas;

@@ -5,6 +5,7 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import Icon from '../../icons';
 import MakeGameFirstStep from './firstStep';
 import MakeGameProgress from './progress';
+import Status404 from '../404';
 // actions
 import { handleSubmit, handleInputChange } from './actions';
 // styles
@@ -26,7 +27,12 @@ class MakeGame extends React.PureComponent {
         <Icon className={styles.makeSlotIcon} icon="MAKE_SLOT" />
         <MakeGameProgress currentStep={makeGameState.get('currentStep')} />
         <Switch>
-          <Route exact path={match.url} component={MakeGameFirstStep} />
+          <Route exact path={`${match.url}/1`} component={MakeGameFirstStep} />
+          <Route exact path={`${match.url}/2`} component={MakeGameFirstStep} />
+          <Route exact path={`${match.url}/3`} component={MakeGameFirstStep} />
+          <Route exact path={`${match.url}/4`} component={MakeGameFirstStep} />
+          <Route path={match.url} component={MakeGameFirstStep} />
+          <Route component={Status404} />
         </Switch>
       </div>
     );

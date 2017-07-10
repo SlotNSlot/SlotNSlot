@@ -11,7 +11,10 @@ const steps = currentStep => {
     const className = styles[`stepContainer${i + 1}`];
 
     resultArr.push(
-      <div className={i + 1 === currentStep ? `${className} ${styles.activeStep}` : className}>
+      <div
+        key={`makeGameStepProgress_${i}`}
+        className={i + 1 === currentStep ? `${className} ${styles.activeStep}` : className}
+      >
         <div className={i + 1 <= currentStep ? styles.activeBall : styles.deactiveBall} />
         <div className={styles.stepCount}>
           {`STEP ${i + 1}`}

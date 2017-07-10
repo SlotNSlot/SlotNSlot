@@ -1,4 +1,4 @@
-import Header from './header.jsx';
-import Footer from '../../about/layouts/footer.jsx';
+import Header from './header';
+import Footer from '../../about/layouts/footer';
 
 export { Header, Footer };

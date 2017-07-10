@@ -1,20 +1,29 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import Icon from '../../../icons';
 import styles from './header.scss';
 
-const Header = ({ rootState }) =>
+const Header = ({ rootState, location }) =>
   <div className={styles.header}>
-    <h1 className={styles.title}> SLOT & SLOT </h1>
-    <NavLink to="/slot/play" className={styles.item} activeClassName="active">
-      PLAY
-    </NavLink>
-    <NavLink to="/slot/make" className={styles.item} activeClassName="active">
-      MAKE
-    </NavLink>
-    <div className={styles.walletStatus}>
-      Your Balance : {rootState.get('balance')} ETH
+    <div className={styles.headerContainer}>
+      <Link to="/" className={styles.logo}>
+        <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
+      </Link>
+      <div className={styles.leftItems}>
+        <NavLink to="/slot/play" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>
+          PLAY
+        </NavLink>
+        <NavLink to="/slot/make" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>
+          MAKE
+        </NavLink>
+      </div>
+      <div className={styles.rightItems}>
+        <div className={styles.walletStatus}>
+          Your balance : {rootState.get('balance')} ETH
+        </div>
+        <button className={styles.accountBtn}>Your Account</button>
+      </div>
     </div>
-    <button className={styles.accountBtn}>Your Account</button>
   </div>;
 
 export default Header;

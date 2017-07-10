@@ -315,6 +315,7 @@ export default class SlotGame {
         }
       }
       console.log('WAITING...');
+      // console.log('WAITING...');
     } else if (this.gameStatus === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
         reel.y += reel.vy;
@@ -616,6 +617,10 @@ export default class SlotGame {
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
+    this.yourStakeText.text = document.getElementById('your-balance').innerText + ' ETH';
+    this.yourStakeText.position.set(360, 29);
+    this.yourStakeText.anchor.x = 1;
+    this.yourStakeText.style.align = 'right';
 
     this.yourStakeText = new Text('2.5345 ETH', {
       fontSize: '18.8px',
@@ -764,6 +769,7 @@ export default class SlotGame {
     this.UIContainer.addChild(mergedBackground);
     this.UIContainer.addChild(ribbon);
     this.UIContainer.addChild(yourStake);
+    this.UIContainer.addChild(this.yourStakeText);
     this.UIContainer.addChild(bankRoll);
     this.UIContainer.addChild(betAmount);
     this.UIContainer.addChild(betSize);

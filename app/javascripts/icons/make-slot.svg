@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="622" height="75" viewBox="0 0 622 75">
+    <defs>
+        <linearGradient id="make-slot-a" x1="50%" x2="50%" y1="0%" y2="97.1%">
+            <stop offset="0%" stop-color="#E2E3EA"/>
+            <stop offset="29.977%" stop-color="#FFFED4"/>
+            <stop offset="46.376%" stop-color="#E6B242"/>
+            <stop offset="68.237%" stop-color="#9E5F35"/>
+            <stop offset="82.896%" stop-color="#E9A245"/>
+            <stop offset="90.922%" stop-color="#E0905D"/>
+            <stop offset="100%" stop-color="#FCCC0F"/>
+        </linearGradient>
+    </defs>
+    <text fill="url(#make-slot-a)" fill-rule="evenodd" stroke="#000" font-family="Montserrat-Medium, Montserrat" font-size="101.8" font-weight="400" letter-spacing="4.201" transform="translate(-1132 -293)">
+        <tspan x="1124.009" y="366">MAKE SLOT</tspan>
+    </text>
+</svg>

@@ -1,48 +1,22 @@
+@import "../slot/layouts/header";
+
 .makeGameContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/makeSlotBackground.png");
+  background-size: 100% 100%;
+  height: calc(100vh - #{$top-navbar-height});
+  text-align: center;
 }
 
-.makeGameForm {
-  width: 600px;
-  margin-top: 100px;
+.makeSlotIcon {
+  display: inline-block;
+  vertical-align: top;
+  width: 317px;
+  height: 67.5px;
 
-  h1 {
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 317px;
+    height: 67.5px;
   }
-}
-
-.makeGameFormInput {
-  height: 40px;
-  line-height: 40px;
-  width: 100%;
-}
-
-.inputRow {
-  margin: 40px 0;
-}
-
-.inputLabel {
-  margin-bottom: 5px;
-  font-size: 18px;
-  color: #333;
-}
-
-.submitBtn {
-  display: block;
-  width: 100px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 50px;
-  margin: 0 auto;
-  border: 1px solid #333;
-  cursor: pointer;
-}
-
-.warningMessage {
-  color: #e02121;
-  font-weight: bold;
 }

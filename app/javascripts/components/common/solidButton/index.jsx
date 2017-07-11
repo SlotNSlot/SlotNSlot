@@ -1,21 +1,22 @@
 import React from 'react';
-import styles from './jadeButton.scss';
+import styles from './solidButton.scss';
 
-const JadeButton = ({
+const SolidButton = ({
   onClickFunc,
-  isSelected,
   buttonText,
   className,
   value,
   overrideStyles = {},
   isSubmit = false,
+  disabled = false,
 }) => {
   return (
     <button
       style={overrideStyles}
       type={isSubmit ? 'submit' : 'button'}
-      className={`${styles.jadeButton} ${className} ${isSelected ? styles.active : ''}`}
+      className={`${styles.solidButton} ${className}`}
       value={value}
+      disabled={disabled}
       onClick={
         onClickFunc
           ? onClickFunc
@@ -29,4 +30,4 @@ const JadeButton = ({
   );
 };
 
-export default JadeButton;
+export default SolidButton;

@@ -52,3 +52,61 @@
     margin-right: 0;
   }
 }
+
+.cautionContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 85.8px;
+}
+
+.cautionWrapper {
+  position: relative;
+  width: 517px;
+}
+
+.tipIcon {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  display: inline-block;
+  vertical-align: top;
+  width: 54px;
+  height: 33.1px;
+
+  &:after {
+    content: 'TIP';
+    position: absolute;
+    top: 8.53px;
+    left: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-align: center;
+    color: #1b1b27;
+  }
+
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 54px;
+    height: 33.1px;
+  }
+}
+
+.nextButtonWrapper {
+  margin-top: 29px;
+}
+
+.caution {
+  position: absolute;
+  left: 68px;
+  display: inline-block;
+  vertical-align: top;
+  width: 449px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.7px;
+  color: #c6c4df;
+}

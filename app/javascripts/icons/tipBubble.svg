@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="108px" height="67px" viewBox="0 0 108 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Rectangle 18</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-924.000000, -1280.000000)" fill="#DDDBEA">
+            <g transform="translate(660.000000, 636.000000)">
+                <g transform="translate(264.000000, 632.244275)">
+                    <g transform="translate(0.000000, 12.396947)">
+                        <path d="M20,2.63677968e-16 L88,2.63677968e-16 L88,0 C99.045695,-1.18397046e-14 108,8.954305 108,20 L108,36.7316935 L108,66.1170483 L90.295082,55.0975403 L20,55.0975403 L20,55.0975403 C8.954305,55.0975403 1.3527075e-15,46.1432353 0,35.0975403 L0,20 L0,20 C-1.3527075e-15,8.954305 8.954305,5.58168962e-15 20,3.55271368e-15 Z"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

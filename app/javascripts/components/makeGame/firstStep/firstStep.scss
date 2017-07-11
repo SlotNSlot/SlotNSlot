@@ -1,0 +1,54 @@
+.firstContainer {
+  position: relative;
+  width: 780px;
+  height: 406px;
+  margin: 0 auto;
+  border-radius: 10px;
+  padding-top: 34.2px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    background-color: #0e0d16;
+  }
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.title {
+  font-size: 24px;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #8f8d9a;
+}
+
+.strongTitle {
+  color: #fff;
+  font-weight: bold;
+}
+
+.subTitle {
+  font-size: 18px;
+  font-weight: 200;
+  letter-spacing: 0.7px;
+  text-align: center;
+  color: #8f8d9a;
+  margin-bottom: 66.3px;
+}
+
+.hitButton {
+  margin-right: 28.8px;
+
+  &:last-of-type {
+    margin-right: 0;
+  }
+}

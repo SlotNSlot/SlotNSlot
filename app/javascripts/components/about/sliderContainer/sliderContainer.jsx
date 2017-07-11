@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './sliderContainer.scss';
 import Icon from '../../../icons';
+import styles from './sliderContainer.scss';
 
 const sliderContainer = () =>
   <div className={styles.sliderContainer}>

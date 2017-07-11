@@ -1,10 +1,28 @@
 @import "../slot/layouts/header";
 
+.makeGameContent {
+  position: relative;
+  z-index: 10;
+  padding-top: 58px;
+  padding-bottom: 74px;
+}
+
 .makeGameContainer {
-  background-image: url("https://d1qh7kd1bid312.cloudfront.net/makeSlotBackground.png");
-  background-size: 100% 100%;
-  height: calc(100vh - #{$top-navbar-height});
+  position: relative;
   text-align: center;
+  background-color: #22212f;
+
+  &:after {
+    content: '';
+    position: absolute;
+    background-image: url("https://d1qh7kd1bid312.cloudfront.net/makeSlotBackground.png");
+    background-size: 100% 100%;
+    top: 0;
+    left: 85px;
+    right: 85px;
+    height: 336px;
+    position: absolute;
+  }
 }
 
 .makeSlotIcon {

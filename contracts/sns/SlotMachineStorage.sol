@@ -21,9 +21,12 @@ contract SlotMachineStorage is Ownable {
     }
 
     function addUser(address _user) {
-        useraddress.push(_user);
-        userAdded(_user);
+        if (!isUserexist(_user)){
+          useraddress.push(_user);
+          userAdded(_user);
+        }
     }
+
     function getUser(uint _idx) constant returns (address) {
         return useraddress[_idx];
     }
@@ -54,9 +57,7 @@ contract SlotMachineStorage is Ownable {
     returns (address)
     {
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
-        if (!isUserexist(_provider)){
-          addUser(_provider);
-        }
+        addUser(_provider);
         slotMachines[_provider].push(newslot);
         slotMachinesTotalnum++;
         return newslot;
@@ -101,7 +102,27 @@ contract SlotMachineStorage is Ownable {
     function getSlotMachineInfo(address _provider, uint _idx)
         constant returns (uint, uint, uint)
     {
-        return (SlotMachine(slotMachines[_provider][_idx]).getInfo());
+        uint totalnum = getNumofSlotMachine(_provider);
+        if (_idx < totalnum) {
+          return (SlotMachine(slotMachines[_provider][_idx]).getInfo());
+        }
+        else {
+          return (0,0,0);
+        }
+
+    }
+
+    function getSlotMachineInfos(address _provider, uint _idx)
+        constant returns (uint[10], uint[10], uint[10])
+    {
+        uint[10] memory deciders;
+        uint[10] memory minbets;
+        uint[10] memory maxbets;
+        for(uint i = _idx; i < _idx + 10; i++){
+          (deciders[i], minbets[i], maxbets[i]) = getSlotMachineInfo(_provider, i);
+        }
+
+        return (deciders, minbets, maxbets);
     }
 
     function getSlotMachine(address _provider, uint _idx)

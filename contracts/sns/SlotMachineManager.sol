@@ -13,7 +13,7 @@ contract SlotMachineManager {
     event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
 
-    function SlotMachineManager (address _storageaddr) {
+    function SlotMachineManager (address _storageaddr) payable {
       slotmachineStorage = _storageaddr;
     }
 
@@ -49,6 +49,10 @@ contract SlotMachineManager {
 
     function getSlotMachineInfo(uint _idx) constant returns (uint, uint, uint) {
         return slotmachineStorage.getSlotMachineInfo(msg.sender, _idx);
+    }
+
+    function getSlotMachineInfos(uint _idx) constant returns (uint[10], uint[10], uint[10]) {
+        return slotmachineStorage.getSlotMachineInfos(msg.sender, _idx);
     }
 
 

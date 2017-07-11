@@ -2,6 +2,7 @@ import React from 'react';
 const InlineSVG = require('svg-inline-react');
 
 const ICONS = {
+  TIP_BUBBLE: require('./tipBubble.svg'),
   BROWSER: require('./browser.svg'),
   BUBBLE_LEFT: require('./bubble-left.svg'),
   BUBBLE_RIGHT: require('./bubble-right.svg'),

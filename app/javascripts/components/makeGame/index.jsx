@@ -20,17 +20,13 @@ function mapStateToProps(appState) {
 
 class MakeGame extends React.PureComponent {
   render() {
-    const { makeGameState, match } = this.props;
+    const { match } = this.props;
 
     return (
       <div className={styles.makeGameContainer}>
         <Icon className={styles.makeSlotIcon} icon="MAKE_SLOT" />
-        <MakeGameProgress currentStep={makeGameState.get('currentStep')} />
+        <MakeGameProgress currentStep={parseInt(match.params.step, 10)} />
         <Switch>
-          <Route exact path={`${match.url}/1`} component={MakeGameFirstStep} />
-          <Route exact path={`${match.url}/2`} component={MakeGameFirstStep} />
-          <Route exact path={`${match.url}/3`} component={MakeGameFirstStep} />
-          <Route exact path={`${match.url}/4`} component={MakeGameFirstStep} />
           <Route path={match.url} component={MakeGameFirstStep} />
           <Route component={Status404} />
         </Switch>

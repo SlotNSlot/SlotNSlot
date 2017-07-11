@@ -2,7 +2,6 @@ import { fromJS } from 'immutable';
 import { ACTION_TYPES } from './actions';
 
 export const MAKE_GAME_INITIAL_STATE = fromJS({
-  currentStep: 1,
   hitRatio: null,
   totalStake: null,
   maxPrize: null,

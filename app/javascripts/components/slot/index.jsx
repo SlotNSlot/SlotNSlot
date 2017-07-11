@@ -18,7 +18,7 @@ const Slot = ({ match, location, rootState }) =>
     <Header rootState={rootState} location={location} />
     <Switch>
       <Route exact path={`${match.url}/play`} component={PlaySlot} />
-      <Route path={`${match.url}/make`} component={MakeGame} />
+      <Route path={`${match.url}/make/:step`} component={MakeGame} />
       <Route exact path={match.url} component={PlaySlot} />
       <Route component={Status404} />
     </Switch>

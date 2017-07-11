@@ -1,0 +1,22 @@
+.emptySolidButton {
+  width: 220px;
+  height: 60px;
+  line-height: 60px;
+  border-radius: 100px;
+  background-color: transparent;
+  font-size: 22px;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #6257da;
+  outline: none;
+  border: solid 2px #6257da;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #473e79;
+    letter-spacing: 0.9px;
+    text-align: center;
+    color: #1b1b27;
+    cursor: not-allowed;
+  }
+}

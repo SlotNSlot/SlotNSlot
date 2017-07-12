@@ -3,10 +3,13 @@ import * as PIXI from 'pixi.js';
 const ENTIRE_REEL_COUNT = 5;
 const ITEM_PER_ENTIRE_REEL = 12;
 const ITEMS_PER_HALF_REEL = ITEM_PER_ENTIRE_REEL / 2;
-const ALL_SYMBOL_COUNT = 13;
-const SYMBOL_WIDTH = 100;
-const SYMBOL_HEIGHT = 100;
-const SLOWING_DISTANCE = 50;
+const ALL_SYMBOL_COUNT = 9;
+const SYMBOL_WIDTH = 100.4;
+const SYMBOL_HEIGHT = 92.7;
+const SYMBOL_WIDTH_GAP = 60;
+const SYMBOL_HEIGHT_GAP = 35.7;
+const SLOWING_DISTANCE = 52;
+const SLOT_START_X = 97.3;
 
 // STATE CONST VALUES
 const STATE_ZERO = 0; // State which does not load every PIXI Component.
@@ -14,6 +17,50 @@ const STATE_WAITING = 1; // State which does nothing, so ready to spin
 const STATE_SPINNING = 2; // State which is spinning while waiting slot result.
 const STATE_STOPPING = 3; // State which is animating while stopping.
 const STATE_DRAWING = 4; // State whcih is drawing slot win line
+
+const PAY_TABLE = [
+  [5, 10, 25], // A 0
+  [5, 25, 50], // B 1
+  [25, 50, 75], // C 2
+  [50, 75, 100], // D 3
+  [75, 125, 150], // E 4
+  [100, 150, 250], // G 5
+  [125, 250, 1000], // F 6
+  [250, 500, 2000], // H 7
+];
+
+const PROBABILITY_TABLE = [
+  9.000001082 * 10 ** -1, // not win
+  6.9864 * 10 ** -2, // 5
+  2.1954 * 10 ** -2, // 10
+  4.7523 * 10 ** -3, // 25
+  1.4933 * 10 ** -3, // 50
+  7.5869 * 10 ** -4, // 75
+  4.6925 * 10 ** -4, // 100
+  3.2326 * 10 ** -4, // 125
+  2.3841 * 10 ** -4, // 150
+  1.0158 * 10 ** -4, // 250
+  3.192 * 10 ** -5, // 500
+  1.003 * 10 ** -5, // 1000
+  3.1518 * 10 ** -6, // 2000
+];
+
+const PROBABILITY_VALUE_TABLE = [0, 5, 10, 25, 50, 75, 100, 125, 150, 250, 500, 1000, 2000];
+
+const LINE_CASES = [
+  [{ symbol: 7, length: 5 }], // 2000
+  [{ symbol: 6, length: 5 }], // 1000
+  [{ symbol: 7, length: 4 }], // 500
+  [{ symbol: 7, length: 3 }, { symbol: 6, length: 4 }, { symbol: 5, length: 5 }], // 250
+  [{ symbol: 5, length: 4 }, { symbol: 4, length: 5 }], // 150
+  [{ symbol: 6, length: 3 }, { symbol: 4, length: 4 }], // 125
+  [{ symbol: 5, length: 3 }, { symbol: 3, length: 5 }], // 100
+  [{ symbol: 4, length: 3 }, { symbol: 3, length: 4 }, { symbol: 2, length: 5 }], // 75
+  [{ symbol: 3, length: 3 }, { symbol: 2, length: 4 }, { symbol: 1, length: 5 }], // 50
+  [{ symbol: 2, length: 3 }, { symbol: 1, length: 4 }, { symbol: 0, length: 5 }], // 25
+  [{ symbol: 0, length: 2 }], // 10
+  [{ symbol: 1, length: 3 }, { symbol: 0, length: 3 }], // 5
+];
 
 const WIN_LINE = [
   [0, 0, 0, 0, 0],
@@ -73,6 +120,8 @@ export default class SlotGame {
     this.stopReel = this.stopReel.bind(this);
     this.changeSlot = this.changeSlot.bind(this);
     this.drawLine = this.drawLine.bind(this);
+    this.calculateSlot = this.calculateSlot.bind(this);
+    this.makeRandomPrize = this.makeRandomPrize.bind(this);
     // PIXI Element
     this.canvas = canvasElement;
     this.renderer = null;
@@ -153,11 +202,11 @@ export default class SlotGame {
             const symbol = randomNumbers[reelNum][idx];
             symbol.width = SYMBOL_WIDTH;
             symbol.height = SYMBOL_HEIGHT;
-            // Anchor to center
-            symbol.anchor.set(0.5, 0.5);
             symbol.x = 0;
-            symbol.y = idx < ITEMS_PER_HALF_REEL ? symbol.height * idx : symbol.height * (idx - ITEMS_PER_HALF_REEL);
-
+            symbol.y =
+              idx < ITEMS_PER_HALF_REEL
+                ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
+                : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
             symbol.animationSpeed = 0.3;
             symbol.play();
             if (idx < ITEMS_PER_HALF_REEL) {
@@ -171,12 +220,13 @@ export default class SlotGame {
 
           // Set reel group position
           this.reelGroup[reelNum * 2].y = 0;
-          this.reelGroup[reelNum * 2 + 1].y = SYMBOL_HEIGHT * ITEMS_PER_HALF_REEL;
-          this.reelGroup[reelNum * 2].x = SYMBOL_WIDTH * reelNum;
-          this.reelGroup[reelNum * 2 + 1].x = SYMBOL_WIDTH * reelNum;
+          this.reelGroup[reelNum * 2 + 1].y = (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL;
+          this.reelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+          this.reelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
         }
 
-        this.reelContainer.x = 150;
+        this.reelContainer.x = SLOT_START_X;
+        this.reelContainer.y = SLOWING_DISTANCE;
         this.stage.addChild(this.reelContainer);
 
         // Add UI Elements.
@@ -258,27 +308,44 @@ export default class SlotGame {
       });
     } else if (this.gameStatus === STATE_DRAWING) {
       if (this.drawingLineIndex < this.drawingPercentageList.length) {
-        if (this.drawingPercentageList[this.drawingLineIndex] < 1) {
+        // Draw until matching percentage List
+        if (this.drawingPercentageList[this.drawingLineIndex] <= this.matchingPercentageList[this.drawingLineIndex]) {
+          // Drawing Line percentage's intensification factor. When it's larger, it draws faster.
           this.drawingPercentageList[this.drawingLineIndex] += 0.05;
+          // Current line's drawing percentage
           const p = this.drawingPercentageList[this.drawingLineIndex];
           let moveX;
           let moveY;
           let partP;
-          let angle = 0;
+          let angle;
           const lineNum = this.testWinLines[this.drawingLineIndex];
           this.winLines.lineStyle(4, WIN_LINE_COLOR[lineNum], 0.8);
-          const startY = this.reelContainer.y + 100 + WIN_LINE[lineNum][0] * SYMBOL_HEIGHT;
-          this.winLines.moveTo(this.reelContainer.x, startY);
+          // Starting Point of Current line.
+          const startX = this.reelContainer.x + SYMBOL_WIDTH / 2;
+          const startY =
+            this.reelContainer.y + SYMBOL_HEIGHT / 2 + (WIN_LINE[lineNum][0] + 1) * (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP);
+          this.winLines.moveTo(startX, startY);
           for (let j = 1; j < ENTIRE_REEL_COUNT; j += 1) {
             if (j * 0.25 > p && p > (j - 1) * 0.25) {
+              // Every Win Line can be divided to 4 parts.
+              // partP means part Percentage at 1 part.
               partP = (p - (j - 1) * 0.25) / 0.25;
-              angle = (WIN_LINE[lineNum][j] - WIN_LINE[lineNum][j - 1]) * SYMBOL_HEIGHT / SYMBOL_WIDTH;
-              moveX = this.reelContainer.x + SYMBOL_WIDTH * (j - 1) + SYMBOL_WIDTH * partP;
-              moveY = this.reelContainer.y + 100 + WIN_LINE[lineNum][j - 1] * SYMBOL_HEIGHT;
-              moveY += SYMBOL_HEIGHT * partP * angle;
+              angle =
+                (WIN_LINE[lineNum][j] - WIN_LINE[lineNum][j - 1]) *
+                (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP * 2) /
+                (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP);
+              moveX = startX + (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * (j - 1) + (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * partP;
+              moveY =
+                this.reelContainer.y +
+                SYMBOL_HEIGHT / 2 +
+                (WIN_LINE[lineNum][j - 1] + 1) * (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP);
+              moveY += (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * partP * angle;
             } else if (p > (j - 1) * 0.25) {
-              moveX = this.reelContainer.x + SYMBOL_WIDTH * j;
-              moveY = this.reelContainer.y + 100 + WIN_LINE[lineNum][j] * SYMBOL_HEIGHT;
+              moveX = startX + (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * j;
+              moveY =
+                this.reelContainer.y +
+                SYMBOL_HEIGHT / 2 +
+                (WIN_LINE[lineNum][j] + 1) * (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP);
             } else {
               break;
             }
@@ -316,6 +383,7 @@ export default class SlotGame {
     this.gameStatus = STATE_DRAWING;
     this.testWinLines = [0, 4, 8, 10, 12, 16, 18];
     this.drawingPercentageList = new Array(this.testWinLines.length).fill(0);
+    this.matchingPercentageList = [1, 1, 0.5, 0.75, 1, 0.5, 1];
     this.drawingLineIndex = 0;
   }
 
@@ -384,6 +452,9 @@ export default class SlotGame {
     lineNum.height = 65;
 
     const spinBtn = new Sprite(TextureCache['spin.png']);
+    spinBtn.interactive = true;
+    spinBtn.buttonMode = true;
+    spinBtn.on('pointerdown', this.loopStart);
     spinBtn.position.set(620, 580);
     spinBtn.width = 186;
     spinBtn.height = 65;
@@ -406,23 +477,58 @@ export default class SlotGame {
     this.UIContainer.addChild(autoBtn);
   }
 
+  makeRandomPrize(lineNum) {
+    let prize = 0;
+    for (let i = 0; i < lineNum; i += 1) {
+      let nowProbability = 0;
+      const randomCase = Math.random();
+      for (let j = 0; j <= PROBABILITY_TABLE.length; j += 1) {
+        nowProbability += PROBABILITY_TABLE[j];
+        if (randomCase < nowProbability) {
+          prize += PROBABILITY_VALUE_TABLE[j];
+          break;
+        }
+      }
+    }
+    return prize;
+  }
+
+  calculateSlot() {
+    const randLineNum = Math.floor(Math.random() * 20);
+    let sumPrize = this.makeRandomPrize(randLineNum);
+    const lines = [];
+    if (sumPrize !== 0) {
+      for (let i = 0; i < PROBABILITY_VALUE_TABLE.length; i += 1) {
+        // Prize has to be selected by reverse order.
+        const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
+        if (sumPrize >= prize) {
+          const prizeNum = Math.floor(sumPrize / prize);
+          for (let j = 0; j < prizeNum; j += 1) {
+            const randIndex = Math.floor(Math.random() * LINE_CASES[i].length);
+            lines.push(LINE_CASES[i][randIndex]);
+            sumPrize -= prize;
+          }
+        }
+      }
+    }
+  }
+
   changeSlot() {
     this.newReelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
     this.newReelGroup.forEach((reelItem, index) => {
       this.newReelGroup[index] = new PIXI.Container();
       this.newReelGroup[index].vy = 0;
     });
-
     for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
       for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
         const symbol = new PIXI.extras.AnimatedSprite(this.symbols[1]);
         symbol.width = SYMBOL_WIDTH;
         symbol.height = SYMBOL_HEIGHT;
-        // Anchor to center
-        symbol.anchor.set(0.5, 0.5);
         symbol.x = 0;
-        symbol.y = idx < ITEMS_PER_HALF_REEL ? symbol.height * idx : symbol.height * (idx - ITEMS_PER_HALF_REEL);
-
+        symbol.y =
+          idx < ITEMS_PER_HALF_REEL
+            ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
+            : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
         symbol.animationSpeed = 0.3;
         symbol.play();
         if (idx < ITEMS_PER_HALF_REEL) {
@@ -433,10 +539,11 @@ export default class SlotGame {
       }
 
       // Set reel group position
-      this.newReelGroup[reelNum * 2].y -= SLOWING_DISTANCE;
-      this.newReelGroup[reelNum * 2 + 1].y = SYMBOL_HEIGHT * ITEMS_PER_HALF_REEL - SLOWING_DISTANCE;
-      this.newReelGroup[reelNum * 2].x = SYMBOL_WIDTH * reelNum;
-      this.newReelGroup[reelNum * 2 + 1].x = SYMBOL_WIDTH * reelNum;
+      this.newReelGroup[reelNum * 2].y = -1 * SLOWING_DISTANCE;
+      this.newReelGroup[reelNum * 2 + 1].y =
+        (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL - SLOWING_DISTANCE;
+      this.newReelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+      this.newReelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
     }
   }
 

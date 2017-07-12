@@ -9,6 +9,7 @@ export const MAKE_GAME_INITIAL_STATE = fromJS({
   maxPrize: 0,
   betMinValue: 0,
   betMaxValue: 0,
+  slotname: '',
   isLoading: false,
 });
 
@@ -35,6 +36,10 @@ export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SET_BET_MAX_VALUE: {
       return state.set('betMaxValue', action.payload.value);
+    }
+
+    case ACTION_TYPES.SET_SLOT_NAME: {
+      return state.set('slotname', action.payload.slotname);
     }
 
     default:

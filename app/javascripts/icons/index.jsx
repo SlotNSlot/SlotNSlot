@@ -27,6 +27,8 @@ const ICONS = {
   TRIANGLE_DOWN: require('./triangle-down.svg'),
   MAKE_SLOT: require('./make-slot.svg'),
   CROWDSALE_TICKET: require('./crowdsale-ticket.svg'),
+  MEDIUM: require('./medium.svg'),
+  MEDIUM_FOR_FOOTER: require('./medium-for-footer.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

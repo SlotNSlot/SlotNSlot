@@ -48,11 +48,6 @@ class Header extends React.PureComponent {
           </Link>
           <ul className={styles.rightNavItemsWrapper}>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
-                GitHub
-              </a>
-            </li>
-            <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
                 href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
@@ -62,8 +57,18 @@ class Header extends React.PureComponent {
               </a>
             </li>
             <li className={styles.rightNavItem}>
+              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+                GitHub
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
               <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
                 Chat
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
+              <a className={styles.item} href="https://medium.com/@kkenji1024" target="_blank">
+                Blog
               </a>
             </li>
           </ul>

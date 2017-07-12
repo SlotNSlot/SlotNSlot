@@ -3,6 +3,7 @@ import ReactDom from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import ReactGA from 'react-ga';
+import Raven from 'raven-js';
 import EnvChecker from './helpers/envChecker';
 // redux stuff
 import { store, getHistoryObject } from './store';
@@ -31,6 +32,7 @@ if (!EnvChecker.isDev()) {
   });
   ReactGA.set({ page: window.location.pathname + window.location.search });
   ReactGA.pageview(window.location.pathname + window.location.search);
+  Raven.config(process.env['RAVEN_KEY']).install();
 }
 // React Rendering
 ReactDom.render(<App />, document.getElementById('ether-app'));

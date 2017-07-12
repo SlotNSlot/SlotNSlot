@@ -42,9 +42,9 @@ contract('TestProxyLibrary', () => {
         removalevent = slotManager.slotMachineRemoved();
         removalevent.watch(function(error, result){
           if(!error){
-            console.log('Event Log : \n \tslotMachine removed in storage, manager : ', result.args._manageraddr,
-            'storage addr : ', result.args._storageaddr,
-            'index : ', result.args._idx);
+            console.log('Event Log : \n \tslotMachine removed in storage, provider : ', result.args._provider,
+            'removed slot addr : ', result.args._slotaddr,
+            'totalnum : ', result.args._totalnum);
           }
         });
       })

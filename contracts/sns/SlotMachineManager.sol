@@ -11,7 +11,7 @@ contract SlotMachineManager {
     /*mapping (address => address[]) userdata;*/
 
     event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
-    event slotMachineRemoved(address _manageraddr, address _storageaddr, uint _idx);
+    event slotMachineRemoved(address _provider, address _slotaddr, uint _totalnum);
 
     function SlotMachineManager (address _storageaddr) payable {
       slotmachineStorage = _storageaddr;

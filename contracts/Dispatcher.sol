@@ -9,7 +9,7 @@ contract Dispatcher {
     address target = dispatcherStorage.lib();
 
     //TODO : len should be caculated properly
-    len = 320;
+    len = 960;
     assembly {
       calldatacopy(0x0, 0x0, calldatasize)
       let a := delegatecall(sub(gas, 10000), target, 0x0, calldatasize, 0, len)

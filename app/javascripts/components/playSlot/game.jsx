@@ -402,118 +402,6 @@ export default class SlotGame {
     });
   }
 
-  drawUI() {
-    const TextureCache = PIXI.utils.TextureCache;
-    const Sprite = PIXI.Sprite;
-    const Graphics = PIXI.Graphics;
-
-    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
-    mergedBackground.position.set(0, 0);
-    mergedBackground.width = 940;
-    mergedBackground.height = 660;
-
-    const slotBackground = new Sprite(TextureCache['slot-background.png']);
-    slotBackground.position.set(43, 120);
-    slotBackground.width = 855;
-    slotBackground.height = 461;
-
-    const ribbon = new Sprite(TextureCache['ribbon.png']);
-    ribbon.position.set(132, 77);
-    ribbon.width = 675.6;
-    ribbon.height = 491.3;
-
-    const yourStake = new Sprite(TextureCache['your-stake.png']);
-    yourStake.position.set(41.8, 12.3);
-    yourStake.width = 351;
-    yourStake.height = 60;
-
-    const bankRoll = new Sprite(TextureCache['bank-roll.png']);
-    bankRoll.position.set(547, 12);
-    bankRoll.width = 352;
-    bankRoll.height = 61;
-
-    const betAmount = new Sprite(TextureCache['bat-amount.png']);
-    betAmount.position.set(42, 580);
-    betAmount.width = 149;
-    betAmount.height = 65;
-
-    const betSize = new Sprite(TextureCache['bet-size.png']);
-    betSize.position.set(190, 580);
-    betSize.width = 185;
-    betSize.height = 65;
-
-    const maxBet = new Sprite(TextureCache['max-bet.png']);
-    maxBet.position.set(375, 580);
-    maxBet.width = 63;
-    maxBet.height = 65;
-    maxBet.interactive = true;
-    maxBet.buttonMode = true;
-
-    const lineNum = new Sprite(TextureCache['line.png']);
-    lineNum.position.set(436, 580);
-    lineNum.width = 186;
-    lineNum.height = 65;
-
-    const betMinusBtn = new Graphics();
-    betMinusBtn.beginFill(0, 0);
-    betMinusBtn.drawRect(194, 583, 38, 57);
-    betMinusBtn.interactive = true;
-    betMinusBtn.buttonMode = true;
-    betMinusBtn.endFill();
-
-    const betPlusBtn = new Graphics();
-    betPlusBtn.beginFill(0, 0);
-    betPlusBtn.drawRect(333, 583, 38, 57);
-    betPlusBtn.interactive = true;
-    betPlusBtn.buttonMode = true;
-    betPlusBtn.endFill();
-
-    const lineMinusBtn = new Graphics();
-    lineMinusBtn.beginFill(0, 0);
-    lineMinusBtn.drawRect(440, 583, 38, 57);
-    lineMinusBtn.interactive = true;
-    lineMinusBtn.buttonMode = true;
-    lineMinusBtn.endFill();
-
-    const linePlusBtn = new Graphics();
-    linePlusBtn.beginFill(0, 0);
-    linePlusBtn.drawRect(580, 583, 38, 57);
-    linePlusBtn.interactive = true;
-    linePlusBtn.buttonMode = true;
-    linePlusBtn.endFill();
-
-    const spinBtn = new Sprite(TextureCache['spin.png']);
-    spinBtn.interactive = true;
-    spinBtn.buttonMode = true;
-    spinBtn.on('pointerdown', this.loopStart);
-    spinBtn.position.set(620, 580);
-    spinBtn.width = 186;
-    spinBtn.height = 65;
-
-    const autoBtn = new Sprite(TextureCache['auto.png']);
-    autoBtn.position.set(804, 580);
-    autoBtn.width = 93;
-    autoBtn.height = 65;
-    autoBtn.interactive = true;
-    autoBtn.buttonMode = true;
-
-    this.stage.addChild(slotBackground);
-    this.UIContainer.addChild(mergedBackground);
-    this.UIContainer.addChild(ribbon);
-    this.UIContainer.addChild(yourStake);
-    this.UIContainer.addChild(bankRoll);
-    this.UIContainer.addChild(betAmount);
-    this.UIContainer.addChild(betSize);
-    this.UIContainer.addChild(betMinusBtn);
-    this.UIContainer.addChild(betPlusBtn);
-    this.UIContainer.addChild(maxBet);
-    this.UIContainer.addChild(lineNum);
-    this.UIContainer.addChild(lineMinusBtn);
-    this.UIContainer.addChild(linePlusBtn);
-    this.UIContainer.addChild(spinBtn);
-    this.UIContainer.addChild(autoBtn);
-  }
-
   makeRandomPrize(lineNum) {
     let prize = 0;
     for (let i = 0; i < lineNum; i += 1) {
@@ -587,5 +475,179 @@ export default class SlotGame {
   removeCurrentGame() {
     PIXI.loader.reset();
     this.canvas.remove();
+  }
+
+  drawUI() {
+    const TextureCache = PIXI.utils.TextureCache;
+    const Sprite = PIXI.Sprite;
+    const Graphics = PIXI.Graphics;
+    const Text = PIXI.Text;
+
+    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    mergedBackground.position.set(0, 0);
+    mergedBackground.width = 940;
+    mergedBackground.height = 660;
+
+    const slotBackground = new Sprite(TextureCache['slot-background.png']);
+    slotBackground.position.set(43, 120);
+    slotBackground.width = 855;
+    slotBackground.height = 461;
+
+    const ribbon = new Sprite(TextureCache['ribbon.png']);
+    ribbon.position.set(132, 77);
+    ribbon.width = 675.6;
+    ribbon.height = 491.3;
+
+    const ribbonText = new Text('JACKPOT SLOT', {
+      fontSize: '31.3px',
+      letterSpacing: 1.3,
+      align: 'center',
+      fill: '0xf6b115',
+    });
+    ribbonText.anchor.set(0.5, 0.5);
+    ribbonText.position.set(470, 120);
+
+    const yourStake = new Sprite(TextureCache['your-stake.png']);
+    yourStake.position.set(41.8, 12.3);
+    yourStake.width = 351;
+    yourStake.height = 60;
+
+    const yourStakeText = new Text('2.5345 ETH', {
+      fontSize: '18.8px',
+      letterSpacing: 0.8,
+      align: 'right',
+      fill: '0xffffff',
+    });
+    yourStakeText.anchor.set(1, 0.5);
+    yourStakeText.position.set(365, 41);
+
+    const bankRoll = new Sprite(TextureCache['bank-roll.png']);
+    bankRoll.position.set(547, 12);
+    bankRoll.width = 352;
+    bankRoll.height = 61;
+
+    const bankRollText = new Text('14.3894 ETH', {
+      fontSize: '18.8px',
+      letterSpacing: 0.8,
+      align: 'left',
+      fill: '0xffffff',
+    });
+    bankRollText.anchor.set(0, 0.5);
+    bankRollText.position.set(575, 41);
+
+    const betAmount = new Sprite(TextureCache['bat-amount.png']);
+    betAmount.position.set(42, 580);
+    betAmount.width = 149;
+    betAmount.height = 65;
+
+    const betAmountText = new Text('0.4', {
+      fontSize: '18.8px',
+      letterSpacing: 0.8,
+      align: 'center',
+      fill: '0xffffff',
+    });
+    betAmountText.anchor.set(0.5, 0.5);
+    betAmountText.position.set(116, 620);
+
+    const betSize = new Sprite(TextureCache['bet-size.png']);
+    betSize.position.set(190, 580);
+    betSize.width = 185;
+    betSize.height = 65;
+
+    const betSizeText = new Text('0.1', {
+      fontSize: '18.8px',
+      letterSpacing: 0.8,
+      align: 'center',
+      fill: '0xffffff',
+    });
+    betSizeText.anchor.set(0.5, 0.5);
+    betSizeText.position.set(283, 620);
+
+    const betMinusBtn = new Graphics();
+    betMinusBtn.beginFill(0, 0);
+    betMinusBtn.drawRect(194, 583, 38, 57);
+    betMinusBtn.interactive = true;
+    betMinusBtn.buttonMode = true;
+    betMinusBtn.endFill();
+
+    const betPlusBtn = new Graphics();
+    betPlusBtn.beginFill(0, 0);
+    betPlusBtn.drawRect(333, 583, 38, 57);
+    betPlusBtn.interactive = true;
+    betPlusBtn.buttonMode = true;
+    betPlusBtn.endFill();
+
+    const maxBet = new Sprite(TextureCache['max-bet.png']);
+    maxBet.position.set(375, 580);
+    maxBet.width = 63;
+    maxBet.height = 65;
+    maxBet.interactive = true;
+    maxBet.buttonMode = true;
+
+    const lineNum = new Sprite(TextureCache['line.png']);
+    lineNum.position.set(436, 580);
+    lineNum.width = 186;
+    lineNum.height = 65;
+
+    const lineNumText = new Text('0.1', {
+      fontSize: '18.8px',
+      letterSpacing: 0.8,
+      align: 'center',
+      fill: '0xffffff',
+    });
+    lineNumText.anchor.set(0.5, 0.5);
+    lineNumText.position.set(528, 620);
+
+    const lineMinusBtn = new Graphics();
+    lineMinusBtn.beginFill(0, 0);
+    lineMinusBtn.drawRect(440, 583, 38, 57);
+    lineMinusBtn.interactive = true;
+    lineMinusBtn.buttonMode = true;
+    lineMinusBtn.endFill();
+
+    const linePlusBtn = new Graphics();
+    linePlusBtn.beginFill(0, 0);
+    linePlusBtn.drawRect(580, 583, 38, 57);
+    linePlusBtn.interactive = true;
+    linePlusBtn.buttonMode = true;
+    linePlusBtn.endFill();
+
+    const spinBtn = new Sprite(TextureCache['spin.png']);
+    spinBtn.interactive = true;
+    spinBtn.buttonMode = true;
+    spinBtn.on('pointerdown', this.loopStart);
+    spinBtn.position.set(620, 580);
+    spinBtn.width = 186;
+    spinBtn.height = 65;
+
+    const autoBtn = new Sprite(TextureCache['auto.png']);
+    autoBtn.position.set(804, 580);
+    autoBtn.width = 93;
+    autoBtn.height = 65;
+    autoBtn.interactive = true;
+    autoBtn.buttonMode = true;
+
+    this.stage.addChild(slotBackground);
+    this.UIContainer.addChild(mergedBackground);
+    this.UIContainer.addChild(ribbon);
+    this.UIContainer.addChild(yourStake);
+    this.UIContainer.addChild(bankRoll);
+    this.UIContainer.addChild(betAmount);
+    this.UIContainer.addChild(betSize);
+    this.UIContainer.addChild(betMinusBtn);
+    this.UIContainer.addChild(betPlusBtn);
+    this.UIContainer.addChild(maxBet);
+    this.UIContainer.addChild(lineNum);
+    this.UIContainer.addChild(lineMinusBtn);
+    this.UIContainer.addChild(linePlusBtn);
+    this.UIContainer.addChild(spinBtn);
+    this.UIContainer.addChild(autoBtn);
+    // Text Component
+    this.UIContainer.addChild(ribbonText);
+    this.UIContainer.addChild(bankRollText);
+    this.UIContainer.addChild(yourStakeText);
+    this.UIContainer.addChild(betAmountText);
+    this.UIContainer.addChild(betSizeText);
+    this.UIContainer.addChild(lineNumText);
   }
 }

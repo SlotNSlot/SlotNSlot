@@ -18,13 +18,21 @@ function mapStateToProps(appState) {
 }
 
 class MakeGameFourthStep extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.validateValidValues = this.validateValidValues.bind(this);
+  }
+
   render() {
-    const { rootState, makeGameState } = this.props;
+    const { makeGameState } = this.props;
 
     let maxBet = 0;
     if (makeGameState.get('maxPrize') && makeGameState.get('totalStake')) {
       maxBet = parseFloat(makeGameState.get('totalStake'), 10) / parseFloat(makeGameState.get('maxPrize'), 10);
     }
+
+    const nextButtonState = this.validateValidValues();
 
     return (
       <div>
@@ -91,14 +99,21 @@ class MakeGameFourthStep extends React.PureComponent {
               this.goToPage('complete');
             }}
             buttonText="NEXT >"
-            disabled={
-              parseFloat(makeGameState.get('betMinValue'), 10) === 0 ||
-              parseFloat(makeGameState.get('betMaxValue'), 10) === 0
-            }
+            disabled={!nextButtonState}
             className={styles.linkButton}
           />
         </div>
       </div>
+    );
+  }
+
+  validateValidValues() {
+    const { makeGameState } = this.props;
+
+    return (
+      parseFloat(makeGameState.get('betMinValue'), 10) !== 0 &&
+      parseFloat(makeGameState.get('betMaxValue'), 10) !== 0 &&
+      parseFloat(makeGameState.get('betMinValue'), 10) < parseFloat(makeGameState.get('betMaxValue'), 10)
     );
   }
 

@@ -27,7 +27,7 @@ class MakeGameFirstStep extends React.PureComponent {
         <div className={styles.firstContainer}>
           <div className={styles.contentWrapper}>
             <h1 className={styles.title}>
-              SETP 1. <span className={styles.strongTitle}>SET HIT RATIO</span>
+              STEP 1. <span className={styles.strongTitle}>SET HIT RATIO</span>
             </h1>
             <h2 className={styles.subTitle}>The hit ratio is an ideal probability that a hit occurs in a slot.</h2>
             <div className={styles.buttonContainer}>

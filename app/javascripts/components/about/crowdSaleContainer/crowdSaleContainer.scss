@@ -2,6 +2,12 @@
   height: 560px;
   padding-top: 100px;
   background-color: #e9e7f2;
+  overflow: hidden;
+
+  @media (max-width: 800px) {
+    padding-top: 60px;
+    height: 360px;
+  }
 }
 
 .ticketContainer {
@@ -34,6 +40,10 @@
 
     strong {
       font-weight: 500;
+    }
+
+    @media (max-width: 800px) {
+      font-size: 20px;
     }
   }
 
@@ -72,6 +82,21 @@
         font-size: 22px;
         letter-spacing: 0.6px;
         color: #1a0c3d;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .timeColon {
+        font-size: 45px;
+      }
+      .counterCell {
+        width: 100px;
+        .counterNumber {
+          font-size: 45px;
+        }
+        .counterTag {
+          font-size: 14px;
+        }
       }
     }
   }

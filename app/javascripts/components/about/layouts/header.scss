@@ -43,6 +43,10 @@ $top-navbar-height: 75px;
     height: 100%;
     cursor: pointer;
   }
+
+  @media (max-width: 800px) {
+    margin-right: 0;
+  }
 }
 
 .logo {

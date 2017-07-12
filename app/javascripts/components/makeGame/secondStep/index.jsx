@@ -43,6 +43,7 @@ class MakeGameSecondStep extends React.PureComponent {
                   className={styles.stakeInput}
                   type="number"
                   step="0.001"
+                  min={0}
                   max={parseFloat(rootState.get('balance'), 10)}
                   onChange={e => {
                     this.handleTotalStakeChange(e);
@@ -115,6 +116,8 @@ class MakeGameSecondStep extends React.PureComponent {
     if (totalStakeValueArr.length > 2) {
       alert('You should put valid stake');
       return;
+    } else if (!totalStake) {
+      cleanedTotalStake = 0;
     } else if (totalStakeValueArr[1] === '') {
       cleanedTotalStake = totalStake;
     } else if (totalStakeValueArr[1] !== undefined && totalStakeValueArr[1].length > 3) {

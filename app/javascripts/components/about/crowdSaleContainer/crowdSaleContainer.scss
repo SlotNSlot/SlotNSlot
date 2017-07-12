@@ -1,0 +1,78 @@
+.crowdSaleContainer {
+  height: 560px;
+  padding-top: 100px;
+  background-color: #e9e7f2;
+}
+
+.ticketContainer {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 1122px;
+    height: 250px;
+    background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
+    background-size: cover;
+  }
+
+  .ticketTitle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 20%;
+    text-align: center;
+    font-size: 30px;
+    letter-spacing: 0.9px;
+    color: #1a0c3d;
+
+    strong {
+      font-weight: 500;
+    }
+  }
+
+  .timeCounter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40%;
+    text-align: center;
+
+    .timeColon {
+      display: inline-block;
+      font-size: 70px;
+      letter-spacing: 2px;
+      color: #d2c9ea;
+    }
+
+    .counterCell {
+      position: relative;
+      display: inline-block;
+      width: 150px;
+
+      .counterNumber {
+        font-size: 70px;
+        line-height: 0.6;
+        letter-spacing: 2px;
+        text-align: center;
+        color: #1a0c3d;
+      }
+
+      .counterTag {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        right: 0;
+        font-size: 22px;
+        letter-spacing: 0.6px;
+        color: #1a0c3d;
+      }
+    }
+  }
+}

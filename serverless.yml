@@ -66,7 +66,7 @@ resources:
                 - User-Agent
                 - X-Forwarded-For
             TargetOriginId: "${self:service}-${opt:stage}-api-gateway"
-            ViewerProtocolPolicy: allow-all
+            ViewerProtocolPolicy: redirect-to-https
           Aliases:
             - ${file(./env/${opt:stage}.yml):DNS_ALIAS1}
             - ${file(./env/${opt:stage}.yml):DNS_ALIAS2}

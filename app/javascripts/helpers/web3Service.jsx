@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import contract from 'truffle-contract';
+import EnvChecker from './envChecker';
 
 class Web3Service {
   constructor() {
@@ -14,10 +15,12 @@ class Web3Service {
       this.web3 = new Web3(window.web3.currentProvider);
     } else {
       console.warn(
-        "No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
+        "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
       );
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      if (EnvChecker.isDev()) {
+        this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      }
     }
 
     // Set MetaCoin Provider

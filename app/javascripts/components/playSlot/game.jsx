@@ -405,6 +405,7 @@ export default class SlotGame {
   drawUI() {
     const TextureCache = PIXI.utils.TextureCache;
     const Sprite = PIXI.Sprite;
+    const Graphics = PIXI.Graphics;
 
     const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
     mergedBackground.position.set(0, 0);
@@ -445,11 +446,41 @@ export default class SlotGame {
     maxBet.position.set(375, 580);
     maxBet.width = 63;
     maxBet.height = 65;
+    maxBet.interactive = true;
+    maxBet.buttonMode = true;
 
     const lineNum = new Sprite(TextureCache['line.png']);
     lineNum.position.set(436, 580);
     lineNum.width = 186;
     lineNum.height = 65;
+
+    const betMinusBtn = new Graphics();
+    betMinusBtn.beginFill(0, 0);
+    betMinusBtn.drawRect(194, 583, 38, 57);
+    betMinusBtn.interactive = true;
+    betMinusBtn.buttonMode = true;
+    betMinusBtn.endFill();
+
+    const betPlusBtn = new Graphics();
+    betPlusBtn.beginFill(0, 0);
+    betPlusBtn.drawRect(333, 583, 38, 57);
+    betPlusBtn.interactive = true;
+    betPlusBtn.buttonMode = true;
+    betPlusBtn.endFill();
+
+    const lineMinusBtn = new Graphics();
+    lineMinusBtn.beginFill(0, 0);
+    lineMinusBtn.drawRect(440, 583, 38, 57);
+    lineMinusBtn.interactive = true;
+    lineMinusBtn.buttonMode = true;
+    lineMinusBtn.endFill();
+
+    const linePlusBtn = new Graphics();
+    linePlusBtn.beginFill(0, 0);
+    linePlusBtn.drawRect(580, 583, 38, 57);
+    linePlusBtn.interactive = true;
+    linePlusBtn.buttonMode = true;
+    linePlusBtn.endFill();
 
     const spinBtn = new Sprite(TextureCache['spin.png']);
     spinBtn.interactive = true;
@@ -463,6 +494,8 @@ export default class SlotGame {
     autoBtn.position.set(804, 580);
     autoBtn.width = 93;
     autoBtn.height = 65;
+    autoBtn.interactive = true;
+    autoBtn.buttonMode = true;
 
     this.stage.addChild(slotBackground);
     this.UIContainer.addChild(mergedBackground);
@@ -471,8 +504,12 @@ export default class SlotGame {
     this.UIContainer.addChild(bankRoll);
     this.UIContainer.addChild(betAmount);
     this.UIContainer.addChild(betSize);
+    this.UIContainer.addChild(betMinusBtn);
+    this.UIContainer.addChild(betPlusBtn);
     this.UIContainer.addChild(maxBet);
     this.UIContainer.addChild(lineNum);
+    this.UIContainer.addChild(lineMinusBtn);
+    this.UIContainer.addChild(linePlusBtn);
     this.UIContainer.addChild(spinBtn);
     this.UIContainer.addChild(autoBtn);
   }

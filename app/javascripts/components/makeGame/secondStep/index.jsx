@@ -20,6 +20,12 @@ function mapStateToProps(appState) {
 }
 
 class MakeGameSecondStep extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.validateStakeState = this.validateStakeState.bind(this);
+  }
+
   componentDidMount() {
     if (this.maxEtherLabel) {
       this.maxEtherLabel.style.right = `-${parseFloat(this.maxEtherLabel.offsetWidth, 10) / 2}px`;
@@ -28,6 +34,8 @@ class MakeGameSecondStep extends React.PureComponent {
 
   render() {
     const { rootState, makeGameState } = this.props;
+
+    const nextButtonDisabled = !this.validateStakeState();
 
     return (
       <div>
@@ -43,6 +51,7 @@ class MakeGameSecondStep extends React.PureComponent {
                   className={styles.stakeInput}
                   type="number"
                   step="0.001"
+                  min={0}
                   max={parseFloat(rootState.get('balance'), 10)}
                   onChange={e => {
                     this.handleTotalStakeChange(e);
@@ -98,11 +107,20 @@ class MakeGameSecondStep extends React.PureComponent {
               this.goToPage(3);
             }}
             buttonText="NEXT >"
-            disabled={parseFloat(makeGameState.get('totalStake'), 10) === 0}
+            disabled={nextButtonDisabled}
             className={styles.linkButton}
           />
         </div>
       </div>
+    );
+  }
+
+  validateStakeState() {
+    const { rootState, makeGameState } = this.props;
+
+    return (
+      parseFloat(makeGameState.get('totalStake'), 10) > 0 &&
+      parseFloat(makeGameState.get('totalStake'), 10) <= parseFloat(rootState.get('balance'))
     );
   }
 
@@ -115,6 +133,8 @@ class MakeGameSecondStep extends React.PureComponent {
     if (totalStakeValueArr.length > 2) {
       alert('You should put valid stake');
       return;
+    } else if (!totalStake) {
+      cleanedTotalStake = 0;
     } else if (totalStakeValueArr[1] === '') {
       cleanedTotalStake = totalStake;
     } else if (totalStakeValueArr[1] !== undefined && totalStakeValueArr[1].length > 3) {

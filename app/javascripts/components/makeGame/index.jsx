@@ -5,6 +5,7 @@ import Icon from '../../icons';
 import MakeGameFirstStep from './firstStep';
 import MakeGameSecondStep from './secondStep';
 import MakeGameThirdStep from './thirdStep';
+import MakeGameForuthStep from './fourthStep';
 import MakeGameProgress from './progress';
 import Status404 from '../404';
 // styles
@@ -26,6 +27,10 @@ const MakeGame = ({ match }) => {
                 return <MakeGameSecondStep />;
               } else if (parseInt(match.params.step, 10) === 3) {
                 return <MakeGameThirdStep />;
+              } else if (parseInt(match.params.step, 10) === 4) {
+                return <MakeGameForuthStep />;
+              } else if (match.params.step === 'complete') {
+                return <MakeGameForuthStep />;
               }
               return <MakeGameFirstStep />;
             }}

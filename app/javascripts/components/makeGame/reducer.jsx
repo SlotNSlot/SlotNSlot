@@ -25,6 +25,10 @@ export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
       return state.set('totalStake', action.payload.totalStake);
     }
 
+    case ACTION_TYPES.SET_MAX_PRIZE: {
+      return state.set('maxPrize', action.payload.maxPrize);
+    }
+
     default:
       return state;
   }

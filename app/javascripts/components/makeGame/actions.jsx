@@ -4,6 +4,7 @@ export const ACTION_TYPES = {
   CHANGE_TOTAL_STAKE: 'make_game.CHANGE_TOTAL_STAKE',
   SET_BET_MIN_VALUE: 'make_game.SET_BET_MIN_VALUE',
   SET_BET_MAX_VALUE: 'make_game.SET_BET_MAX_VALUE',
+  SET_SLOT_NAME: 'make_game.SET_SLOT_NAME',
 };
 
 export function selectHitRation(hitRatio) {
@@ -47,6 +48,15 @@ export function setBetMaxValue(value) {
     type: ACTION_TYPES.SET_BET_MAX_VALUE,
     payload: {
       value,
+    },
+  };
+}
+
+export function setSlotName(slotname) {
+  return {
+    type: ACTION_TYPES.SET_SLOT_NAME,
+    payload: {
+      slotname,
     },
   };
 }

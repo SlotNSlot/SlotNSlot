@@ -1,7 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import ReactTable from 'react-table';
+import './react-table.scss';
 import SlotGame from './game';
+<<<<<<< HEAD
 import * as Actions from './actions';
+=======
+import styles from './playSlot.scss';
+>>>>>>> Apply front-end design without data
 
 let gameAlreadyLoaded = false;
 
@@ -49,16 +55,103 @@ class PlaySlot extends React.PureComponent {
   }
 
   render() {
+    const { root } = this.props;
+    const data = [
+      {
+        id: 1,
+        time: '17.07.07',
+        bet: 2300,
+        result: 'success',
+        profit: 100,
+      },
+      {
+        id: 2,
+        time: '17.07.07',
+        bet: 2400,
+        result: 'success',
+        profit: -100,
+      },
+      {
+        id: 3,
+        time: '17.07.07',
+        bet: 2000,
+        result: 'success',
+        profit: -1100,
+      },
+    ];
+    const columns = [
+      {
+        Header: 'ID',
+        accessor: 'id',
+      },
+      {
+        Header: 'TIME',
+        accessor: 'time',
+      },
+      {
+        Header: 'BET',
+        accessor: 'bet',
+      },
+      {
+        Header: 'RESULT',
+        accessor: 'result',
+      },
+      {
+        Header: 'PROFIT',
+        accessor: 'profit',
+      },
+    ];
+
     return (
-      <div>
-        <div>
-          My Balance <span id="your-balance">{root.get('balance')}</span>
+      <div className={styles.playSlotSection}>
+        <div className={styles.playSlotContainer}>
+          {/* <div>
+            My Balance <span id="your-balance">{root.get('balance')}</span>
+          </div>*/}
+          <div className={styles.innerHeader}>
+            <div className={styles.slotName}>Slot Name</div>
+            <div className={styles.rightBtns}>
+              <a
+                className={styles.helpBtn}
+                onClick={() => {
+                  alert('help');
+                }}
+              >
+                ?
+              </a>
+              <a
+                onClick={() => {
+                  alert('contarct');
+                }}
+                className={styles.headerBtn}
+              >
+                CONTRACT
+              </a>
+              <a
+                onClick={() => {
+                  alert('pay table');
+                }}
+                className={styles.headerBtn}
+              >
+                PAY TABLE
+              </a>
+            </div>
+          </div>
+          <canvas
+            ref={canvas => {
+              this.canvas = canvas;
+            }}
+          />
         </div>
-        <canvas
-          ref={canvas => {
-            this.canvas = canvas;
-          }}
-        />
+        <div className={styles.bottomSection}>
+          <div className={styles.bottomContainer}>
+            <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>
+            <div className={styles.sectionMenu}>ALL BETS</div>
+          </div>
+          <div className={styles.tableWrapper}>
+            <ReactTable className="" data={data} columns={columns} defaultPageSize={10} showPageSizeOptions={false} />
+          </div>
+        </div>
       </div>
     );
   }

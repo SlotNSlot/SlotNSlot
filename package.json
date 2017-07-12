@@ -101,6 +101,7 @@
         "lodash.throttle": "^4.1.1",
         "pixi.js": "^4.5.3",
         "process-nextick-args": "^1.0.7",
+        "raven-js": "^3.16.1",
         "react": "^15.6.1",
         "react-dom": "^15.6.1",
         "react-ga": "^2.2.0",

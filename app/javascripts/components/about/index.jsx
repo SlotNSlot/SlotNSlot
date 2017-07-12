@@ -5,6 +5,7 @@ import FeatureContainer from './featureContainer/featureContainer';
 import MakeAndPlayContainer from './makeAndPlayContainer/makeAndPlayContainer';
 import RoadmapContainer from './roadmapContainer/roadmapContainer';
 import SliderContainer from './sliderContainer/sliderContainer';
+import CrowdSaleContainer from './crowdSaleContainer/crowdSaleContainer';
 import MailingContainer from './mailingContainer/mailingContainer';
 import { Header, Footer } from './layouts';
 import Status404 from '../404';
@@ -29,6 +30,7 @@ const About = props => {
       <FeatureContainer />
       <RoadmapContainer />
       <SliderContainer />
+      <CrowdSaleContainer />
       <MailingContainer />
       <Footer />
     </div>

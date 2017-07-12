@@ -589,6 +589,10 @@ export default class SlotGame {
     const Graphics = PIXI.Graphics;
     const Text = PIXI.Text;
 
+    this.gameTitleText.text = 'GAME TITLE';
+    this.gameTitleText.position.set(465, 102);
+    this.gameTitleText.anchor.x = 0.5;
+
     const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
     mergedBackground.position.set(0, 0);
     mergedBackground.width = 940;
@@ -617,10 +621,10 @@ export default class SlotGame {
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
-    this.yourStakeText.text = document.getElementById('your-balance').innerText + ' ETH';
+    // this.yourStakeText.text = document.getElementById('your-balance').innerText + ' ETH';
+    this.yourStakeText.text = '100 ETH';
     this.yourStakeText.position.set(360, 30);
     this.yourStakeText.anchor.x = 1;
-    this.yourStakeText.style.align = 'right';
 
     this.yourStakeText = new Text('2.5345 ETH', {
       fontSize: '18.8px',

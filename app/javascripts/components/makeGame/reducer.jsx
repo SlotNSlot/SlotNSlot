@@ -6,9 +6,9 @@ const AVAILABLE_HIT_RATIO = [10, 12.5, 15];
 export const MAKE_GAME_INITIAL_STATE = fromJS({
   hitRatio: null,
   totalStake: 0,
-  maxPrize: null,
-  betMinValue: null,
-  betMaxValue: null,
+  maxPrize: 0,
+  betMinValue: 0,
+  betMaxValue: 0,
   isLoading: false,
 });
 
@@ -27,6 +27,14 @@ export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SET_MAX_PRIZE: {
       return state.set('maxPrize', action.payload.maxPrize);
+    }
+
+    case ACTION_TYPES.SET_BET_MIN_VALUE: {
+      return state.set('betMinValue', action.payload.value);
+    }
+
+    case ACTION_TYPES.SET_BET_MAX_VALUE: {
+      return state.set('betMaxValue', action.payload.value);
     }
 
     default:

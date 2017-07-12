@@ -1,0 +1,196 @@
+.fourthContainer {
+  position: relative;
+  width: 780px;
+  height: 406px;
+  margin: 0 auto;
+  border-radius: 10px;
+  padding-top: 34.2px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    background-color: #0e0d16;
+  }
+}
+
+.betContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 81px;
+}
+
+.betInputWrapper {
+  display: inline-block;
+  vertical-align: top;
+  height: 51px;
+  font-size: 48.8px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: #00e9dd;
+}
+
+.horizontalDivider {
+  display: inline-block;
+  vertical-align: top;
+  width: 19px;
+  opacity: 0.25;
+  margin: 30.8px 19px 0 19px;
+  border-top: solid 3px #00e9dd;
+}
+
+.betInput {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 169px;
+  text-align: right;
+  height: 51px;
+  font-size: 38.8px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: #00e9dd;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  margin-right: 7.6px;
+  outline: none;
+  border-bottom: solid 2px #144e54;
+
+  &:focus {
+    border-bottom: solid 2px #00e9dd;
+  }
+}
+
+.betInputUnit {
+  display: inline-block;
+  vertical-align: top;
+  height: 51px;
+  line-height: 51px;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.title {
+  font-size: 24px;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #8f8d9a;
+}
+
+.strongTitle {
+  color: #fff;
+  font-weight: bold;
+}
+
+.subTitle {
+  font-size: 18px;
+  font-weight: 200;
+  letter-spacing: 0.7px;
+  text-align: center;
+  color: #8f8d9a;
+  margin-bottom: 76.4px;
+}
+
+.hitButton {
+  margin-right: 28.8px;
+
+  &:last-of-type {
+    margin-right: 0;
+  }
+}
+
+.cautionContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.cautionWrapper {
+  position: relative;
+  width: 517px;
+}
+
+.tipIcon {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  display: inline-block;
+  vertical-align: top;
+  width: 54px;
+  height: 33.1px;
+
+  &:after {
+    content: 'TIP';
+    position: absolute;
+    top: 8.53px;
+    left: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-align: center;
+    color: #1b1b27;
+  }
+
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 54px;
+    height: 33.1px;
+  }
+}
+
+.nextButtonWrapper {
+  margin-top: 29px;
+}
+
+.caution {
+  position: absolute;
+  left: 68px;
+  display: inline-block;
+  vertical-align: top;
+  width: 449px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.7px;
+  text-align: left;
+  color: #c6c4df;
+}
+
+.sliderWrapper {
+  position: relative;
+  width: 380px;
+  margin: 0 auto;
+}
+
+.leftLabel {
+  position: absolute;
+  bottom: -42px;
+  left: -6px;
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.8px;
+  color: #fff;
+}
+
+.rightLabel {
+  position: absolute;
+  bottom: -42px;
+  right: 0;
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.8px;
+  color: #fff;
+}
+
+.linkButton + .linkButton {
+  margin-left: 25px;
+}

@@ -49,6 +49,7 @@ resources:
         DistributionConfig:
           ViewerCertificate:
             AcmCertificateArn: arn:aws:acm:us-east-1:966390130392:certificate/b81df856-c668-4b50-a8a9-f4a506ae2e3e
+            SslSupportMethod: sni-only
           DefaultRootObject: ''
           Enabled: true
           DefaultCacheBehavior:

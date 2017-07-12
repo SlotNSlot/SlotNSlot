@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Icon from '../../icons';
 import MakeGameFirstStep from './firstStep';
 import MakeGameSecondStep from './secondStep';
+import MakeGameThirdStep from './thirdStep';
 import MakeGameProgress from './progress';
 import Status404 from '../404';
 // styles
@@ -23,7 +24,10 @@ const MakeGame = ({ match }) => {
                 return <MakeGameFirstStep />;
               } else if (parseInt(match.params.step, 10) === 2) {
                 return <MakeGameSecondStep />;
+              } else if (parseInt(match.params.step, 10) === 3) {
+                return <MakeGameThirdStep />;
               }
+              return <MakeGameFirstStep />;
             }}
           />
           <Route component={Status404} />

@@ -6,7 +6,6 @@ import { updateCountdown } from './actions';
 
 function mapStateToProps(appState) {
   return {
-    // pass
     aboutCrowdSale: appState.aboutCrowdSale,
   };
 }
@@ -72,10 +71,6 @@ class CrowdSaleContainer extends React.PureComponent {
   updateTimer() {
     const { dispatch } = this.props;
     dispatch(updateCountdown());
-    // const dueDate = new Date('2017-08-15T14:00:00.000Z');
-    // this.props.due
-    // console.log('hi');
-    // console.log(this.props.aboutCrowdSale.get('dueDate'));
   }
 }
 export default connect(mapStateToProps)(CrowdSaleContainer);

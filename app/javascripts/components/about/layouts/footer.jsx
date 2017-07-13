@@ -26,6 +26,9 @@ const Footer = () =>
         <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
           <Icon className={styles.snsBtn} icon="TWITTER_FOR_FOOTER" />
         </a>
+        <a className={styles.btnContainer} href="https://medium.com/@kkenji1024" target="_blank">
+          <Icon className={styles.snsBtn} icon="MEDIUM_FOR_FOOTER" />
+        </a>
       </div>
     </div>
   </div>;

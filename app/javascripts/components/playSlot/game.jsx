@@ -108,9 +108,15 @@ const WIN_LINE_COLOR = [
 ];
 
 export default class SlotGame {
-  constructor(canvasElement) {
-    if (!canvasElement) {
+  constructor(params) {
+    if (!params.canvas) {
       return;
+    }
+    // constructor params has properties like below.
+    // canvas, betSize, lineNum, bankRoll, betUnit, minBet, maxBet,
+    // setBetSizeFunc, setLineNumFunc, spinStartFunc, yourStake
+    for (const prop in params) {
+      this[prop] = params[prop];
     }
     // Function List
     this.gameLoop = this.gameLoop.bind(this);
@@ -123,7 +129,6 @@ export default class SlotGame {
     this.calculateSlot = this.calculateSlot.bind(this);
     this.makeRandomPrize = this.makeRandomPrize.bind(this);
     // PIXI Element
-    this.canvas = canvasElement;
     this.renderer = null;
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
     this.winLines = new PIXI.Graphics();
@@ -136,7 +141,7 @@ export default class SlotGame {
     this.drawingLineIndex = null;
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
-      view: canvasElement,
+      view: this.canvas,
       antialias: true,
       transparent: false,
       resolution: 1,
@@ -172,8 +177,7 @@ export default class SlotGame {
     });
     // Add the canvas to the HTML document
     PIXI.loader
-      .add('assets/images/symbolsMap.json')
-      .add('assets/images/slotMap.json')
+      .add(['assets/images/symbolsMap.json', 'assets/images/slotMap.json'])
       .on('progress', (loader, resource) => {
         console.log(loader);
         console.log(resource);
@@ -280,6 +284,12 @@ export default class SlotGame {
     if (this.gameStatus === STATE_ZERO) {
       this.gameStatus = STATE_WAITING;
     } else if (this.gameStatus === STATE_WAITING) {
+      if (this.betSize !== undefined) this.betSizeText.text = this.betSize;
+      if (this.lineNum !== undefined) this.lineNumText.text = `${this.lineNum}`;
+      if (this.yourStake !== undefined) this.yourStakeText.text = `${this.yourStake} ETH`;
+      if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
+      if (this.lineNum !== undefined && this.betSize !== undefined)
+        this.betAmountText.text = this.betSize * this.lineNum;
       console.log('WAITING...');
     } else if (this.gameStatus === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
@@ -512,62 +522,69 @@ export default class SlotGame {
     yourStake.width = 351;
     yourStake.height = 60;
 
-    const yourStakeText = new Text('2.5345 ETH', {
+    this.yourStakeText = new Text('2.5345 ETH', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'right',
       fill: '0xffffff',
     });
-    yourStakeText.anchor.set(1, 0.5);
-    yourStakeText.position.set(365, 41);
+    this.yourStakeText.anchor.set(1, 0.5);
+    this.yourStakeText.position.set(365, 41);
 
     const bankRoll = new Sprite(TextureCache['bank-roll.png']);
     bankRoll.position.set(547, 12);
     bankRoll.width = 352;
     bankRoll.height = 61;
 
-    const bankRollText = new Text('14.3894 ETH', {
+    this.bankRollText = new Text('14.3894 ETH', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'left',
       fill: '0xffffff',
     });
-    bankRollText.anchor.set(0, 0.5);
-    bankRollText.position.set(575, 41);
+    this.bankRollText.anchor.set(0, 0.5);
+    this.bankRollText.position.set(575, 41);
 
     const betAmount = new Sprite(TextureCache['bat-amount.png']);
     betAmount.position.set(42, 580);
     betAmount.width = 149;
     betAmount.height = 65;
 
-    const betAmountText = new Text('0.4', {
+    this.betAmountText = new Text('0.4', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
       fill: '0xffffff',
     });
-    betAmountText.anchor.set(0.5, 0.5);
-    betAmountText.position.set(116, 620);
+    this.betAmountText.anchor.set(0.5, 0.5);
+    this.betAmountText.position.set(116, 620);
 
     const betSize = new Sprite(TextureCache['bet-size.png']);
     betSize.position.set(190, 580);
     betSize.width = 185;
     betSize.height = 65;
 
-    const betSizeText = new Text('0.1', {
+    this.betSizeText = new Text('0.12332', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
       fill: '0xffffff',
     });
-    betSizeText.anchor.set(0.5, 0.5);
-    betSizeText.position.set(283, 620);
+    this.betSizeText.anchor.set(0.5, 0.5);
+    this.betSizeText.position.set(283, 620);
 
     const betMinusBtn = new Graphics();
     betMinusBtn.beginFill(0, 0);
     betMinusBtn.drawRect(194, 583, 38, 57);
     betMinusBtn.interactive = true;
     betMinusBtn.buttonMode = true;
+    betMinusBtn.on('pointerdown', () => {
+      if (this.betSize - this.betUnit >= this.minBet) {
+        this.setBetSize(this.betSize - this.betUnit);
+      } else {
+        this.setBetSize(this.minBet);
+      }
+    });
     betMinusBtn.endFill();
 
     const betPlusBtn = new Graphics();
@@ -575,6 +592,13 @@ export default class SlotGame {
     betPlusBtn.drawRect(333, 583, 38, 57);
     betPlusBtn.interactive = true;
     betPlusBtn.buttonMode = true;
+    betPlusBtn.on('pointerdown', () => {
+      if (this.betSize + this.betUnit <= this.maxBet) {
+        this.setBetSize(this.betSize + this.betUnit);
+      } else {
+        this.setBetSize(this.maxBet);
+      }
+    });
     betPlusBtn.endFill();
 
     const maxBet = new Sprite(TextureCache['max-bet.png']);
@@ -583,26 +607,35 @@ export default class SlotGame {
     maxBet.height = 65;
     maxBet.interactive = true;
     maxBet.buttonMode = true;
+    maxBet.on('pointerdown', () => {
+      this.setBetSize(this.maxBet);
+      this.setLineNum(20);
+    });
 
     const lineNum = new Sprite(TextureCache['line.png']);
     lineNum.position.set(436, 580);
     lineNum.width = 186;
     lineNum.height = 65;
 
-    const lineNumText = new Text('0.1', {
+    this.lineNumText = new Text('0.1', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
       fill: '0xffffff',
     });
-    lineNumText.anchor.set(0.5, 0.5);
-    lineNumText.position.set(528, 620);
+    this.lineNumText.anchor.set(0.5, 0.5);
+    this.lineNumText.position.set(528, 620);
 
     const lineMinusBtn = new Graphics();
     lineMinusBtn.beginFill(0, 0);
     lineMinusBtn.drawRect(440, 583, 38, 57);
     lineMinusBtn.interactive = true;
     lineMinusBtn.buttonMode = true;
+    lineMinusBtn.on('pointerdown', () => {
+      if (this.lineNum > 1) {
+        this.setLineNum(this.lineNum - 1);
+      }
+    });
     lineMinusBtn.endFill();
 
     const linePlusBtn = new Graphics();
@@ -610,6 +643,11 @@ export default class SlotGame {
     linePlusBtn.drawRect(580, 583, 38, 57);
     linePlusBtn.interactive = true;
     linePlusBtn.buttonMode = true;
+    linePlusBtn.on('pointerdown', () => {
+      if (this.lineNum < 20) {
+        this.setLineNum(this.lineNum + 1);
+      }
+    });
     linePlusBtn.endFill();
 
     const spinBtn = new Sprite(TextureCache['spin.png']);
@@ -644,10 +682,10 @@ export default class SlotGame {
     this.UIContainer.addChild(autoBtn);
     // Text Component
     this.UIContainer.addChild(ribbonText);
-    this.UIContainer.addChild(bankRollText);
-    this.UIContainer.addChild(yourStakeText);
-    this.UIContainer.addChild(betAmountText);
-    this.UIContainer.addChild(betSizeText);
-    this.UIContainer.addChild(lineNumText);
+    this.UIContainer.addChild(this.bankRollText);
+    this.UIContainer.addChild(this.yourStakeText);
+    this.UIContainer.addChild(this.betAmountText);
+    this.UIContainer.addChild(this.betSizeText);
+    this.UIContainer.addChild(this.lineNumText);
   }
 }

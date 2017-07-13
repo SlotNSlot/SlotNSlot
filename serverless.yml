@@ -47,6 +47,9 @@ resources:
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
+          ViewerCertificate:
+            AcmCertificateArn: arn:aws:acm:us-east-1:966390130392:certificate/b81df856-c668-4b50-a8a9-f4a506ae2e3e
+            SslSupportMethod: sni-only
           DefaultRootObject: ''
           Enabled: true
           DefaultCacheBehavior:
@@ -66,7 +69,7 @@ resources:
                 - User-Agent
                 - X-Forwarded-For
             TargetOriginId: "${self:service}-${opt:stage}-api-gateway"
-            ViewerProtocolPolicy: allow-all
+            ViewerProtocolPolicy: redirect-to-https
           Aliases:
             - ${file(./env/${opt:stage}.yml):DNS_ALIAS1}
             - ${file(./env/${opt:stage}.yml):DNS_ALIAS2}

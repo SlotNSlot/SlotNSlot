@@ -6,6 +6,7 @@ import MakeGameFirstStep from './firstStep';
 import MakeGameSecondStep from './secondStep';
 import MakeGameThirdStep from './thirdStep';
 import MakeGameForuthStep from './fourthStep';
+import MakeGameCompleteStep from './completeStep';
 import MakeGameProgress from './progress';
 import Status404 from '../404';
 // styles
@@ -16,7 +17,7 @@ const MakeGame = ({ match }) => {
     <div className={styles.makeGameContainer}>
       <div className={styles.makeGameContent}>
         <Icon className={styles.makeSlotIcon} icon="MAKE_SLOT" />
-        <MakeGameProgress currentStep={parseInt(match.params.step, 10)} />
+        <MakeGameProgress currentStep={match.params.step} />
         <Switch>
           <Route
             path={match.url}
@@ -30,7 +31,7 @@ const MakeGame = ({ match }) => {
               } else if (parseInt(match.params.step, 10) === 4) {
                 return <MakeGameForuthStep />;
               } else if (match.params.step === 'complete') {
-                return <MakeGameForuthStep />;
+                return <MakeGameCompleteStep />;
               }
               return <MakeGameFirstStep />;
             }}

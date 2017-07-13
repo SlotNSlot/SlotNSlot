@@ -68,6 +68,8 @@
   height: 33.9px;
   border-radius: 50%;
   background-color: #3b3766;
+  z-index: 10;
+  cursor: pointer;
 
   &::after {
     content: '';
@@ -79,6 +81,7 @@
     height: 17.4px;
     border-radius: 50%;
     background-color: #6257da;
+    z-index: 10;
   }
 }
 
@@ -90,4 +93,5 @@
   left: -9.5px;
   border-radius: 50%;
   background-color: #3f3d4f;
+  cursor: not-allowed;
 }

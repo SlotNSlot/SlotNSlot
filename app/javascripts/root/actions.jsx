@@ -20,14 +20,21 @@ export function setCoinBalance(balance) {
 
 export function refreshBalance(account) {
   return dispatch => {
-    const balance = Web3Service.getWeb3().eth.getBalance(account);
-    const ethBalance = Web3Service.getWeb3().fromWei(balance, 'ether').valueOf();
-    dispatch(setCoinBalance(ethBalance));
+    Web3Service.getWeb3().eth.getBalance(account, (err, balance) => {
+      if (err) {
+        console.error(err);
+      } else {
+        dispatch(setCoinBalance(Web3Service.getEthFromWei(balance)));
+      }
+    });
   };
 }
 
 export function setAccount() {
   return dispatch => {
+    if (!Web3Service.getWeb3()) {
+      return;
+    }
     dispatch({ type: ACTION_TYPES.START_TO_GET_ACCOUNT });
 
     Web3Service.getWeb3().eth.getAccounts((err, accs) => {

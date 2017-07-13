@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware } from 'redux';
+import Immutable from 'immutable';
 import thunk from 'redux-thunk';
-import logger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import { routerMiddleware } from 'react-router-redux';
 import createBrowserHistory from 'history/createBrowserHistory';
 import createHashHistory from 'history/createHashHistory';
@@ -27,6 +28,21 @@ const router = routerMiddleware(getHistoryObject());
 
 let middleWare;
 if (EnvChecker.isDev()) {
+  const logger = createLogger({
+    stateTransformer: state => {
+      const newState = {};
+
+      for (var i of Object.keys(state)) {
+        if (Immutable.Iterable.isIterable(state[i])) {
+          newState[i] = state[i].toJS();
+        } else {
+          newState[i] = state[i];
+        }
+      }
+
+      return newState;
+    },
+  });
   middleWare = applyMiddleware(thunk, router, logger);
 } else {
   middleWare = applyMiddleware(thunk, router);

@@ -1,67 +1,5 @@
 [
     {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_idx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getSlotMachines",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address[5]"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_idx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getSlotMachineInfo",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_idx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getSlotMachineDecider",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
         "constant": false,
         "inputs": [
             {
@@ -102,25 +40,12 @@
     },
     {
         "constant": true,
-        "inputs": [
-            {
-                "name": "_idx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getSlotMachineInfos",
+        "inputs": [],
+        "name": "slotmachineStorage",
         "outputs": [
             {
                 "name": "",
-                "type": "uint256[10]"
-            },
-            {
-                "name": "",
-                "type": "uint256[10]"
-            },
-            {
-                "name": "",
-                "type": "uint256[10]"
+                "type": "address"
             }
         ],
         "payable": false,
@@ -153,26 +78,13 @@
         "type": "function"
     },
     {
-        "constant": true,
-        "inputs": [],
-        "name": "getNumofSlotMachine",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "name": "_storageaddr",
                 "type": "address"
             }
         ],
-        "payable": true,
+        "payable": false,
         "type": "constructor"
     },
     {
@@ -217,17 +129,17 @@
         "inputs": [
             {
                 "indexed": false,
-                "name": "_manageraddr",
+                "name": "_provider",
                 "type": "address"
             },
             {
                 "indexed": false,
-                "name": "_storageaddr",
+                "name": "_slotaddr",
                 "type": "address"
             },
             {
                 "indexed": false,
-                "name": "_idx",
+                "name": "_totalnum",
                 "type": "uint256"
             }
         ],

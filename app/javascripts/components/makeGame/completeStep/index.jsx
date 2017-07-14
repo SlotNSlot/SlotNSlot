@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { push } from 'react-router-redux';
+// components
+import Spinner from '../../common/spinner';
 import SolidButton from '../../common/solidButton';
 import EmptySolidButton from '../../common/emptySolidButton';
 // actions
@@ -20,8 +22,23 @@ class MakeGameCompleteStep extends React.PureComponent {
   render() {
     const { makeGameState } = this.props;
 
+    let loadingElem = null;
+    if (makeGameState.get('isLoading')) {
+      loadingElem = (
+        <div className={styles.loading}>
+          <div>
+            <Spinner className={styles.spinner} />
+            <div className={styles.loadingTitle}>
+              Creating slot...
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div>
+        {loadingElem}
         <h1 className={styles.title}>
           COMPLETE. <span className={styles.strongTitle}>SET SLOT NAME</span>
         </h1>
@@ -81,11 +98,14 @@ class MakeGameCompleteStep extends React.PureComponent {
     dispatch(setSlotName(e.currentTarget.value));
   }
 
-  makeSlotMachine() {
+  async makeSlotMachine() {
     const { dispatch, rootState } = this.props;
 
-    dispatch(requestToMakeGame(rootState.get('account')));
-    // alert(`Made Slot Machine successfully. It made at ${transaction.address}`);
+    document.body.style.overflow = 'hidden';
+    await dispatch(requestToMakeGame(rootState.get('account')));
+    document.body.style.overflow = 'scroll';
+    // TODO: Change below to game list page
+    dispatch(push('/slot/make/1'));
   }
 
   goToPage(step) {

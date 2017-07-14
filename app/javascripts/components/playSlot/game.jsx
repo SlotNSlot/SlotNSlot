@@ -133,8 +133,8 @@ export default class SlotGame {
     // PIXI Element
     this.renderer = null;
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
-    this.colorMatrixFilter = new PIXI.filters.ColorMatrixFilter();
-    this.colorMatrixFilter.lsd();
+    this.lsdFilter = new PIXI.filters.ColorMatrixFilter();
+    this.lsdFilter.lsd();
     this.winLines = new PIXI.Graphics();
     // Game Variable Initialization
     this.stage = null;
@@ -143,6 +143,10 @@ export default class SlotGame {
     this.rotateStatus = new Array(ENTIRE_REEL_COUNT).fill(false);
     this.slowingDistance = null;
     this.drawingLineIndex = null;
+    // Animation Variable Initialization
+    this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
+    this.bigWinTextVel = 0;
+    this.bigWinTextAcc = 0.003;
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: this.canvas,
@@ -181,7 +185,13 @@ export default class SlotGame {
     });
     // Add the canvas to the HTML document
     PIXI.loader
-      .add(['assets/images/symbolsMap.json', 'assets/images/slotMap.json', 'assets/images/slot/bigwin-15-x@3x.png'])
+      .add([
+        'assets/images/symbolsMap.json',
+        'assets/images/slotMap.json',
+        'assets/images/slot/big-win-front@2x.png',
+        'assets/images/slot/circle-big-win-15-x@2x.png',
+        'assets/images/slot/oval-14@2x.png',
+      ])
       .on('progress', (loader, resource) => {
         console.log(loader);
         console.log(resource);
@@ -277,13 +287,13 @@ export default class SlotGame {
       this.winLines.clear();
       this.gameStatus = STATE_SPINNING;
       this.reelGroup.forEach(reel => {
-        reel.filters = [this.blurFilter];
         reel.vy = 100;
       });
       this.spinStatus.fill(true);
-      this.bigWin.visible = false;
+      this.bigWinContainer.visible = false;
       this.bigWinText.visible = false;
-      this.reelContainer.filters = [];
+      this.ovalBackground.visible = false;
+      this.reelContainer.filters = [this.blurFilter];
     }
   }
 
@@ -297,6 +307,13 @@ export default class SlotGame {
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
       if (this.lineNum !== undefined && this.betSize !== undefined)
         this.betAmountText.text = this.betSize * this.lineNum;
+      if (this.bigWinContainer.visible) {
+        this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
+        this.bigWinContainer.scale.y += 0.005 * this.bigWinPopping;
+        if (Math.abs(this.bigWinContainer.scale.x - 1) > 0.15) {
+          this.bigWinPopping *= -1;
+        }
+      }
       console.log('WAITING...');
     } else if (this.gameStatus === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
@@ -386,9 +403,9 @@ export default class SlotGame {
           }
         });
       } else if (this.bigWinPercentage <= 2) {
-        this.bigWin.scale.x += 0.015;
-        this.bigWin.scale.y += 0.015;
-        this.bigWin.alpha += 0.015;
+        this.bigWinContainer.scale.x += 0.015;
+        this.bigWinContainer.scale.y += 0.015;
+        this.bigWinContainer.alpha += 0.015;
         this.bigWinPercentage += 0.015;
         this.reelGroup.forEach(reel => {
           reel.y += reel.vy;
@@ -397,16 +414,25 @@ export default class SlotGame {
           }
         });
       } else if (this.bigWinPercentage <= 3) {
-        this.bigWinText.scale.x += 0.015;
-        this.bigWinText.scale.y += 0.015;
-        this.bigWinText.alpha += 0.015;
-        this.bigWinPercentage += 0.015;
+        if (this.bigWinText.scale.x <= 1) {
+          this.bigWinTextVel += this.bigWinTextAcc;
+          this.bigWinText.scale.x += this.bigWinTextVel;
+          this.bigWinText.scale.y += this.bigWinTextVel;
+          this.bigWinText.alpha += this.bigWinTextVel;
+          this.ovalBackground.scale.x += this.bigWinTextVel;
+          this.ovalBackground.scale.y += this.bigWinTextVel;
+          this.ovalBackground.alpha += this.bigWinTextVel;
+        }
+        this.bigWinPercentage += 0.01;
         this.reelGroup.forEach(reel => {
           reel.y += reel.vy;
           if (reel.y > reel.height) {
             reel.y -= reel.height * 2;
           }
         });
+      } else if (this.bigWinPercentage <= 4) {
+        this.reelContainer.filters = [];
+        this.bigWinPercentage += 0.05;
       } else {
         this.gameStatus = STATE_WAITING;
       }
@@ -421,13 +447,17 @@ export default class SlotGame {
     if (this.gameStatus === STATE_SPINNING) {
       this.gameStatus = STATE_BIG_WIN;
       this.bigWinPercentage = 0;
-      this.bigWin.visible = true;
-      this.bigWin.scale.set(0, 0);
-      this.bigWin.alpha = 0;
+      this.bigWinTextVel = 0;
+      this.bigWinContainer.visible = true;
+      this.bigWinContainer.scale.set(0, 0);
+      this.bigWinContainer.alpha = 0;
       this.bigWinText.visible = true;
       this.bigWinText.scale.set(0, 0);
       this.bigWinText.alpha = 0;
-      this.reelContainer.filters = [this.colorMatrixFilter];
+      this.ovalBackground.visible = true;
+      this.ovalBackground.scale.set(0, 0);
+      this.ovalBackground.alpha = 0;
+      this.reelContainer.filters = [this.lsdFilter, this.blurFilter];
     }
   }
   async stopSpin() {
@@ -742,23 +772,36 @@ export default class SlotGame {
     this.UIContainer.addChild(this.betSizeText);
     this.UIContainer.addChild(this.lineNumText);
     // Add Big Win & Big Win Text Element as invisible.
-    this.bigWin = new Sprite.fromImage('assets/images/slot/bigwin-15-x@3x.png');
-    this.bigWin.anchor.set(0.5, 0.5);
-    this.bigWin.position.set(470, 340);
-    this.bigWin.width = 427;
-    this.bigWin.height = 427;
-    this.bigWin.blendMode = PIXI.BLEND_MODES.SCREEN;
-    this.bigWin.visible = false;
-    this.UIContainer.addChild(this.bigWin);
+    // BigWinContainer contains bigWin & bigWinBackGround
+    this.bigWinContainer = new PIXI.Container();
+    const bigWin = new Sprite.fromImage('assets/images/slot/circle-big-win-15-x@2x.png');
+    bigWin.anchor.set(0.5, 0.5);
+    bigWin.position.set(2, 11);
+    bigWin.blendMode = PIXI.BLEND_MODES.SCREEN;
+    const bigWinBackGround = new Sprite.fromImage('assets/images/slot/big-win-front@2x.png');
+    bigWinBackGround.anchor.set(0.5, 0.5);
+    bigWinBackGround.alpha = 1;
+    this.bigWinContainer.addChild(bigWin);
+    this.bigWinContainer.addChild(bigWinBackGround);
+    this.bigWinContainer.position.set(470, 340);
+    this.bigWinContainer.visible = false;
+    this.UIContainer.addChild(this.bigWinContainer);
+
+    this.ovalBackground = new Sprite.fromImage('assets/images/slot/oval-14@2x.png');
+    this.ovalBackground.anchor.set(0.5, 0.5);
+    this.ovalBackground.position.set(470, 470);
+    this.ovalBackground.visible = false;
+    this.UIContainer.addChild(this.ovalBackground);
+
     this.bigWinText = new Text('+400', {
       fontSize: '80px',
       fontStyle: 'italic',
       letterSpacing: 1.3,
       align: 'center',
       dropShadow: true,
-      dropShadowBlur: 15,
+      dropShadowBlur: 30,
       dropShadowAlpha: 0.3,
-      dropShadowRadius: 3,
+      dropShadowAngle: 0,
       dropShadowColor: '0xffffff',
       fill: ['0xfbda61', '0xf71c66'],
       fillGradientType: PIXI.TEXT_GRADIENT.LINEAR_VERTICAL,
@@ -767,7 +810,7 @@ export default class SlotGame {
       strokeThickness: 8,
     });
     this.bigWinText.anchor.set(0.5, 0.5);
-    this.bigWinText.position.set(470, 440);
+    this.bigWinText.position.set(470, 470);
     this.bigWinText.visible = false;
     this.UIContainer.addChild(this.bigWinText);
   }

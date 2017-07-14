@@ -30,6 +30,51 @@ const PAY_TABLE = [
   [250, 500, 2000], // H 7
 ];
 
+const INDEPENDENT_LINES = {
+  2: [
+    [0, 11],
+    [0, 14],
+    [0, 16],
+    [1, 2],
+    [2, 7],
+    [2, 9],
+    [2, 12],
+    [2, 13],
+    [2, 15],
+    [3, 8],
+    [3, 11],
+    [3, 12],
+    [4, 7],
+    [4, 12],
+    [4, 19],
+    [5, 13],
+    [5, 14],
+    [6, 13],
+    [6, 14],
+    [7, 10],
+    [7, 15],
+    [7, 16],
+    [8, 9],
+    [8, 15],
+    [8, 16],
+    [9, 11],
+    [9, 12],
+    [9, 18],
+    [9, 19],
+    [10, 11],
+    [10, 17],
+    [11, 18],
+    [12, 17],
+    [13, 19],
+    [14, 19],
+    [15, 18],
+    [16, 17],
+    [17, 18],
+    [17, 19],
+  ],
+  3: [[0, 1, 2], [0, 8, 16], [0, 10, 11], [2, 7, 15], [2, 9, 12], [9, 11, 18], [10, 12, 17]],
+};
+
 const PROBABILITY_TABLE = [
   9.000001082 * 10 ** -1, // not win
   6.9864 * 10 ** -2, // 5
@@ -59,9 +104,16 @@ const LINE_CASES = [
   [{ symbol: 4, length: 3 }, { symbol: 3, length: 4 }, { symbol: 2, length: 5 }], // 75
   [{ symbol: 3, length: 3 }, { symbol: 2, length: 4 }, { symbol: 1, length: 5 }], // 50
   [{ symbol: 2, length: 3 }, { symbol: 1, length: 4 }, { symbol: 0, length: 5 }], // 25
-  [{ symbol: 0, length: 2 }], // 10
+  [{ symbol: 0, length: 4 }], // 10
   [{ symbol: 1, length: 3 }, { symbol: 0, length: 3 }], // 5
 ];
+
+function shuffleArray(arr) {
+  for (let i = arr.length; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * i);
+    [arr[i - 1], arr[j]] = [arr[j], arr[i - 1]];
+  }
+}
 
 const WIN_LINE = [
   [0, 0, 0, 0, 0],
@@ -85,28 +137,7 @@ const WIN_LINE = [
   [2, 0, 2, 0, 2],
   [2, 0, 1, 0, 2],
 ];
-const WIN_LINE_COLOR = [
-  0xc21e42,
-  0x68d106,
-  0xced42d,
-  0x2c2d3e,
-  0x2be3be,
-  0xb47d58,
-  0x9ee54e,
-  0x73f42a,
-  0x3e99a1,
-  0x01891c,
-  0x2c0d07,
-  0xc526b3,
-  0xf746b0,
-  0xdcd1f7,
-  0x6d2ae,
-  0x67704a,
-  0x7c3669,
-  0xab9e06,
-  0x5fb616,
-  0x33198f,
-];
+const WIN_LINE_COLOR = [0xffe600, 0xff1c71, 0x00e9dd, 0x7923ff, 0x00ff64];
 
 export default class SlotGame {
   constructor(params) {
@@ -147,6 +178,7 @@ export default class SlotGame {
     this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
     this.bigWinTextVel = 0;
     this.bigWinTextAcc = 0.003;
+    this.drawingLines = [];
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: this.canvas,
@@ -163,14 +195,6 @@ export default class SlotGame {
     // Create a container object called the `stage`
     this.stage = new PIXI.Container();
     this.symbols = new Array(ALL_SYMBOL_COUNT);
-    let randomNumbers = [];
-    // Make Random variable for inital slot.
-    for (let idx = 0; idx < ENTIRE_REEL_COUNT; idx += 1) {
-      randomNumbers[idx] = [];
-      for (let j = 0; j < ITEM_PER_ENTIRE_REEL; j += 1) {
-        randomNumbers[idx].push(Math.floor(Math.random() * ALL_SYMBOL_COUNT));
-      }
-    }
 
     this.UIContainer = new PIXI.Container();
     const tempContainer = new PIXI.Container();
@@ -210,14 +234,11 @@ export default class SlotGame {
           }
           this.symbols[i - 1] = imglist;
         }
-        // Random number of Symbol image frames are integrated to animated sprite.
-        randomNumbers = randomNumbers.map(reel =>
-          reel.map(randomNum => new PIXI.extras.AnimatedSprite(this.symbols[randomNum])),
-        );
         // Random symbol's coordinates are set per reelGroup.
         for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
-          for (let idx = 0; idx < randomNumbers[reelNum].length; idx += 1) {
-            const symbol = randomNumbers[reelNum][idx];
+          for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
+            const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+            const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
             symbol.width = SYMBOL_WIDTH;
             symbol.height = SYMBOL_HEIGHT;
             symbol.x = 0;
@@ -270,7 +291,7 @@ export default class SlotGame {
         stopBtn.interactive = true;
         stopBtn.buttonMode = true;
 
-        stopBtn.on('pointerdown', this.drawBigWin);
+        stopBtn.on('pointerdown', this.calculateSlot);
         tempContainer.addChild(stopBtn);
 
         this.stage.addChild(tempContainer);
@@ -294,6 +315,7 @@ export default class SlotGame {
       this.bigWinContainer.visible = false;
       this.bigWinText.visible = false;
       this.ovalBackground.visible = false;
+      this.drawingLines = [];
     }
   }
 
@@ -343,7 +365,7 @@ export default class SlotGame {
     } else if (this.gameStatus === STATE_DRAWING) {
       if (this.drawingLineIndex < this.drawingPercentageList.length) {
         // Draw until matching percentage List
-        if (this.drawingPercentageList[this.drawingLineIndex] <= this.matchingPercentageList[this.drawingLineIndex]) {
+        if (this.drawingPercentageList[this.drawingLineIndex] <= 1) {
           // Drawing Line percentage's intensification factor. When it's larger, it draws faster.
           this.drawingPercentageList[this.drawingLineIndex] += 0.05;
           // Current line's drawing percentage
@@ -352,8 +374,8 @@ export default class SlotGame {
           let moveY;
           let partP;
           let angle;
-          const lineNum = this.testWinLines[this.drawingLineIndex];
-          this.winLines.lineStyle(4, WIN_LINE_COLOR[lineNum], 0.8);
+          const lineNum = this.drawingLines[this.drawingLineIndex].lineNum;
+          this.winLines.lineStyle(6, WIN_LINE_COLOR[this.drawingLineIndex], 0.8);
           // Starting Point of Current line.
           const startX = this.reelContainer.x + SYMBOL_WIDTH / 2;
           const startY =
@@ -473,6 +495,11 @@ export default class SlotGame {
   }
   async stopSpin() {
     if (this.gameStatus === STATE_SPINNING) {
+      const slotResult = this.calculateSlot();
+      if (slotResult === 'BIG_WIN') {
+        this.drawBigWin();
+        return;
+      }
       this.gameStatus = STATE_STOPPING;
       this.slowingDistance = new Array(ENTIRE_REEL_COUNT * 2).fill(SLOWING_DISTANCE);
       await this.changeSlot();
@@ -480,15 +507,17 @@ export default class SlotGame {
         await this.stopReel(i);
       }
       // After reels stop, draw win lines.
-      await this.drawLine();
+      if (slotResult === 'DRAW_LINE') {
+        await this.drawLine();
+      } else {
+        this.gameStatus = STATE_WAITING;
+      }
     }
   }
 
   drawLine() {
     this.gameStatus = STATE_DRAWING;
-    this.testWinLines = [0, 4, 8, 10, 12, 16, 18];
-    this.drawingPercentageList = new Array(this.testWinLines.length).fill(0);
-    this.matchingPercentageList = [1, 1, 0.5, 0.75, 1, 0.5, 1];
+    this.drawingPercentageList = new Array(this.drawingLines.length).fill(0);
     this.drawingLineIndex = 0;
   }
 
@@ -499,7 +528,6 @@ export default class SlotGame {
       setTimeout(() => {
         this.rotateStatus[reelNum] = false;
         if (reelNum === ENTIRE_REEL_COUNT - 1) {
-          this.gameStatus = STATE_DRAWING;
           this.reelGroup = this.newReelGroup;
         }
         resolve(reelNum);
@@ -526,21 +554,53 @@ export default class SlotGame {
   calculateSlot() {
     const randLineNum = Math.floor(Math.random() * 20);
     let sumPrize = this.makeRandomPrize(randLineNum);
-    const lines = [];
-    if (sumPrize !== 0) {
-      for (let i = 0; i < PROBABILITY_VALUE_TABLE.length; i += 1) {
-        // Prize has to be selected by reverse order.
-        const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
-        if (sumPrize >= prize) {
-          const prizeNum = Math.floor(sumPrize / prize);
-          for (let j = 0; j < prizeNum; j += 1) {
-            const randIndex = Math.floor(Math.random() * LINE_CASES[i].length);
-            lines.push(LINE_CASES[i][randIndex]);
-            sumPrize -= prize;
-          }
+    const lineInfos = []; // Minimum drawing line's info.
+    if (sumPrize === 0) {
+      // Earn nothing.
+      return 0;
+    }
+    for (let i = 0; i < PROBABILITY_VALUE_TABLE.length; i += 1) {
+      // Prize has to be selected by reverse order.
+      const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
+      if (sumPrize >= prize) {
+        const prizeNum = Math.floor(sumPrize / prize);
+        for (let j = 0; j < prizeNum; j += 1) {
+          const randIndex = Math.floor(Math.random() * LINE_CASES[i].length);
+          lineInfos.push(LINE_CASES[i][randIndex]);
+          sumPrize -= prize;
         }
       }
     }
+    const needLineNum = lineInfos.length;
+    if (needLineNum === 1) {
+      const randNum = Math.floor(Math.random() * randLineNum);
+      const drawingLine = {
+        lineNum: randNum,
+        symbol: lineInfos[0].symbol,
+        length: lineInfos[0].length,
+      };
+      this.drawingLines.push(drawingLine);
+      return 'DRAW_LINE';
+    } else if (1 < needLineNum && needLineNum < 3 && needLineNum <= randLineNum) {
+      shuffleArray(INDEPENDENT_LINES[needLineNum]);
+      for (let i = 0; i < INDEPENDENT_LINES[needLineNum].length; i += 1) {
+        if (INDEPENDENT_LINES[needLineNum][i][needLineNum - 1] <= randLineNum) {
+          // It means possible case.
+          for (let j = 0; j < needLineNum; j += 1) {
+            const drawingLine = {
+              lineNum: INDEPENDENT_LINES[needLineNum][i][j],
+              symbol: lineInfos[j].symbol,
+              length: lineInfos[j].length,
+            };
+            this.drawingLines.push(drawingLine);
+          }
+          break;
+        }
+      }
+      return 'DRAW_LINE';
+    }
+    // This case can't be drawn. So it will be expressed by BIG_WIN
+    return 'BIG_WIN';
   }
 
   changeSlot() {
@@ -549,9 +609,30 @@ export default class SlotGame {
       this.newReelGroup[index] = new PIXI.Container();
       this.newReelGroup[index].vy = 0;
     });
+    // Save Slot Infos for avoiding inconsistency.
+    const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
+    for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
+      slotLineInfo[i] = [];
+    }
+    // If drawingLines exist, have not to draw that symbol.
+    let avoidSymbolArr = [];
+    for (let i = 0; i < this.drawingLines.length; i += 1) {
+      avoidSymbolArr.push(this.drawingLines[i].symbol);
+    }
+    // Delete duplicated value from avoidSymbolArr.
+    avoidSymbolArr = Array.from(new Set(avoidSymbolArr));
     for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
       for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
-        const symbol = new PIXI.extras.AnimatedSprite(this.symbols[1]);
+        let randomNum;
+        do {
+          randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+        } while (avoidSymbolArr.indexOf(randomNum) !== -1);
+        const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
+        // Save Slot Infos for avoiding inconsistency.
+        // When reelNum is [0, 1, 2, 3, 4] and idx is [1, 2, 3]
+        if ([1, 2, 3].indexOf(idx) !== -1) {
+          slotLineInfo[reelNum].push(randomNum);
+        }
         symbol.width = SYMBOL_WIDTH;
         symbol.height = SYMBOL_HEIGHT;
         symbol.x = 0;
@@ -574,6 +655,56 @@ export default class SlotGame {
         (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL - SLOWING_DISTANCE;
       this.newReelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
       this.newReelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+    }
+
+    // We have to consider only visible part.
+    // So care about just newReelGroup[0 || 2 || 4 || 8][1 || 2 || 3]
+    if (this.drawingLines.length === 0) {
+      // In this case, Slot should have none of Win Lines.
+      const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
+      let i = 0;
+      while (i < 3) {
+        const symbolNum = slotLineInfo[2][i];
+        if (secondReelInfos.indexOf(symbolNum) === -1) {
+          // Pass
+          i += 1;
+        } else {
+          // have to Change
+          const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+          this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
+          slotLineInfo[2][i] = randomNum;
+        }
+      }
+    } else {
+      // First, change slot following drawingLines.
+      for (let i = 0; i < this.drawingLines.length; i += 1) {
+        const lineSymbol = this.drawingLines[i].symbol;
+        const lineNum = this.drawingLines[i].lineNum;
+        const lineLength = this.drawingLines[i].length;
+        for (let j = 0; j < lineLength; j += 1) {
+          const lineY = WIN_LINE[lineNum][j];
+          this.newReelGroup[j * 2].children[lineY + 1].textures = this.symbols[lineSymbol];
+          slotLineInfo[j][lineY] = '*'; // It means have to be not changed.
+        }
+      }
+      // Second, slot should have none of Win Lines except drawingLines .
+      const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
+      let i = 0;
+      while (i < 3) {
+        const symbolNum = slotLineInfo[2][i];
+        if (symbolNum === '*') {
+          // Pass
+          i += 1;
+        } else if (secondReelInfos.indexOf(symbolNum) === -1 && avoidSymbolArr.indexOf(symbolNum) === -1) {
+          // Pass
+          i += 1;
+        } else {
+          // have to Change
+          const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+          this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
+          slotLineInfo[2][i] = randomNum;
+        }
+      }
     }
   }
 

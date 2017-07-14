@@ -3,11 +3,8 @@ import { connect } from 'react-redux';
 import ReactTable from 'react-table';
 import './react-table.scss';
 import SlotGame from './game';
-<<<<<<< HEAD
 import * as Actions from './actions';
-=======
 import styles from './playSlot.scss';
->>>>>>> Apply front-end design without data
 
 let gameAlreadyLoaded = false;
 
@@ -121,19 +118,19 @@ class PlaySlot extends React.PureComponent {
               </a>
               <a
                 onClick={() => {
-                  alert('contarct');
+                  alert('deposit');
                 }}
                 className={styles.headerBtn}
               >
-                CONTRACT
+                DEPOSIT
               </a>
               <a
                 onClick={() => {
-                  alert('pay table');
+                  alert('cash out');
                 }}
                 className={styles.headerBtn}
               >
-                PAY TABLE
+                CASH OUT
               </a>
             </div>
           </div>

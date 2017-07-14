@@ -17,6 +17,7 @@ const STATE_WAITING = 1; // State which does nothing, so ready to spin
 const STATE_SPINNING = 2; // State which is spinning while waiting slot result.
 const STATE_STOPPING = 3; // State which is animating while stopping.
 const STATE_DRAWING = 4; // State whcih is drawing slot win line
+const STATE_BIG_WIN = 5; // State whcih is drawing Big Win
 
 const PAY_TABLE = [
   [5, 10, 25], // A 0
@@ -120,7 +121,7 @@ export default class SlotGame {
     }
     // Function List
     this.gameLoop = this.gameLoop.bind(this);
-    this.loopStart = this.loopStart.bind(this);
+    this.startSpin = this.startSpin.bind(this);
     this.stopSpin = this.stopSpin.bind(this);
     this.drawUI = this.drawUI.bind(this);
     this.stopReel = this.stopReel.bind(this);
@@ -128,9 +129,12 @@ export default class SlotGame {
     this.drawLine = this.drawLine.bind(this);
     this.calculateSlot = this.calculateSlot.bind(this);
     this.makeRandomPrize = this.makeRandomPrize.bind(this);
+    this.drawBigWin = this.drawBigWin.bind(this);
     // PIXI Element
     this.renderer = null;
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
+    this.lsdFilter = new PIXI.filters.ColorMatrixFilter();
+    this.lsdFilter.lsd();
     this.winLines = new PIXI.Graphics();
     // Game Variable Initialization
     this.stage = null;
@@ -139,6 +143,10 @@ export default class SlotGame {
     this.rotateStatus = new Array(ENTIRE_REEL_COUNT).fill(false);
     this.slowingDistance = null;
     this.drawingLineIndex = null;
+    // Animation Variable Initialization
+    this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
+    this.bigWinTextVel = 0;
+    this.bigWinTextAcc = 0.003;
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: this.canvas,
@@ -177,7 +185,13 @@ export default class SlotGame {
     });
     // Add the canvas to the HTML document
     PIXI.loader
-      .add(['assets/images/symbolsMap.json', 'assets/images/slotMap.json'])
+      .add([
+        'assets/images/symbolsMap.json',
+        'assets/images/slotMap.json',
+        'assets/images/slot/big-win-front@2x.png',
+        'assets/images/slot/circle-big-win-15-x@2x.png',
+        'assets/images/slot/oval-14@2x.png',
+      ])
       .on('progress', (loader, resource) => {
         console.log(loader);
         console.log(resource);
@@ -243,7 +257,7 @@ export default class SlotGame {
         spinBtn.y = 525;
         spinBtn.interactive = true;
         spinBtn.buttonMode = true;
-        spinBtn.on('pointerdown', this.loopStart);
+        spinBtn.on('pointerdown', this.stopSpin);
         tempContainer.addChild(spinBtn);
 
         const stopBtn = new PIXI.Graphics();
@@ -256,7 +270,7 @@ export default class SlotGame {
         stopBtn.interactive = true;
         stopBtn.buttonMode = true;
 
-        stopBtn.on('pointerdown', this.stopSpin);
+        stopBtn.on('pointerdown', this.drawBigWin);
         tempContainer.addChild(stopBtn);
 
         this.stage.addChild(tempContainer);
@@ -268,15 +282,18 @@ export default class SlotGame {
       });
   }
 
-  loopStart() {
+  startSpin() {
     if (this.gameStatus === STATE_WAITING) {
       this.winLines.clear();
       this.gameStatus = STATE_SPINNING;
       this.reelGroup.forEach(reel => {
-        reel.filters = [this.blurFilter];
         reel.vy = 100;
+        reel.filters = [this.blurFilter];
       });
       this.spinStatus.fill(true);
+      this.bigWinContainer.visible = false;
+      this.bigWinText.visible = false;
+      this.ovalBackground.visible = false;
     }
   }
 
@@ -290,6 +307,13 @@ export default class SlotGame {
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
       if (this.lineNum !== undefined && this.betSize !== undefined)
         this.betAmountText.text = this.betSize * this.lineNum;
+      if (this.bigWinContainer.visible) {
+        this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
+        this.bigWinContainer.scale.y += 0.005 * this.bigWinPopping;
+        if (Math.abs(this.bigWinContainer.scale.x - 1) > 0.15) {
+          this.bigWinPopping *= -1;
+        }
+      }
       console.log('WAITING...');
     } else if (this.gameStatus === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
@@ -369,6 +393,57 @@ export default class SlotGame {
         this.drawingPercentageList = null;
         this.gameStatus = STATE_WAITING;
       }
+    } else if (this.gameStatus === STATE_BIG_WIN) {
+      if (this.bigWinPercentage <= 1) {
+        this.bigWinPercentage += 0.01;
+        this.reelGroup.forEach(reel => {
+          reel.y += reel.vy;
+          if (reel.y > reel.height) {
+            reel.y -= reel.height * 2;
+          }
+        });
+      } else if (this.bigWinPercentage <= 2) {
+        this.bigWinContainer.scale.x += 0.015;
+        this.bigWinContainer.scale.y += 0.015;
+        this.bigWinContainer.alpha += 0.015;
+        this.bigWinPercentage += 0.015;
+        this.reelGroup.forEach(reel => {
+          reel.y += reel.vy;
+          if (reel.y > reel.height) {
+            reel.y -= reel.height * 2;
+          }
+        });
+      } else if (this.bigWinPercentage <= 3) {
+        if (this.bigWinText.scale.x <= 1) {
+          this.bigWinTextVel += this.bigWinTextAcc;
+          this.bigWinText.scale.x += this.bigWinTextVel;
+          this.bigWinText.scale.y += this.bigWinTextVel;
+          this.bigWinText.alpha += this.bigWinTextVel;
+          this.ovalBackground.scale.x += this.bigWinTextVel;
+          this.ovalBackground.scale.y += this.bigWinTextVel;
+          this.ovalBackground.alpha += this.bigWinTextVel;
+        }
+        this.bigWinPercentage += 0.01;
+        this.reelGroup.forEach(reel => {
+          reel.y += reel.vy;
+          if (reel.y > reel.height) {
+            reel.y -= reel.height * 2;
+          }
+        });
+      } else if (this.bigWinPercentage <= 4) {
+        this.reelGroup.forEach((reel, index) => {
+          if (this.reelGroup[index] !== null) {
+            this.reelGroup[index].destroy();
+            this.reelGroup[index] = null;
+            this.newReelGroup[index].y += SLOWING_DISTANCE;
+            this.reelContainer.addChildAt(this.newReelGroup[index], index);
+          }
+        });
+        this.bigWinPercentage += 0.05;
+      } else {
+        this.reelGroup = this.newReelGroup;
+        this.gameStatus = STATE_WAITING;
+      }
     }
 
     // Render the stage to see the animation
@@ -376,6 +451,26 @@ export default class SlotGame {
     this.renderer.render(this.stage);
   }
 
+  drawBigWin() {
+    if (this.gameStatus === STATE_SPINNING) {
+      this.gameStatus = STATE_BIG_WIN;
+      this.bigWinPercentage = 0;
+      this.bigWinTextVel = 0;
+      this.bigWinContainer.visible = true;
+      this.bigWinContainer.scale.set(0, 0);
+      this.bigWinContainer.alpha = 0;
+      this.bigWinText.visible = true;
+      this.bigWinText.scale.set(0, 0);
+      this.bigWinText.alpha = 0;
+      this.ovalBackground.visible = true;
+      this.ovalBackground.scale.set(0, 0);
+      this.ovalBackground.alpha = 0;
+      this.reelGroup.forEach(reel => {
+        reel.filters = [this.lsdFilter, this.blurFilter];
+      });
+      this.changeSlot();
+    }
+  }
   async stopSpin() {
     if (this.gameStatus === STATE_SPINNING) {
       this.gameStatus = STATE_STOPPING;
@@ -653,7 +748,7 @@ export default class SlotGame {
     const spinBtn = new Sprite(TextureCache['spin.png']);
     spinBtn.interactive = true;
     spinBtn.buttonMode = true;
-    spinBtn.on('pointerdown', this.loopStart);
+    spinBtn.on('pointerdown', this.startSpin);
     spinBtn.position.set(620, 580);
     spinBtn.width = 186;
     spinBtn.height = 65;
@@ -687,5 +782,47 @@ export default class SlotGame {
     this.UIContainer.addChild(this.betAmountText);
     this.UIContainer.addChild(this.betSizeText);
     this.UIContainer.addChild(this.lineNumText);
+    // Add Big Win & Big Win Text Element as invisible.
+    // BigWinContainer contains bigWin & bigWinBackGround
+    this.bigWinContainer = new PIXI.Container();
+    const bigWin = new Sprite.fromImage('assets/images/slot/circle-big-win-15-x@2x.png');
+    bigWin.anchor.set(0.5, 0.5);
+    bigWin.position.set(2, 11);
+    bigWin.blendMode = PIXI.BLEND_MODES.SCREEN;
+    const bigWinBackGround = new Sprite.fromImage('assets/images/slot/big-win-front@2x.png');
+    bigWinBackGround.anchor.set(0.5, 0.5);
+    bigWinBackGround.alpha = 1;
+    this.bigWinContainer.addChild(bigWin);
+    this.bigWinContainer.addChild(bigWinBackGround);
+    this.bigWinContainer.position.set(470, 340);
+    this.bigWinContainer.visible = false;
+    this.UIContainer.addChild(this.bigWinContainer);
+
+    this.ovalBackground = new Sprite.fromImage('assets/images/slot/oval-14@2x.png');
+    this.ovalBackground.anchor.set(0.5, 0.5);
+    this.ovalBackground.position.set(470, 470);
+    this.ovalBackground.visible = false;
+    this.UIContainer.addChild(this.ovalBackground);
+
+    this.bigWinText = new Text('+400', {
+      fontSize: '80px',
+      fontStyle: 'italic',
+      letterSpacing: 1.3,
+      align: 'center',
+      dropShadow: true,
+      dropShadowBlur: 30,
+      dropShadowAlpha: 0.3,
+      dropShadowAngle: 0,
+      dropShadowColor: '0xffffff',
+      fill: ['0xfbda61', '0xf71c66'],
+      fillGradientType: PIXI.TEXT_GRADIENT.LINEAR_VERTICAL,
+      fillGradientStops: [0.1, 0.9],
+      stroke: '0x681443',
+      strokeThickness: 8,
+    });
+    this.bigWinText.anchor.set(0.5, 0.5);
+    this.bigWinText.position.set(470, 470);
+    this.bigWinText.visible = false;
+    this.UIContainer.addChild(this.bigWinText);
   }
 }

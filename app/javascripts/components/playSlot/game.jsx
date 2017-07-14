@@ -315,7 +315,6 @@ export default class SlotGame {
         }
       }
       console.log('WAITING...');
-      // console.log('WAITING...');
     } else if (this.gameStatus === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
         reel.y += reel.vy;
@@ -589,10 +588,6 @@ export default class SlotGame {
     const Graphics = PIXI.Graphics;
     const Text = PIXI.Text;
 
-    this.gameTitleText.text = 'GAME TITLE';
-    this.gameTitleText.position.set(465, 102);
-    this.gameTitleText.anchor.x = 0.5;
-
     const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
     mergedBackground.position.set(0, 0);
     mergedBackground.width = 940;
@@ -621,10 +616,6 @@ export default class SlotGame {
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
-    // this.yourStakeText.text = document.getElementById('your-balance').innerText + ' ETH';
-    this.yourStakeText.text = '100 ETH';
-    this.yourStakeText.position.set(360, 30);
-    this.yourStakeText.anchor.x = 1;
 
     this.yourStakeText = new Text('2.5345 ETH', {
       fontSize: '18.8px',
@@ -639,8 +630,6 @@ export default class SlotGame {
     bankRoll.position.set(547, 12);
     bankRoll.width = 352;
     bankRoll.height = 61;
-    this.bankRollText.text = '13' + ' ETH';
-    this.bankRollText.position.set(590, 30);
 
     this.bankRollText = new Text('14.3894 ETH', {
       fontSize: '18.8px',
@@ -655,9 +644,6 @@ export default class SlotGame {
     betAmount.position.set(42, 580);
     betAmount.width = 149;
     betAmount.height = 65;
-    this.betAmountText.text = '0.4';
-    this.betAmountText.position.set(117, 610);
-    this.betAmountText.anchor.x = 0.5;
 
     this.betAmountText = new Text('0.4', {
       fontSize: '18.8px',
@@ -672,9 +658,6 @@ export default class SlotGame {
     betSize.position.set(190, 580);
     betSize.width = 185;
     betSize.height = 65;
-    this.betSizeText.text = '0.1';
-    this.betSizeText.position.set(283, 610);
-    this.betSizeText.anchor.x = 0.5;
 
     this.betSizeText = new Text('0.12332', {
       fontSize: '18.8px',
@@ -728,9 +711,6 @@ export default class SlotGame {
     lineNum.position.set(436, 580);
     lineNum.width = 186;
     lineNum.height = 65;
-    this.lineNumText.text = '4';
-    this.lineNumText.position.set(529, 610);
-    this.lineNumText.anchor.x = 0.5;
 
     this.lineNumText = new Text('0.1', {
       fontSize: '18.8px',
@@ -784,11 +764,8 @@ export default class SlotGame {
     this.UIContainer.addChild(mergedBackground);
     this.UIContainer.addChild(ribbon);
     this.UIContainer.addChild(yourStake);
-    this.UIContainer.addChild(this.yourStakeText);
     this.UIContainer.addChild(bankRoll);
-    this.UIContainer.addChild(this.bankRollText);
     this.UIContainer.addChild(betAmount);
-    this.UIContainer.addChild(this.betAmountText);
     this.UIContainer.addChild(betSize);
     this.UIContainer.addChild(betMinusBtn);
     this.UIContainer.addChild(betPlusBtn);

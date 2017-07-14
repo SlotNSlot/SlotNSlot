@@ -288,12 +288,12 @@ export default class SlotGame {
       this.gameStatus = STATE_SPINNING;
       this.reelGroup.forEach(reel => {
         reel.vy = 100;
+        reel.filters = [this.blurFilter];
       });
       this.spinStatus.fill(true);
       this.bigWinContainer.visible = false;
       this.bigWinText.visible = false;
       this.ovalBackground.visible = false;
-      this.reelContainer.filters = [this.blurFilter];
     }
   }
 
@@ -431,9 +431,17 @@ export default class SlotGame {
           }
         });
       } else if (this.bigWinPercentage <= 4) {
-        this.reelContainer.filters = [];
+        this.reelGroup.forEach((reel, index) => {
+          if (this.reelGroup[index] !== null) {
+            this.reelGroup[index].destroy();
+            this.reelGroup[index] = null;
+            this.newReelGroup[index].y += SLOWING_DISTANCE;
+            this.reelContainer.addChildAt(this.newReelGroup[index], index);
+          }
+        });
         this.bigWinPercentage += 0.05;
       } else {
+        this.reelGroup = this.newReelGroup;
         this.gameStatus = STATE_WAITING;
       }
     }
@@ -457,7 +465,10 @@ export default class SlotGame {
       this.ovalBackground.visible = true;
       this.ovalBackground.scale.set(0, 0);
       this.ovalBackground.alpha = 0;
-      this.reelContainer.filters = [this.lsdFilter, this.blurFilter];
+      this.reelGroup.forEach(reel => {
+        reel.filters = [this.lsdFilter, this.blurFilter];
+      });
+      this.changeSlot();
     }
   }
   async stopSpin() {

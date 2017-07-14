@@ -41,6 +41,10 @@ library SlotLib {
         return totalnum;
     }
 
+    function getTotalNumofSlotMachine(address _slotmachineStorage) constant returns (uint) {
+        return SlotMachineStorage(_slotmachineStorage).getTotalNumofSlotMachine();
+    }
+
     //return information of slotmachine
     function getSlotMachineDecider (address _slotmachineStorage, address _provider, uint _idx) constant returns (uint){
         return SlotMachineStorage(_slotmachineStorage).getSlotMachineDecider(_provider, _idx);

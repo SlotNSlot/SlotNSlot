@@ -5,61 +5,50 @@ import '../zeppelin/ownership/Ownable.sol';
 import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
-    address[] private useraddress;
-    mapping (address => address[]) slotMachines;
-    uint private slotMachinesTotalnum;
-    //event slotMachineCreated(address provider, uint decider, uint minBet, uint maxBet);
+//    user[] public userdata;
+    /*struct slot {address slotaddress; bool deleted;}*/
 
-    event userAdded(address _user);
+    address[] public provideraddress;
+    mapping (address => address[]) public slotMachines;
+
+    uint public totalNumofSlotMachine;
+
+    event providerAdded(address _provider, uint _slotnum);
+    /*event ownershipTransferred(address _before, address _after);*/
 
     function SlotMachineStorage (){
-
+        totalNumofSlotMachine = 0;
     }
 
     function getOwner() constant returns (address) {
         return owner;
     }
 
-    function addUser(address _user) {
-        if (!isUserexist(_user)){
-          useraddress.push(_user);
-          userAdded(_user);
+    function addProvider(address _provider, uint _slotnum) private {
+        if (!isValidProvider(_provider)){
+          provideraddress.push(_provider);
+          providerAdded(_provider, _slotnum);
         }
     }
 
-    function getUser(uint _idx) constant returns (address) {
-        return useraddress[_idx];
+    function isValidProvider(address _provider) constant returns (bool){
+        return (slotMachines[_provider].length != 0);
     }
 
-    function isUserexist(address _user) constant returns (bool){
-        if (slotMachines[_user].length == 0) {
-          return false;
-        }
-        else {
-          return true;
-        }
-    }
 
-    function getUserSlot(address _user) constant returns (uint) {
-      return slotMachines[_user].length;
-    }
-
-    function removeUser(uint _idx) {
-        uint totalnum = useraddress.length;
-    }
-
-    function getNumofUser() constant returns (uint) {
-        return useraddress.length;
+    function getNumofProvider() constant returns (uint) {
+        return provideraddress.length;
     }
 
     function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet)
         onlyOwner
-    returns (address)
+        returns (address)
     {
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
-        addUser(_provider);
+        addProvider(_provider, 1);
         slotMachines[_provider].push(newslot);
-        slotMachinesTotalnum++;
+        /*slotMachines[_provider][0] = newslot;*/
+        totalNumofSlotMachine++;
         return newslot;
     }
 
@@ -68,8 +57,9 @@ contract SlotMachineStorage is Ownable {
     {
         delete slotMachines[_provider][_idx];
         slotMachines[_provider].length--;
-        slotMachinesTotalnum--;
+        totalNumofSlotMachine--;
     }
+
     function setSlotMachine(address _provider, uint _idx, address _newslotMachine)
         onlyOwner
     {
@@ -77,22 +67,16 @@ contract SlotMachineStorage is Ownable {
     }
 
     function getNumofSlotMachine(address _provider)
-        onlyOwner
+    //    onlyOwner
         constant returns (uint)
     {
         return slotMachines[_provider].length;
     }
 
-    function getTotalNumofSlotMachine()
-        onlyOwner
-        constant returns (uint)
-    {
-        return slotMachinesTotalnum;
-    }        /*slotMachines.push(newslot);*/
 
 
     function getSlotMachineDecider(address _provider, uint _idx)
-        onlyOwner
+  //      onlyOwner
         constant returns (uint)
     {
         return (SlotMachine(slotMachines[_provider][_idx]).mDecider());
@@ -113,7 +97,7 @@ contract SlotMachineStorage is Ownable {
     }
 
     function getSlotMachineInfos(address _provider, uint _idx)
-        onlyOwner
+  //      onlyOwner
         constant returns (uint[10], uint[10], uint[10])
     {
         uint[10] memory deciders;
@@ -127,7 +111,7 @@ contract SlotMachineStorage is Ownable {
     }
 
     function getSlotMachine(address _provider, uint _idx)
-        onlyOwner
+      //  onlyOwner
         constant returns(address)
     {
         if (_idx < slotMachines[_provider].length) {
@@ -139,7 +123,7 @@ contract SlotMachineStorage is Ownable {
     }
 
     function getSlotMachines(address _provider, uint _idx)
-        onlyOwner
+        //onlyOwner
         constant returns(address[5])
     {
         address[5] memory returnslots;

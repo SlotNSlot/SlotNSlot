@@ -13,6 +13,15 @@ class Web3Service {
   getMetaCoinContract() {
     return this.MetaCoin;
   }
+
+  createSlotMachine(account) {
+    if (account === 'forceFail') {
+      return Promise.reject();
+    }
+    return Promise.resolve({
+      account,
+    });
+  }
 }
 
 const web3Service = new Web3Service();

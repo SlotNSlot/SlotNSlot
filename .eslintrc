@@ -13,7 +13,8 @@
         "jest": 1,
         "describe": 1,
         "it": 1,
-        "expect": 1
+        "expect": 1,
+        "beforeEach": 1
     },
     "parserOptions": {
         "ecmaVersion": 8

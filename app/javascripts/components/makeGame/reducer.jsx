@@ -11,13 +11,32 @@ export const MAKE_GAME_INITIAL_STATE = fromJS({
   betMaxValue: 0,
   slotname: '',
   isLoading: false,
+  hasFailed: false,
 });
 
 export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
   switch (action.type) {
+    case ACTION_TYPES.START_TO_MAKE_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasFailed', false);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEED_TO_MAKE_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasFailed', false);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_MAKE_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasFailed', true);
+      });
+    }
+
     case ACTION_TYPES.SELECT_HIT_RATIO: {
       if (!AVAILABLE_HIT_RATIO.includes(action.payload.hitRatio)) {
-        return;
+        return state;
       }
       return state.set('hitRatio', action.payload.hitRatio);
     }

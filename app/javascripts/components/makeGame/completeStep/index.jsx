@@ -4,10 +4,8 @@ import { withRouter } from 'react-router-dom';
 import { push } from 'react-router-redux';
 import SolidButton from '../../common/solidButton';
 import EmptySolidButton from '../../common/emptySolidButton';
-// helpers
-import Web3Helper from '../../../helpers/web3Service';
 // actions
-import { setSlotName } from '../actions';
+import { setSlotName, requestToMakeGame } from '../actions';
 // styles
 import styles from './completeStep.scss';
 
@@ -83,16 +81,11 @@ class MakeGameCompleteStep extends React.PureComponent {
     dispatch(setSlotName(e.currentTarget.value));
   }
 
-  async makeSlotMachine() {
+  makeSlotMachine() {
     const { dispatch, rootState } = this.props;
 
-    try {
-      const transaction = await Web3Helper.createSlotMachine(rootState.get('account'));
-      alert(`Made Slot Machine successfully. It spend ${transaction.gasPrice.valueOf()} WEI at ${transaction.tx}`);
-      dispatch(push('/'));
-    } catch (err) {
-      alert(err);
-    }
+    dispatch(requestToMakeGame(rootState.get('account')));
+    // alert(`Made Slot Machine successfully. It made at ${transaction.address}`);
   }
 
   goToPage(step) {

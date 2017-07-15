@@ -5,9 +5,11 @@ import { ConnectedRouter } from 'react-router-redux';
 import ReactGA from 'react-ga';
 import Raven from 'raven-js';
 import EnvChecker from './helpers/envChecker';
-// redux stuff
+// Redux
 import { store, getHistoryObject } from './store';
 import Root from './root';
+// Bootstrap styles
+import 'bootstrap/dist/css/bootstrap.css';
 
 const history = getHistoryObject();
 

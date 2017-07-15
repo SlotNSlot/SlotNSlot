@@ -1,4 +1,4 @@
 import Header from './header';
-import Footer from '../../about/layouts/footer';
+import Footer from './footer';
 
 export { Header, Footer };

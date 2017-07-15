@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import styles from './slot.scss';
-import { Header } from './layouts';
+import { Header, Footer } from './layouts';
 import MakeGame from '../makeGame';
 import PlaySlot from '../playSlot';
 import MySlotListContainer from '../slotList/mySlotList';
@@ -25,6 +25,7 @@ const Slot = ({ match, location, rootState }) =>
       <Route exact path={match.url} component={SlotList} />
       <Route component={Status404} />
     </Switch>
+    <Footer />
   </div>;
 
 export default withRouter(connect(mapStateToProps)(Slot));

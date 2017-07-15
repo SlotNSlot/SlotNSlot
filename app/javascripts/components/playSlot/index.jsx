@@ -5,6 +5,7 @@ import './react-table.scss';
 import SlotGame from './game';
 import * as Actions from './actions';
 import styles from './playSlot.scss';
+import EmotionButton from './emotionButton';
 
 let gameAlreadyLoaded = false;
 
@@ -102,9 +103,6 @@ class PlaySlot extends React.PureComponent {
     return (
       <div className={styles.playSlotSection}>
         <div className={styles.playSlotContainer}>
-          {/* <div>
-            My Balance <span id="your-balance">{root.get('balance')}</span>
-          </div>*/}
           <div className={styles.innerHeader}>
             <div className={styles.slotName}>Slot Name</div>
             <div className={styles.rightBtns}>
@@ -140,6 +138,7 @@ class PlaySlot extends React.PureComponent {
             }}
           />
         </div>
+        <EmotionButton />
         <div className={styles.bottomSection}>
           <div className={styles.bottomContainer}>
             <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>

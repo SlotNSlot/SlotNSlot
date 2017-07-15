@@ -2,9 +2,6 @@
 
 .makeGameContent {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   z-index: 10;
   height: 700px;
   padding-top: 30px;
@@ -15,6 +12,8 @@
   height: calc(100vh - 75px);
   min-height: 700px;
   text-align: center;
+  display: flex;
+  justify-content: center;
   background-color: #22212f;
 
   &:after {

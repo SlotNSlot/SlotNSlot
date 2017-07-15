@@ -1,6 +1,8 @@
 import { fromJS } from 'immutable';
 import { ACTION_TYPES } from './actions';
 
+const emotionTypes = ['Thank', 'Threaten', 'Oops', 'Sorry', 'Well Played', 'Greetings'];
+
 export const PLAY_SLOT_INITIAL_STATE = fromJS({
   betSize: 4,
   lineNum: 1,
@@ -9,6 +11,8 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   minBet: 2,
   maxBet: 20,
   isSpinning: false,
+  isClicked: 0,
+  emotionList: emotionTypes,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -32,6 +36,11 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SPIN_END: {
       return state.set('isSpinning', false);
     }
+
+    case ACTION_TYPES.TOGGLE_EMOTION: {
+      return state.set('isClicked', state.get('isClicked') ^ 1);
+    }
+
     default:
       return state;
   }

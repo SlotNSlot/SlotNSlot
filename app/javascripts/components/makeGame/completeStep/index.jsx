@@ -2,12 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { push } from 'react-router-redux';
+// components
+import Spinner from '../../common/spinner';
 import SolidButton from '../../common/solidButton';
 import EmptySolidButton from '../../common/emptySolidButton';
-// helpers
-import Web3Helper from '../../../helpers/web3Service';
 // actions
-import { setSlotName } from '../actions';
+import { setSlotName, requestToMakeGame } from '../actions';
 // styles
 import styles from './completeStep.scss';
 
@@ -22,8 +22,23 @@ class MakeGameCompleteStep extends React.PureComponent {
   render() {
     const { makeGameState } = this.props;
 
+    let loadingElem = null;
+    if (makeGameState.get('isLoading')) {
+      loadingElem = (
+        <div className={styles.loading}>
+          <div>
+            <Spinner className={styles.spinner} />
+            <div className={styles.loadingTitle}>
+              Creating slot...
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div>
+        {loadingElem}
         <h1 className={styles.title}>
           COMPLETE. <span className={styles.strongTitle}>SET SLOT NAME</span>
         </h1>
@@ -86,13 +101,11 @@ class MakeGameCompleteStep extends React.PureComponent {
   async makeSlotMachine() {
     const { dispatch, rootState } = this.props;
 
-    try {
-      const transaction = await Web3Helper.createSlotMachine(rootState.get('account'));
-      alert(`Made Slot Machine successfully. It spend ${transaction.gasPrice.valueOf()} WEI at ${transaction.tx}`);
-      dispatch(push('/'));
-    } catch (err) {
-      alert(err);
-    }
+    document.body.style.overflow = 'hidden';
+    await dispatch(requestToMakeGame(rootState.get('account')));
+    document.body.style.overflow = 'scroll';
+    // TODO: Change below to game list page
+    dispatch(push('/slot/make/1'));
   }
 
   goToPage(step) {

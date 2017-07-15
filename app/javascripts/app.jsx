@@ -8,6 +8,7 @@ import EnvChecker from './helpers/envChecker';
 // redux stuff
 import { store, getHistoryObject } from './store';
 import Root from './root';
+// import 'notie/dist/notie.min.css';
 
 const history = getHistoryObject();
 

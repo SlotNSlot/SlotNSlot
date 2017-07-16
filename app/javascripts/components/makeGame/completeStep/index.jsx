@@ -28,9 +28,7 @@ class MakeGameCompleteStep extends React.PureComponent {
         <div className={styles.loading}>
           <div>
             <Spinner className={styles.spinner} />
-            <div className={styles.loadingTitle}>
-              Creating slot...
-            </div>
+            <div className={styles.loadingTitle}>Creating slot...</div>
           </div>
         </div>
       );
@@ -98,13 +96,10 @@ class MakeGameCompleteStep extends React.PureComponent {
     dispatch(setSlotName(e.currentTarget.value));
   }
 
-  async makeSlotMachine() {
+  makeSlotMachine() {
     const { dispatch, rootState } = this.props;
 
-    document.body.style.overflow = 'hidden';
-    await dispatch(requestToMakeGame(rootState.get('account')));
-    document.body.style.overflow = 'scroll';
-    // TODO: Change below to game list page
+    dispatch(requestToMakeGame(rootState.get('account')));
     dispatch(push('/slot/make/1'));
   }
 

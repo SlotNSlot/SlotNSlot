@@ -5,6 +5,7 @@ import * as MakeGameReducer from './components/makeGame/reducer';
 import * as AboutLayoutReducer from './components/about/layouts/reducer';
 import * as AboutCrowdSaleReducer from './components/about/crowdSaleContainer/reducer';
 import * as PlaySlotReducer from './components/playSlot/reducer';
+import * as SlotListReducer from './components/slotList/reducer';
 
 export const initialState = {
   root: RootReducer.initialState,
@@ -12,6 +13,7 @@ export const initialState = {
   playSlot: PlaySlotReducer.initialState,
   aboutLayout: AboutLayoutReducer.initialState,
   aboutCrowdSale: AboutCrowdSaleReducer.initialState,
+  slotList: SlotListReducer.initialState,
 };
 
 export const rootReducer = Redux.combineReducers({
@@ -20,5 +22,6 @@ export const rootReducer = Redux.combineReducers({
   playSlot: PlaySlotReducer.reducer,
   aboutLayout: AboutLayoutReducer.reducer,
   aboutCrowdSale: AboutCrowdSaleReducer.reducer,
+  slotList: SlotListReducer.reducer,
   router: routerReducer,
 });

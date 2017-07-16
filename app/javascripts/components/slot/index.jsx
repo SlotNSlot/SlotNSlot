@@ -5,6 +5,7 @@ import styles from './slot.scss';
 import { Header } from './layouts';
 import MakeGame from '../makeGame';
 import PlaySlot from '../playSlot';
+import SlotList from '../slotList';
 import Status404 from '../404';
 
 function mapStateToProps(appState) {
@@ -19,7 +20,7 @@ const Slot = ({ match, location, rootState }) =>
     <Switch>
       <Route exact path={`${match.url}/play`} component={PlaySlot} />
       <Route path={`${match.url}/make/:step`} component={MakeGame} />
-      <Route exact path={match.url} component={PlaySlot} />
+      <Route exact path={match.url} component={SlotList} />
       <Route component={Status404} />
     </Switch>
   </div>;

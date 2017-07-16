@@ -1,0 +1,59 @@
+.slotListContainer {
+  background-color: #fff;
+}
+
+.sortingHeader {
+  position: relative;
+  width: 937.5px;
+  border-bottom: solid 1.5px #eeeef3;
+  margin: 15.5px auto 22.5px auto;
+  height: 46px;
+  line-height: 46px;
+}
+
+.background {
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListBackground.jpg");
+  height: 300px;
+  background-color: #3b212f;
+  background-position: center top;
+  background-size: auto 300px;
+  background-repeat: no-repeat;
+}
+
+.slotListWrapper {
+  width: 980.5px;
+  margin: 0 auto;
+}
+
+.headerLeft {
+  position: absolute;
+  font-size: 22px;
+  letter-spacing: 0.6px;
+  color: #222135;
+  top: 0;
+  left: 0;
+}
+
+.headerRight {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 21px;
+  letter-spacing: 0.6px;
+  text-align: right;
+  color: #9494ac;
+}
+
+.paginationWrapper {
+  text-align: center;
+
+  span {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 5px;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}

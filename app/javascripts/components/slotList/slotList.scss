@@ -6,9 +6,9 @@
   position: relative;
   width: 937.5px;
   border-bottom: solid 1.5px #eeeef3;
-  margin: 15.5px auto 22.5px auto;
-  height: 46px;
-  line-height: 46px;
+  margin: 18.5px auto 22.5px auto;
+  height: 48px;
+  line-height: 48px;
 }
 
 .carouselWrapper {
@@ -66,7 +66,7 @@
 
 .headerRight {
   position: absolute;
-  top: 0;
+  top: -6px;
   right: 0;
   font-size: 21px;
   letter-spacing: 0.6px;
@@ -107,4 +107,26 @@
   &:active {
     transform: translate3d(0, 1px, 0);
   }
+}
+
+.dropdownToggle {
+  border-radius: 2.5px;
+  background-color: #ffffff;
+  border: solid 1px #dcdbea;
+  width: 173px;
+  height: 48px;
+  cursor: pointer;
+}
+
+.dropdownMenu {
+  width: 173px;
+  border: solid 1px #dcdbea;
+  border-radius: 2.5px;
+  margin-top: 0 !important;
+}
+
+.dropdownItem {
+  width: 173px;
+  height: 45px;
+  cursor: pointer;
 }

@@ -78,9 +78,10 @@ $top-navbar-height: 75px;
 }
 
 .accountBtn {
-  display: inline-block;
-  vertical-align: top;
+  display: flex;
+  align-items: center;
   height: 39px;
+  line-height: 39px;
   border-radius: 81.1px;
   border: 1.5px solid #7b45c9;
   padding: 0 17px;

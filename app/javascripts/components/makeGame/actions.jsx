@@ -16,6 +16,8 @@ export const ACTION_TYPES = {
 
 export function requestToMakeGame(account) {
   return async dispatch => {
+    console.log(Toast);
+    console.log(Toast.notie);
     Toast.notie.alert({
       text: 'Start to making a slot machine',
     });

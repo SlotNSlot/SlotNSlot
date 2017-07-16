@@ -1,5 +1,6 @@
 jest.unmock('../actions');
 jest.unmock('../../../__tests__/mockStore');
+jest.unmock('../../../helpers/notieHelper');
 
 import * as Actions from '../actions';
 import getMockStore from '../../../__tests__/mockStore';

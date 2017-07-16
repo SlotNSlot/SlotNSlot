@@ -34,7 +34,7 @@ export function requestToMakeGame(account) {
     } catch (err) {
       Toast.notie.alert({
         type: 'error',
-        text: 'There wat an error for making a slot machine',
+        text: 'There was an error for making a slot machine',
       });
       dispatch({
         type: ACTION_TYPES.FAILED_TO_MAKE_GAME,

@@ -162,7 +162,7 @@ contract SlotMachine is Ownable {
             throw;
         }
 
-        uint randomNumber = uint(sha3(_providerNumber ^ _playerNumber, block.timestamp));
+        uint randomNumber = uint(sha3(_providerNumber ^ _playerNumber));
         game.providerNumber = _providerNumber;
         game.playerNumber = _playerNumber;
         game.randomNumber = randomNumber;

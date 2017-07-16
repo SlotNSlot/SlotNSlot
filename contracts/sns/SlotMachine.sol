@@ -16,6 +16,9 @@ contract SlotMachine is Ownable {
 
     mapping (address => uint) public mNumGamePlayedByUser;
     mapping (bytes32 => bool) public mUsedPlayerSeeds;
+    uint public providerBalance;
+    uint playerBalance;
+    address public testaddr;
 
     enum GameState {
         PLAYING,
@@ -68,7 +71,27 @@ contract SlotMachine is Ownable {
     */
     event gameInitialized(bytes32 gameId);
     event gameConfirmed(bytes32 gameId);
+    event invalidEtherSent(address from, uint value);
 
+    function getplayerBalance() constant returns (uint) {
+      return playerBalance;
+    }
+
+    function () payable {
+
+      if (msg.sender == owner) {
+        providerBalance += msg.value;
+      }
+      else if(msg.sender == mPlayer) {
+        playerBalance += msg.value;
+      }
+      else {
+        invalidEtherSent(msg.sender, msg.value);
+        throw;
+      }
+
+
+    }
 
     function SlotMachine(address _provider, uint _decider, uint _minBet, uint _maxBet) {
         transferOwnership(_provider);
@@ -86,13 +109,21 @@ contract SlotMachine is Ownable {
         onlyAvailable
         notOccupied
     {
+        //TODO : send ether to this contract
         mPlayer = msg.sender;
     }
 
     function leave()
         onlyPlayer
     {
+        //TODO : send remaining balance of user
+        msg.sender.transfer(playerBalance);
+        playerBalance = 0;
         mPlayer = 0x0;
+    }
+
+    function setplayerBalance(uint _value) {
+        playerBalance = _value;
     }
 
     function shutDown()
@@ -102,6 +133,7 @@ contract SlotMachine is Ownable {
     {
         mAvailable = false;
         owner.transfer(this.balance);
+        providerBalance = 0;
     }
 
     function initGame(bytes32 _providerSeed, bytes32 _playerSeed)

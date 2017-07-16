@@ -13,8 +13,10 @@ contract SlotMachineStorage is Ownable {
 
     uint public totalNumofSlotMachine;
 
+
     event providerAdded(address _provider, uint _slotnum);
     /*event ownershipTransferred(address _before, address _after);*/
+
 
     function SlotMachineStorage (){
         totalNumofSlotMachine = 0;

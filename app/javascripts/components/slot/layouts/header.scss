@@ -77,6 +77,11 @@ $top-navbar-height: 75px;
   margin-right: 33px;
 }
 
+.buttonWrapper {
+  display: inline-block;
+  vertical-align: top;
+}
+
 .accountBtn {
   display: flex;
   align-items: center;

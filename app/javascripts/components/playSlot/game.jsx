@@ -30,51 +30,6 @@ const PAY_TABLE = [
   [250, 500, 2000], // H 7
 ];
 
-const INDEPENDENT_LINES = {
-  2: [
-    [0, 11],
-    [0, 14],
-    [0, 16],
-    [1, 2],
-    [2, 7],
-    [2, 9],
-    [2, 12],
-    [2, 13],
-    [2, 15],
-    [3, 8],
-    [3, 11],
-    [3, 12],
-    [4, 7],
-    [4, 12],
-    [4, 19],
-    [5, 13],
-    [5, 14],
-    [6, 13],
-    [6, 14],
-    [7, 10],
-    [7, 15],
-    [7, 16],
-    [8, 9],
-    [8, 15],
-    [8, 16],
-    [9, 11],
-    [9, 12],
-    [9, 18],
-    [9, 19],
-    [10, 11],
-    [10, 17],
-    [11, 18],
-    [12, 17],
-    [13, 19],
-    [14, 19],
-    [15, 18],
-    [16, 17],
-    [17, 18],
-    [17, 19],
-  ],
-  3: [[0, 1, 2], [0, 8, 16], [0, 10, 11], [2, 7, 15], [2, 9, 12], [9, 11, 18], [10, 12, 17]],
-};
-
 const PROBABILITY_TABLE = [
   9.000001082 * 10 ** -1, // not win
   6.9864 * 10 ** -2, // 5
@@ -115,27 +70,55 @@ function shuffleArray(arr) {
   }
 }
 
+// Function of getting Combinations in Array for calculateSlot
+// source : https://gist.github.com/axelpale/3118596
+function kComb(set, k) {
+  var i, j, combs, head, tailcombs;
+  if (k > set.length || k <= 0) {
+    return [];
+  }
+  if (k === set.length) {
+    return [set];
+  }
+  if (k === 1) {
+    combs = [];
+    for (i = 0; i < set.length; i += 1) {
+      combs.push([set[i]]);
+    }
+    return combs;
+  }
+  combs = [];
+  for (i = 0; i < set.length - k + 1; i += 1) {
+    head = set.slice(i, i + 1);
+    tailcombs = kComb(set.slice(i + 1), k - 1);
+    for (j = 0; j < tailcombs.length; j += 1) {
+      combs.push(head.concat(tailcombs[j]));
+    }
+  }
+  return combs;
+}
+
 const WIN_LINE = [
-  [0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1],
-  [2, 2, 2, 2, 2],
-  [2, 1, 0, 1, 2],
-  [0, 1, 2, 1, 2],
-  [0, 0, 1, 2, 2],
-  [2, 2, 1, 0, 0],
-  [1, 0, 0, 0, 1],
-  [1, 2, 2, 2, 1],
-  [0, 1, 0, 1, 0],
-  [2, 1, 2, 1, 2],
-  [1, 2, 1, 2, 1],
-  [1, 0, 1, 0, 1],
-  [1, 1, 0, 1, 1],
-  [1, 1, 2, 1, 1],
-  [0, 1, 1, 1, 0],
-  [2, 1, 1, 1, 2],
-  [0, 2, 0, 2, 0],
-  [2, 0, 2, 0, 2],
-  [2, 0, 1, 0, 2],
+  [0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 1, 1, 1],
+  [2, 2, 2, 2, 2, 2],
+  [2, 1, 0, 1, 2, 3],
+  [0, 1, 2, 1, 2, 4],
+  [0, 0, 1, 2, 2, 5],
+  [2, 2, 1, 0, 0, 6],
+  [1, 0, 0, 0, 1, 7],
+  [1, 2, 2, 2, 1, 8],
+  [0, 1, 0, 1, 0, 9],
+  [2, 1, 2, 1, 2, 10],
+  [1, 2, 1, 2, 1, 11],
+  [1, 0, 1, 0, 1, 12],
+  [1, 1, 0, 1, 1, 13],
+  [1, 1, 2, 1, 1, 14],
+  [0, 1, 1, 1, 0, 15],
+  [2, 1, 1, 1, 2, 16],
+  [0, 2, 0, 2, 0, 17],
+  [2, 0, 2, 0, 2, 18],
+  [2, 0, 1, 0, 2, 19],
 ];
 const WIN_LINE_COLOR = [0xffe600, 0xff1c71, 0x00e9dd, 0x7923ff, 0x00ff64];
 
@@ -552,7 +535,7 @@ export default class SlotGame {
   }
 
   calculateSlot() {
-    const randLineNum = Math.floor(Math.random() * 20);
+    const randLineNum = 20;
     let sumPrize = this.makeRandomPrize(randLineNum);
     const lineInfos = []; // Minimum drawing line's info.
     if (sumPrize === 0) {
@@ -572,6 +555,7 @@ export default class SlotGame {
       }
     }
     const needLineNum = lineInfos.length;
+    if (randLineNum < needLineNum) return 'BIG_WIN';
     if (needLineNum === 1) {
       const randNum = Math.floor(Math.random() * randLineNum);
       const drawingLine = {
@@ -581,26 +565,194 @@ export default class SlotGame {
       };
       this.drawingLines.push(drawingLine);
       return 'DRAW_LINE';
-    } else if (1 < needLineNum && needLineNum < 3 && needLineNum <= randLineNum) {
-      shuffleArray(INDEPENDENT_LINES[needLineNum]);
-      for (let i = 0; i < INDEPENDENT_LINES[needLineNum].length; i += 1) {
-        if (INDEPENDENT_LINES[needLineNum][i][needLineNum - 1] <= randLineNum) {
-          // It means possible case.
-          for (let j = 0; j < needLineNum; j += 1) {
-            const drawingLine = {
-              lineNum: INDEPENDENT_LINES[needLineNum][i][j],
-              symbol: lineInfos[j].symbol,
-              length: lineInfos[j].length,
+    } else {
+      // Save Slot Infos for avoiding inconsistency.
+      const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
+      for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
+        slotLineInfo[i] = new Array(3).fill(undefined);
+      }
+      let usableLines = WIN_LINE.slice(0, randLineNum);
+      shuffleArray(usableLines);
+      // First, we have to find Lines that use same symbols.
+      const sameSymbolObj = {};
+      const symbolObj = {};
+      const singleSymbolArr = [];
+      for (let i = 0; i < lineInfos.length; i += 1) {
+        const symbol = lineInfos[i].symbol;
+        if (symbolObj[symbol] === undefined) {
+          symbolObj[symbol] = [lineInfos[i]];
+        } else {
+          symbolObj[symbol].push(lineInfos[i]);
+        }
+      }
+      for (const key in symbolObj) {
+        if (symbolObj[key].length >= 2) {
+          sameSymbolObj[key] = symbolObj[key];
+        } else {
+          singleSymbolArr.push(symbolObj[key][0]);
+        }
+      }
+      // If there are no duplicated symbols,
+      if (Object.keys(sameSymbolObj).length === 0) {
+        // First drawing line is drawn to first usableLines.
+        for (let i = 0; i < lineInfos[0].length; i += 1) {
+          const slotY = usableLines[0][i];
+          slotLineInfo[i][slotY] = 1;
+        }
+        let drawingLine = {
+          lineNum: usableLines[0][5],
+          symbol: lineInfos[0].symbol,
+          length: lineInfos[0].length,
+        };
+        this.drawingLines.push(drawingLine);
+        let drawable = true;
+        for (let i = 1; i < needLineNum; i += 1) {
+          // If drawingLines.length < i means that we can't find drawing case.
+          // SO have to draw Big Wins.
+          if (this.drawingLines.length < i) {
+            drawable = false;
+            break;
+          }
+          for (let j = 1; j < randLineNum; j += 1) {
+            // Check for overLapping Line
+            let overLapping = false;
+            for (let k = 0; k < lineInfos[i].length; k += 1) {
+              const slotY = usableLines[j][k];
+              if (slotLineInfo[k][slotY] !== undefined) {
+                overLapping = true;
+                break;
+              }
+            }
+            // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines
+            if (!overLapping) {
+              for (let k = 0; k < lineInfos[i].length; k += 1) {
+                const slotY = usableLines[j][k];
+                slotLineInfo[k][slotY] = 1;
+              }
+              drawingLine = {
+                lineNum: usableLines[j][5],
+                symbol: lineInfos[i].symbol,
+                length: lineInfos[i].length,
+              };
+              this.drawingLines.push(drawingLine);
+              break;
+            }
+          }
+        }
+        const result = drawable ? 'DRAW_LINE' : 'BIG_WIN';
+        return result;
+        // else, we have to draw duplicated symbol lines with minimum distance lines.
+      } else {
+        const distanceCompArr = new Array(ENTIRE_REEL_COUNT);
+        const sameSymbolArr = [];
+        let drawingLine;
+        // First draw sameSymbol Lines.
+        // i means same symbol Array.
+        for (let i = 0; i < Object.keys(sameSymbolObj).length; i += 1) {
+          const symbol = Object.keys(sameSymbolObj)[i];
+          sameSymbolArr.push(symbol);
+          const sameSymbolLinesNum = sameSymbolObj[symbol].length;
+          // LineIndexArr is set for getting random combination from usableLines
+          const lineIndexArr = [];
+          for (let p = 0; p < usableLines.length; p += 1) {
+            lineIndexArr.push(p);
+          }
+          const combArr = kComb(lineIndexArr, sameSymbolLinesNum);
+          // Finding combination that has minimum distance.
+          // j means symbol Arr combinations
+          let minDist = 15;
+          let minCombIndex; // undefined
+          for (let j = 0; j < combArr.length; j += 1) {
+            let overLapping = false;
+            // distanceCompArr Initialization
+            for (let q = 0; q < ENTIRE_REEL_COUNT; q += 1) {
+              distanceCompArr[q] = new Array(3).fill(undefined);
+            }
+            let distance = 0;
+            // Doing calculate Distance
+            // k means combination's element
+            for (let k = 0; k < combArr[j].length; k += 1) {
+              const lineIndex = combArr[j][k];
+              for (let l = 0; l < sameSymbolObj[symbol][k].length; l += 1) {
+                const slotY = usableLines[lineIndex][l];
+                if (slotLineInfo[l][slotY] !== undefined) {
+                  // It means overLapping
+                  overLapping = true;
+                  break;
+                } else if (distanceCompArr[l][slotY] === 1) {
+                  distanceCompArr[l][slotY] = 1;
+                } else {
+                  distanceCompArr[l][slotY] = 1;
+                  distance += 1;
+                }
+              }
+              if (overLapping) break;
+            }
+            if (!overLapping && distance < minDist) {
+              minDist = distance;
+              minCombIndex = j;
+            }
+          }
+          // minCombIndex is still undefined After loop, we can't draw it.
+          if (minCombIndex === undefined) return 'BIG_WIN';
+          // We have to insert that combination of lines to slotLineInfo.
+          for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+            const lineIndex = combArr[minCombIndex][j];
+            for (let k = 0; k < sameSymbolObj[symbol][j].length; k += 1) {
+              const slotY = usableLines[lineIndex][k];
+              slotLineInfo[k][slotY] = symbol;
+            }
+            drawingLine = {
+              lineNum: usableLines[lineIndex][5], // Fifth index is original win lineNum.
+              symbol: parseInt(symbol, 10),
+              length: sameSymbolObj[symbol][j].length,
             };
             this.drawingLines.push(drawingLine);
           }
-          break;
+          // We have to delete lines where we find min distance for quality.
+          let lastIndex = 0;
+          const newUsableLines = [];
+          for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+            newUsableLines.push(...usableLines.slice(lastIndex, combArr[minCombIndex][j]));
+            lastIndex = combArr[minCombIndex][j] + 1;
+          }
+          newUsableLines.push(...usableLines.slice(lastIndex, usableLines.length));
+          usableLines = newUsableLines;
         }
+        // After draw same symbol lines, we have to draw single symbol lines.
+        for (let i = 0; i < singleSymbolArr.length; i += 1) {
+          let drawable = false;
+          for (let j = 0; j < usableLines.length; j += 1) {
+            // Check for overLapping Line.
+            let overLapping = false;
+            for (let k = 0; k < singleSymbolArr[i].length; k += 1) {
+              const slotY = usableLines[j][k];
+              if (slotLineInfo[k][slotY] !== undefined) {
+                overLapping = true;
+                break;
+              }
+            }
+            // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines.
+            if (!overLapping) {
+              for (let k = 0; k < lineInfos[i].length; k += 1) {
+                const slotY = usableLines[j][k];
+                slotLineInfo[k][slotY] = singleSymbolArr[i].symbol;
+              }
+              drawingLine = {
+                lineNum: usableLines[j][5],
+                symbol: parseInt(singleSymbolArr[i].symbol, 10),
+                length: singleSymbolArr[i].length,
+              };
+              this.drawingLines.push(drawingLine);
+              drawable = true;
+              break;
+            }
+          }
+          if (!drawable) return 'BIG_WIN';
+        }
+        return 'DRAW_LINE';
       }
-      return 'DRAW_LINE';
     }
-    // This case can't be drawn. So it will be expressed by BIG_WIN
-    return 'BIG_WIN';
   }
 
   changeSlot() {

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import ReactGA from 'react-ga';
 import Raven from 'raven-js';
+import Web3Service from './helpers/web3Service';
 import EnvChecker from './helpers/envChecker';
 // Redux
 import { store, getHistoryObject } from './store';
@@ -36,5 +37,12 @@ if (!EnvChecker.isDev()) {
   ReactGA.pageview(window.location.pathname + window.location.search);
   Raven.config(process.env['RAVEN_KEY']).install();
 }
-// React Rendering
-ReactDom.render(<App />, document.getElementById('ether-app'));
+
+Web3Service.initializeStorageContract()
+  .then(() => {
+    ReactDom.render(<App />, document.getElementById('ether-app'));
+  })
+  .catch(err => {
+    console.log("Couldn't initialize the SlotStorage contract", err);
+    ReactDom.render(<App />, document.getElementById('ether-app'));
+  });

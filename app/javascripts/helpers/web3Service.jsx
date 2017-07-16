@@ -17,7 +17,6 @@ class Web3Service {
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(mockManagerABI);
       this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
-      this.initializeStorageContract();
     } else {
       console.warn(
         "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
@@ -26,7 +25,6 @@ class Web3Service {
         this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
         const SlotManagerContract = this.web3.eth.contract(mockManagerABI);
         this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
-        this.initializeStorageContract();
       }
     }
   }
@@ -69,6 +67,32 @@ class Web3Service {
     });
   }
 
+  getTheNumberOfProviders() {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getNumofProvider((err, TheNumOfProvider) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(TheNumOfProvider);
+        }
+      });
+    });
+  }
+
+  async getSlotMachineAddressesFromProvider(account) {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getSlotMachines(account, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          console.log(result);
+          resolve(result);
+        }
+      });
+    });
+  }
+
   async createSlotMachine(account) {
     return await new Promise((resolve, reject) => {
       this.slotManagerContract.createSlotMachine(
@@ -100,4 +124,5 @@ class Web3Service {
 }
 
 const web3Service = new Web3Service();
+
 export default web3Service;

@@ -29,6 +29,7 @@ const ICONS = {
   CROWDSALE_TICKET: require('./crowdsale-ticket.svg'),
   MEDIUM: require('./medium.svg'),
   MEDIUM_FOR_FOOTER: require('./medium-for-footer.svg'),
+  BLACK_DOT: require('./blackDot.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

@@ -21,10 +21,10 @@ const Header = ({ rootState, location }) =>
         <div className={styles.walletStatus}>
           Your balance : {rootState.get('balance')} ETH
         </div>
-        <button className={styles.accountBtn}>
+        {/* <button className={styles.accountBtn}>
           Your Account
           <Icon className={styles.triangle} icon="TRIANGLE_DOWN" />
-        </button>
+        </button> */}
       </div>
     </div>
   </div>;

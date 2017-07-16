@@ -157,11 +157,13 @@ export default class SlotGame {
     this.rotateStatus = new Array(ENTIRE_REEL_COUNT).fill(false);
     this.slowingDistance = null;
     this.drawingLineIndex = null;
+    this.winMoney = 0;
     // Animation Variable Initialization
     this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
-    this.bigWinTextVel = 0;
-    this.bigWinTextAcc = 0.003;
+    this.winMoneyTextVel = 0;
+    this.winMoneyTextAcc = 0.003;
     this.drawingLines = [];
+    this.drawWinMoneyPercentage = 0;
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: this.canvas,
@@ -296,7 +298,7 @@ export default class SlotGame {
       });
       this.spinStatus.fill(true);
       this.bigWinContainer.visible = false;
-      this.bigWinText.visible = false;
+      this.winMoneyText.visible = false;
       this.ovalBackground.visible = false;
       this.drawingLines = [];
     }
@@ -358,7 +360,7 @@ export default class SlotGame {
           let partP;
           let angle;
           const lineNum = this.drawingLines[this.drawingLineIndex].lineNum;
-          this.winLines.lineStyle(6, WIN_LINE_COLOR[this.drawingLineIndex], 0.8);
+          this.winLines.lineStyle(6, WIN_LINE_COLOR[this.drawingLineIndex % WIN_LINE_COLOR.length], 0.8);
           // Starting Point of Current line.
           const startX = this.reelContainer.x + SYMBOL_WIDTH / 2;
           const startY =
@@ -393,7 +395,17 @@ export default class SlotGame {
         } else {
           this.drawingLineIndex += 1;
         }
-        this.stage.addChild(this.winLines);
+      } else if (this.drawWinMoneyPercentage <= 1) {
+        this.drawWinMoneyPercentage += 0.01;
+        if (this.winMoneyText.scale.x <= 1) {
+          this.winMoneyTextVel += this.winMoneyTextAcc;
+          this.winMoneyText.scale.x += this.winMoneyTextVel;
+          this.winMoneyText.scale.y += this.winMoneyTextVel;
+          this.winMoneyText.alpha += this.winMoneyTextVel;
+          this.ovalBackground.scale.x += this.winMoneyTextVel;
+          this.ovalBackground.scale.y += this.winMoneyTextVel;
+          this.ovalBackground.alpha += this.winMoneyTextVel;
+        }
       } else {
         this.drawingPercentageList = null;
         this.gameState = STATE_WAITING;
@@ -419,14 +431,14 @@ export default class SlotGame {
           }
         });
       } else if (this.bigWinPercentage <= 3) {
-        if (this.bigWinText.scale.x <= 1) {
-          this.bigWinTextVel += this.bigWinTextAcc;
-          this.bigWinText.scale.x += this.bigWinTextVel;
-          this.bigWinText.scale.y += this.bigWinTextVel;
-          this.bigWinText.alpha += this.bigWinTextVel;
-          this.ovalBackground.scale.x += this.bigWinTextVel;
-          this.ovalBackground.scale.y += this.bigWinTextVel;
-          this.ovalBackground.alpha += this.bigWinTextVel;
+        if (this.winMoneyText.scale.x <= 1) {
+          this.winMoneyTextVel += this.winMoneyTextAcc;
+          this.winMoneyText.scale.x += this.winMoneyTextVel;
+          this.winMoneyText.scale.y += this.winMoneyTextVel;
+          this.winMoneyText.alpha += this.winMoneyTextVel;
+          this.ovalBackground.scale.x += this.winMoneyTextVel;
+          this.ovalBackground.scale.y += this.winMoneyTextVel;
+          this.ovalBackground.alpha += this.winMoneyTextVel;
         }
         this.bigWinPercentage += 0.01;
         this.reelGroup.forEach(reel => {
@@ -460,13 +472,15 @@ export default class SlotGame {
     if (this.gameState === STATE_SPINNING) {
       this.gameState = STATE_BIG_WIN;
       this.bigWinPercentage = 0;
-      this.bigWinTextVel = 0;
       this.bigWinContainer.visible = true;
       this.bigWinContainer.scale.set(0, 0);
       this.bigWinContainer.alpha = 0;
-      this.bigWinText.visible = true;
-      this.bigWinText.scale.set(0, 0);
-      this.bigWinText.alpha = 0;
+      this.winMoneyTextVel = 0;
+      this.winMoneyText.visible = true;
+      this.winMoneyText.scale.set(0, 0);
+      this.winMoneyText.alpha = 0;
+      this.winMoneyText.text = `+${this.winMoney}`;
+      this.ovalBackground.width = 50 * this.winMoneyText.text.length;
       this.ovalBackground.visible = true;
       this.ovalBackground.scale.set(0, 0);
       this.ovalBackground.alpha = 0;
@@ -492,6 +506,16 @@ export default class SlotGame {
       // After reels stop, draw win lines.
       if (slotResult === 'DRAW_LINE') {
         await this.drawLine();
+        this.drawWinMoneyPercentage = 0;
+        this.winMoneyTextVel = 0;
+        this.winMoneyText.visible = true;
+        this.winMoneyText.scale.set(0, 0);
+        this.winMoneyText.alpha = 0;
+        this.winMoneyText.text = `+${this.winMoney}`;
+        this.ovalBackground.width = 50 * this.winMoneyText.text.length;
+        this.ovalBackground.visible = true;
+        this.ovalBackground.scale.set(0, 0);
+        this.ovalBackground.alpha = 0;
       } else {
         this.gameState = STATE_WAITING;
       }
@@ -535,8 +559,9 @@ export default class SlotGame {
   }
 
   calculateSlot() {
-    const randLineNum = 20;
-    let sumPrize = this.makeRandomPrize(randLineNum);
+    const lineNum = this.lineNum;
+    let sumPrize = this.makeRandomPrize(lineNum);
+    this.winMoney = sumPrize;
     const lineInfos = []; // Minimum drawing line's info.
     if (sumPrize === 0) {
       // Earn nothing.
@@ -555,9 +580,9 @@ export default class SlotGame {
       }
     }
     const needLineNum = lineInfos.length;
-    if (randLineNum < needLineNum) return 'BIG_WIN';
+    if (lineNum < needLineNum) return 'BIG_WIN';
     if (needLineNum === 1) {
-      const randNum = Math.floor(Math.random() * randLineNum);
+      const randNum = Math.floor(Math.random() * lineNum);
       const drawingLine = {
         lineNum: randNum,
         symbol: lineInfos[0].symbol,
@@ -571,7 +596,7 @@ export default class SlotGame {
       for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
         slotLineInfo[i] = new Array(3).fill(undefined);
       }
-      let usableLines = WIN_LINE.slice(0, randLineNum);
+      let usableLines = WIN_LINE.slice(0, lineNum);
       shuffleArray(usableLines);
       // First, we have to find Lines that use same symbols.
       const sameSymbolObj = {};
@@ -613,7 +638,7 @@ export default class SlotGame {
             drawable = false;
             break;
           }
-          for (let j = 1; j < randLineNum; j += 1) {
+          for (let j = 1; j < lineNum; j += 1) {
             // Check for overLapping Line
             let overLapping = false;
             for (let k = 0; k < lineInfos[i].length; k += 1) {
@@ -1070,6 +1095,7 @@ export default class SlotGame {
     this.UIContainer.addChild(this.betAmountText);
     this.UIContainer.addChild(this.betSizeText);
     this.UIContainer.addChild(this.lineNumText);
+    this.stage.addChild(this.winLines);
     // Add Big Win & Big Win Text Element as invisible.
     // BigWinContainer contains bigWin & bigWinBackGround
     this.bigWinContainer = new PIXI.Container();
@@ -1092,7 +1118,7 @@ export default class SlotGame {
     this.ovalBackground.visible = false;
     this.UIContainer.addChild(this.ovalBackground);
 
-    this.bigWinText = new Text('+400', {
+    this.winMoneyText = new Text('+400', {
       fontSize: '80px',
       fontStyle: 'italic',
       letterSpacing: 1.3,
@@ -1108,9 +1134,9 @@ export default class SlotGame {
       stroke: '0x681443',
       strokeThickness: 8,
     });
-    this.bigWinText.anchor.set(0.5, 0.5);
-    this.bigWinText.position.set(470, 470);
-    this.bigWinText.visible = false;
-    this.UIContainer.addChild(this.bigWinText);
+    this.winMoneyText.anchor.set(0.5, 0.5);
+    this.winMoneyText.position.set(470, 470);
+    this.winMoneyText.visible = false;
+    this.UIContainer.addChild(this.winMoneyText);
   }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getSlotMachines } from './actions';
+import ListHeader from './listHeader';
 import SlotList from './slotList';
 import styles from './slotList.scss';
 
@@ -33,7 +34,7 @@ class SlotListContainer extends React.PureComponent {
   render() {
     return (
       <div className={styles.slotListContainer}>
-        <div className={styles.background} />
+        <ListHeader />
         <div>
           <div className={styles.sortingHeader}>
             <div className={styles.headerLeft}>All Slots</div>

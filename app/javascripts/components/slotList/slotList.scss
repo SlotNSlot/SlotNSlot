@@ -11,8 +11,13 @@
   line-height: 46px;
 }
 
+.carouselWrapper {
+  height: 300px;
+}
+
 .background {
   background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListBackground.jpg");
+  width: 100%;
   height: 300px;
   background-color: #3b212f;
   background-position: center top;
@@ -22,6 +27,7 @@
 
 .background2 {
   background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListWelcome.png");
+  width: 100%;
   height: 300px;
   background-position: center top;
   background-size: auto 300px;

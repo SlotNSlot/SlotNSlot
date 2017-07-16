@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getSlotMachines } from './actions';
 import SlotList from './slotList';
+import ListHeader from './listHeader';
 import styles from './slotList.scss';
 
 function mapStateToProps(appState) {
@@ -33,17 +34,7 @@ class MySlotListContainer extends React.PureComponent {
   render() {
     return (
       <div className={styles.slotListContainer}>
-        <div className={styles.background2}>
-          <div className={styles.headerContainer}>
-            <div className={styles.headerTitle}>
-              <strong>SlotNSlot</strong> is<br />
-              The World First <strong>Online Slot Machine</strong>
-              <br />
-              <strong>Platform</strong>, running on <strong>Ethereum</strong>
-            </div>
-            <button className={styles.infoButton}>More Information</button>
-          </div>
-        </div>
+        <ListHeader />
         <div>
           <div className={styles.sortingHeader}>
             <div className={styles.headerLeft}>My Slots</div>

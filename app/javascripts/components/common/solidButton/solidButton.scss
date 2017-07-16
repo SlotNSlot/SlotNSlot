@@ -18,4 +18,8 @@
     color: #1b1b27;
     cursor: not-allowed;
   }
+
+  &:active {
+    transform: translate3d(0, 1px, 0);
+  }
 }

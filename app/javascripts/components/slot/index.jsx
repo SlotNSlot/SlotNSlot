@@ -5,6 +5,7 @@ import styles from './slot.scss';
 import { Header } from './layouts';
 import MakeGame from '../makeGame';
 import PlaySlot from '../playSlot';
+import MySlotListContainer from '../slotList/mySlotList';
 import SlotList from '../slotList';
 import Status404 from '../404';
 
@@ -20,6 +21,7 @@ const Slot = ({ match, location, rootState }) =>
     <Switch>
       <Route exact path={`${match.url}/play`} component={PlaySlot} />
       <Route path={`${match.url}/make/:step`} component={MakeGame} />
+      <Route path={`${match.url}/mine`} component={MySlotListContainer} />
       <Route exact path={match.url} component={SlotList} />
       <Route component={Status404} />
     </Switch>

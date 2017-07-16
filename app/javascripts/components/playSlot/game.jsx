@@ -120,7 +120,7 @@ const WIN_LINE = [
   [2, 0, 2, 0, 2, 18],
   [2, 0, 1, 0, 2, 19],
 ];
-const WIN_LINE_COLOR = [0xffe600, 0xff1c71, 0x00e9dd, 0x7923ff, 0x00ff64];
+const WIN_LINE_COLOR = [0xffe600, 0xff1c71, 0x00e9dd, 0x7923ff, 0x00ff64, 0xff1043, 0x2350ff, 0xff6c00];
 
 export default class SlotGame {
   constructor(params) {

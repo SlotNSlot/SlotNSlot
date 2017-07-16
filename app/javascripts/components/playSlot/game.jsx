@@ -169,7 +169,7 @@ export default class SlotGame {
     this.winLines = new PIXI.Graphics();
     // Game Variable Initialization
     this.stage = null;
-    this.gameStatus = STATE_ZERO;
+    this.gameState = STATE_ZERO;
     this.spinStatus = new Array(ENTIRE_REEL_COUNT).fill(true);
     this.rotateStatus = new Array(ENTIRE_REEL_COUNT).fill(false);
     this.slowingDistance = null;
@@ -304,9 +304,9 @@ export default class SlotGame {
   }
 
   startSpin() {
-    if (this.gameStatus === STATE_WAITING) {
+    if (this.gameState === STATE_WAITING) {
       this.winLines.clear();
-      this.gameStatus = STATE_SPINNING;
+      this.gameState = STATE_SPINNING;
       this.reelGroup.forEach(reel => {
         reel.vy = 100;
         reel.filters = [this.blurFilter];
@@ -320,9 +320,9 @@ export default class SlotGame {
   }
 
   gameLoop() {
-    if (this.gameStatus === STATE_ZERO) {
-      this.gameStatus = STATE_WAITING;
-    } else if (this.gameStatus === STATE_WAITING) {
+    if (this.gameState === STATE_ZERO) {
+      this.gameState = STATE_WAITING;
+    } else if (this.gameState === STATE_WAITING) {
       if (this.betSize !== undefined) this.betSizeText.text = this.betSize;
       if (this.lineNum !== undefined) this.lineNumText.text = `${this.lineNum}`;
       if (this.yourStake !== undefined) this.yourStakeText.text = `${this.yourStake} ETH`;
@@ -337,14 +337,14 @@ export default class SlotGame {
         }
       }
       console.log('WAITING...');
-    } else if (this.gameStatus === STATE_SPINNING) {
+    } else if (this.gameState === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
         reel.y += reel.vy;
         if (reel.y > reel.height) {
           reel.y -= reel.height * 2;
         }
       });
-    } else if (this.gameStatus === STATE_STOPPING) {
+    } else if (this.gameState === STATE_STOPPING) {
       this.reelGroup.forEach((reel, index) => {
         if (!this.spinStatus[Math.floor(index / 2)]) {
           if (this.reelGroup[index] !== null) {
@@ -362,7 +362,7 @@ export default class SlotGame {
           }
         }
       });
-    } else if (this.gameStatus === STATE_DRAWING) {
+    } else if (this.gameState === STATE_DRAWING) {
       if (this.drawingLineIndex < this.drawingPercentageList.length) {
         // Draw until matching percentage List
         if (this.drawingPercentageList[this.drawingLineIndex] <= 1) {
@@ -413,9 +413,9 @@ export default class SlotGame {
         this.stage.addChild(this.winLines);
       } else {
         this.drawingPercentageList = null;
-        this.gameStatus = STATE_WAITING;
+        this.gameState = STATE_WAITING;
       }
-    } else if (this.gameStatus === STATE_BIG_WIN) {
+    } else if (this.gameState === STATE_BIG_WIN) {
       if (this.bigWinPercentage <= 1) {
         this.bigWinPercentage += 0.01;
         this.reelGroup.forEach(reel => {
@@ -464,7 +464,7 @@ export default class SlotGame {
         this.bigWinPercentage += 0.05;
       } else {
         this.reelGroup = this.newReelGroup;
-        this.gameStatus = STATE_WAITING;
+        this.gameState = STATE_WAITING;
       }
     }
 
@@ -474,8 +474,8 @@ export default class SlotGame {
   }
 
   drawBigWin() {
-    if (this.gameStatus === STATE_SPINNING) {
-      this.gameStatus = STATE_BIG_WIN;
+    if (this.gameState === STATE_SPINNING) {
+      this.gameState = STATE_BIG_WIN;
       this.bigWinPercentage = 0;
       this.bigWinTextVel = 0;
       this.bigWinContainer.visible = true;
@@ -494,13 +494,13 @@ export default class SlotGame {
     }
   }
   async stopSpin() {
-    if (this.gameStatus === STATE_SPINNING) {
+    if (this.gameState === STATE_SPINNING) {
       const slotResult = this.calculateSlot();
       if (slotResult === 'BIG_WIN') {
         this.drawBigWin();
         return;
       }
-      this.gameStatus = STATE_STOPPING;
+      this.gameState = STATE_STOPPING;
       this.slowingDistance = new Array(ENTIRE_REEL_COUNT * 2).fill(SLOWING_DISTANCE);
       await this.changeSlot();
       for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
@@ -510,13 +510,13 @@ export default class SlotGame {
       if (slotResult === 'DRAW_LINE') {
         await this.drawLine();
       } else {
-        this.gameStatus = STATE_WAITING;
+        this.gameState = STATE_WAITING;
       }
     }
   }
 
   drawLine() {
-    this.gameStatus = STATE_DRAWING;
+    this.gameState = STATE_DRAWING;
     this.drawingPercentageList = new Array(this.drawingLines.length).fill(0);
     this.drawingLineIndex = 0;
   }
@@ -805,6 +805,7 @@ export default class SlotGame {
     betMinusBtn.interactive = true;
     betMinusBtn.buttonMode = true;
     betMinusBtn.on('pointerdown', () => {
+      if (this.gameState !== STATE_WAITING) return;
       if (this.betSize - this.betUnit >= this.minBet) {
         this.setBetSize(this.betSize - this.betUnit);
       } else {
@@ -819,6 +820,7 @@ export default class SlotGame {
     betPlusBtn.interactive = true;
     betPlusBtn.buttonMode = true;
     betPlusBtn.on('pointerdown', () => {
+      if (this.gameState !== STATE_WAITING) return;
       if (this.betSize + this.betUnit <= this.maxBet) {
         this.setBetSize(this.betSize + this.betUnit);
       } else {
@@ -834,6 +836,7 @@ export default class SlotGame {
     maxBet.interactive = true;
     maxBet.buttonMode = true;
     maxBet.on('pointerdown', () => {
+      if (this.gameState !== STATE_WAITING) return;
       this.setBetSize(this.maxBet);
       this.setLineNum(20);
     });
@@ -858,6 +861,7 @@ export default class SlotGame {
     lineMinusBtn.interactive = true;
     lineMinusBtn.buttonMode = true;
     lineMinusBtn.on('pointerdown', () => {
+      if (this.gameState !== STATE_WAITING) return;
       if (this.lineNum > 1) {
         this.setLineNum(this.lineNum - 1);
       }
@@ -870,6 +874,7 @@ export default class SlotGame {
     linePlusBtn.interactive = true;
     linePlusBtn.buttonMode = true;
     linePlusBtn.on('pointerdown', () => {
+      if (this.gameState !== STATE_WAITING) return;
       if (this.lineNum < 20) {
         this.setLineNum(this.lineNum + 1);
       }

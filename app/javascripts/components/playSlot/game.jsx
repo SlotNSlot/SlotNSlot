@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { shuffle } from 'lodash';
+import shuffle from 'lodash.shuffle';
 
 const ENTIRE_REEL_COUNT = 5;
 const ITEM_PER_ENTIRE_REEL = 12;

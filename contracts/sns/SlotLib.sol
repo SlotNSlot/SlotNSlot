@@ -28,7 +28,7 @@ library SlotLib {
         slotMachineRemoved(_provider, slottoremove, totalnum-1);
     }
 
-    //return 5 slotmachines of user : _provider
+    /*//return 5 slotmachines of user : _provider
     function getSlotMachines (address _slotmachineStorage, address _provider, uint _idx) returns (address[5]){
         return SlotMachineStorage(_slotmachineStorage).getSlotMachines(_provider, _idx);
     }
@@ -36,8 +36,6 @@ library SlotLib {
     //return number of slotmachines
     function getNumofSlotMachine (address _slotmachineStorage, address _provider) constant returns (uint) {
         uint totalnum = SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider);
-        /*slotMachineRemoved(msg.sender, _slotmachineStorage, totalnum);*/
-        /*slotMachineNumber(totalnum);*/
         return totalnum;
     }
 
@@ -55,6 +53,6 @@ library SlotLib {
     }
     function getSlotMachineInfos (address _slotmachineStorage, address _provider, uint _idx) constant returns (uint[10], uint[10], uint[10]){
       return (SlotMachineStorage(_slotmachineStorage).getSlotMachineInfos(_provider, _idx));
-    }
+    }*/
 
 }

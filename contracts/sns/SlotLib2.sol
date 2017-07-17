@@ -2,7 +2,7 @@ pragma solidity ^0.4.0;
 import "./LibInterface.sol";
 import "./SlotMachineStorage.sol";
 
-library SlotLib2 {
+library SlotLib2{
 
     event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _provider, address _slotaddr, uint _totalnum);
@@ -28,7 +28,7 @@ library SlotLib2 {
         slotMachineRemoved(_provider, slottoremove, totalnum-1);
     }
 
-    //return 5 slotmachines of user : _provider
+    /*//return 5 slotmachines of user : _provider
     function getSlotMachines (address _slotmachineStorage, address _provider, uint _idx) returns (address[5]){
         return SlotMachineStorage(_slotmachineStorage).getSlotMachines(_provider, _idx);
     }
@@ -36,14 +36,16 @@ library SlotLib2 {
     //return number of slotmachines
     function getNumofSlotMachine (address _slotmachineStorage, address _provider) constant returns (uint) {
         uint totalnum = SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider);
-        /*slotMachineRemoved(msg.sender, _slotmachineStorage, totalnum);*/
-        /*slotMachineNumber(totalnum);*/
         return totalnum;
+    }
+
+    function getTotalNumofSlotMachine(address _slotmachineStorage) constant returns (uint) {
+        return SlotMachineStorage(_slotmachineStorage).getTotalNumofSlotMachine();
     }
 
     //return information of slotmachine
     function getSlotMachineDecider (address _slotmachineStorage, address _provider, uint _idx) constant returns (uint){
-        return SlotMachineStorage(_slotmachineStorage).getSlotMachineDecider(_provider, _idx)*10;
+        return SlotMachineStorage(_slotmachineStorage).getSlotMachineDecider(_provider, _idx);
     }
 
     function getSlotMachineInfo (address _slotmachineStorage, address _provider, uint _idx) constant returns (uint, uint, uint){
@@ -51,6 +53,6 @@ library SlotLib2 {
     }
     function getSlotMachineInfos (address _slotmachineStorage, address _provider, uint _idx) constant returns (uint[10], uint[10], uint[10]){
       return (SlotMachineStorage(_slotmachineStorage).getSlotMachineInfos(_provider, _idx));
-    }
+    }*/
 
 }

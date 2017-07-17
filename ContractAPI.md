@@ -13,6 +13,7 @@
 - removeSlotMachine(uint _idx)
 
   remove slotmachine[_idx] from slotmachine array, rest of arrays will be sorted automatically
+  trigger event slotMachineRemoved
 
 - getStorageAddr() returns (address)
 
@@ -39,7 +40,7 @@
 
 ## SlotMachineStorage
 
-### data
+### variable
   - address[] provideraddress
 
     array of provider addresses
@@ -69,9 +70,29 @@
 
     return slotmachine address of _provider, index with _idx
 
+---
+
+## SlotMachine
+
+### variable
+  - bool public mAvailable;
+
+  -  bool public mBankrupt;
+  -  address public mPlayer;
+
+  -  uint public mDecider;
+  -  uint public mMinBet;
+  -  uint public mMaxBet;
+
+  - uint public providerBalance;
+  - uint public playerBalance;
 
 
-  - getSlotMachines (address _provider, uint _idx)
-
-    get 5 addresses of slotmachines from given index.  
-    if number of slotmachines are less then 5, rest of addresses are filled with '0x0'.
+###methods
+  - occupy()
+  - leave()
+  - shutDown()
+  - initGame(bytes32 _providerSeed, bytes32 _playerSeed)
+  - confirmGame(uint _providerNumber, uint _playerNumber)
+  
+  - getInfo()

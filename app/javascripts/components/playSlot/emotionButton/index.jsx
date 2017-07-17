@@ -13,11 +13,16 @@ function mapStateToProps(appState) {
 class EmotionButton extends React.PureComponent {
   render() {
     const { playSlotState } = this.props;
-    const isClicked = playSlotState.get('isClicked');
+    const emotionClicked = playSlotState.get('emotionClicked');
     const emotionList = playSlotState.get('emotionList');
     const emotionItems = emotionList.map(e =>
       <li>
-        <div onClick={() => alert(e)}>
+        <div
+          onClick={() => {
+            alert(e);
+            this.props.dispatch(toggleEmotion());
+          }}
+        >
           {e}
         </div>
       </li>,
@@ -29,17 +34,17 @@ class EmotionButton extends React.PureComponent {
           onClick={() => {
             this.props.dispatch(toggleEmotion());
           }}
-          className={`${styles.emotionButton} ${isClicked ? styles.active : ''}`}
+          className={`${styles.emotionButton} ${emotionClicked ? styles.active : ''}`}
         >
           <div className={styles.iconBlock}>
             <Icon icon="COMBINED_SHAPE" />
           </div>
           <span>
-            {isClicked ? 'Cancel' : 'Emoji'}
+            {emotionClicked ? 'Cancel' : 'Emoji'}
           </span>
         </div>
-        <ul className={`${styles.emotionList} ${isClicked ? styles.active : ''}`}>
-          {isClicked ? emotionItems : ''}
+        <ul className={`${styles.emotionList} ${emotionClicked ? styles.active : ''}`}>
+          {emotionClicked ? emotionItems : ''}
         </ul>
       </div>
     );

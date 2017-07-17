@@ -26,6 +26,13 @@ $header-height: 80px;
     height: 100%;
     line-height: 80px;
 
+    button:focus {
+      outline: none;
+    }
+    button:active {
+      transform: translate3d(0, 1px, 0);
+    }
+
     .helpBtn {
       display: inline-block;
       width: 40px;
@@ -34,6 +41,7 @@ $header-height: 80px;
       background-color: #dbdbe4;
       border-radius: 50%;
       text-align: center;
+      cursor: pointer;
     }
 
     .headerBtn {
@@ -47,6 +55,7 @@ $header-height: 80px;
       color: #fff;
       text-align: center;
       margin-left: 20px;
+      cursor: pointer;
 
       &:last-child {
         background-color: #41bed5;
@@ -72,6 +81,7 @@ $header-height: 80px;
     text-align: center;
     color: #2d2c44;
     font-weight: 300;
+    cursor: pointer;
 
     &.active {
       background-color: #fff;
@@ -81,6 +91,7 @@ $header-height: 80px;
 
 .tableWrapper {
   background-color: #fff;
+  margin-bottom: 32px;
 
   :global {
     .ReactTable {

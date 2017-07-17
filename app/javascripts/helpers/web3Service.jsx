@@ -1,7 +1,8 @@
 import Web3 from 'web3';
 import EnvChecker from './envChecker';
-const mockManagerABI = require('./__mocks__/mockABI.json');
-const mockStorageABI = require('./__mocks__/mockStorageABI.json');
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
 const CONTRACT_ADDRESS = '0x942b0ffdeb9a91345804bb6c03ac4fa8fee9143a';
 
@@ -15,7 +16,7 @@ class Web3Service {
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
-      const SlotManagerContract = this.web3.eth.contract(mockManagerABI);
+      const SlotManagerContract = this.web3.eth.contract(managerABI);
       this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
     } else {
       console.warn(
@@ -23,7 +24,7 @@ class Web3Service {
       );
       if (EnvChecker.isDev()) {
         this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-        const SlotManagerContract = this.web3.eth.contract(mockManagerABI);
+        const SlotManagerContract = this.web3.eth.contract(managerABI);
         this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
       }
     }
@@ -45,9 +46,14 @@ class Web3Service {
           }
         });
       });
-      const SlotStorageContract = this.web3.eth.contract(mockStorageABI);
+      const SlotStorageContract = this.web3.eth.contract(storageABI);
       this.slotStorageContract = SlotStorageContract.at(this.storageAddr);
     }
+  }
+
+  getSlotMachineContract(contractAddress) {
+    const SlotStorageContract = this.web3.eth.contract(slotMachineABI);
+    return SlotStorageContract.at(contractAddress);
   }
 
   getWeb3() {
@@ -79,14 +85,26 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineAddressesFromProvider(account) {
+  async getProviderAddress(index) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getSlotMachines(account, (err, result) => {
+      this.slotStorageContract.provideraddress(index, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);
         } else {
-          console.log(result);
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async getSlotMachineAddressFromProvider(account, index) {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getSlotMachine(account, index, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
           resolve(result);
         }
       });

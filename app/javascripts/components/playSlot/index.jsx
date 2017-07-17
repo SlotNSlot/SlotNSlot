@@ -53,30 +53,10 @@ class PlaySlot extends React.PureComponent {
   }
 
   render() {
-    const { root } = this.props;
-    const data = [
-      {
-        id: 1,
-        time: '17.07.07',
-        bet: 2300,
-        result: 'success',
-        profit: 100,
-      },
-      {
-        id: 2,
-        time: '17.07.07',
-        bet: 2400,
-        result: 'success',
-        profit: -100,
-      },
-      {
-        id: 3,
-        time: '17.07.07',
-        bet: 2000,
-        result: 'success',
-        profit: -1100,
-      },
-    ];
+    const { root, playSlotState } = this.props;
+    const _data = playSlotState.get('betsData').toJS();
+    const tableCategory = playSlotState.get('tableCategory');
+
     const columns = [
       {
         Header: 'ID',
@@ -106,30 +86,30 @@ class PlaySlot extends React.PureComponent {
           <div className={styles.innerHeader}>
             <div className={styles.slotName}>Slot Name</div>
             <div className={styles.rightBtns}>
-              <a
+              <button
                 className={styles.helpBtn}
                 onClick={() => {
                   alert('help');
                 }}
               >
                 ?
-              </a>
-              <a
+              </button>
+              <button
                 onClick={() => {
                   alert('deposit');
                 }}
                 className={styles.headerBtn}
               >
                 DEPOSIT
-              </a>
-              <a
+              </button>
+              <button
                 onClick={() => {
                   alert('cash out');
                 }}
                 className={styles.headerBtn}
               >
                 CASH OUT
-              </a>
+              </button>
             </div>
           </div>
           <canvas
@@ -141,11 +121,33 @@ class PlaySlot extends React.PureComponent {
         <EmotionButton />
         <div className={styles.bottomSection}>
           <div className={styles.bottomContainer}>
-            <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>
-            <div className={styles.sectionMenu}>ALL BETS</div>
+            <div
+              onClick={() => {
+                this.props.dispatch(Actions.setCategory(0));
+              }}
+              className={`${styles.sectionMenu} ${tableCategory === 0 ? styles.active : ''}`}
+            >
+              YOUR BETS
+            </div>
+            <div
+              onClick={() => {
+                this.props.dispatch(Actions.setCategory(1));
+              }}
+              className={`${styles.sectionMenu} ${tableCategory === 1 ? styles.active : ''}`}
+            >
+              ALL BETS
+            </div>
           </div>
           <div className={styles.tableWrapper}>
-            <ReactTable className="" data={data} columns={columns} defaultPageSize={10} showPageSizeOptions={false} />
+            <ReactTable
+              className=""
+              data={_data.filter(e => {
+                return tableCategory === 0 ? e.id === 1 : 1;
+              })}
+              columns={columns}
+              defaultPageSize={10}
+              showPageSizeOptions={false}
+            />
           </div>
         </div>
       </div>

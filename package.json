@@ -100,6 +100,7 @@
         "history": "^4.6.2",
         "immutable": "^3.8.1",
         "is-ci": "^1.0.10",
+        "lodash.shuffle": "^4.2.0",
         "lodash.throttle": "^4.1.1",
         "notie": "^4.3.1",
         "pixi.js": "^4.5.3",

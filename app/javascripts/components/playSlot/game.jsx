@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { shuffle } from 'lodash';
 
 const ENTIRE_REEL_COUNT = 5;
 const ITEM_PER_ENTIRE_REEL = 12;
@@ -62,13 +63,6 @@ const LINE_CASES = [
   [{ symbol: 0, length: 4 }], // 10
   [{ symbol: 1, length: 3 }, { symbol: 0, length: 3 }], // 5
 ];
-
-function shuffleArray(arr) {
-  for (let i = arr.length; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * i);
-    [arr[i - 1], arr[j]] = [arr[j], arr[i - 1]];
-  }
-}
 
 // Function of getting Combinations in Array for calculateSlot
 // source : https://gist.github.com/axelpale/3118596
@@ -538,7 +532,7 @@ export default class SlotGame {
           this.reelGroup = this.newReelGroup;
         }
         resolve(reelNum);
-      }, 2000);
+      }, 500);
     });
   }
 
@@ -590,193 +584,192 @@ export default class SlotGame {
       };
       this.drawingLines.push(drawingLine);
       return 'DRAW_LINE';
-    } else {
-      // Save Slot Infos for avoiding inconsistency.
-      const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
-      for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
-        slotLineInfo[i] = new Array(3).fill(undefined);
+    }
+    // Save Slot Infos for avoiding inconsistency.
+    const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
+    for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
+      slotLineInfo[i] = new Array(3).fill(undefined);
+    }
+    let usableLines = WIN_LINE.slice(0, lineNum);
+    usableLines = shuffle(usableLines);
+    // First, we have to find Lines that use same symbols.
+    const sameSymbolObj = {};
+    const symbolObj = {};
+    const singleSymbolArr = [];
+    for (let i = 0; i < lineInfos.length; i += 1) {
+      const symbol = lineInfos[i].symbol;
+      if (symbolObj[symbol] === undefined) {
+        symbolObj[symbol] = [lineInfos[i]];
+      } else {
+        symbolObj[symbol].push(lineInfos[i]);
       }
-      let usableLines = WIN_LINE.slice(0, lineNum);
-      shuffleArray(usableLines);
-      // First, we have to find Lines that use same symbols.
-      const sameSymbolObj = {};
-      const symbolObj = {};
-      const singleSymbolArr = [];
-      for (let i = 0; i < lineInfos.length; i += 1) {
-        const symbol = lineInfos[i].symbol;
-        if (symbolObj[symbol] === undefined) {
-          symbolObj[symbol] = [lineInfos[i]];
-        } else {
-          symbolObj[symbol].push(lineInfos[i]);
-        }
+    }
+    for (const key in symbolObj) {
+      if (symbolObj[key].length >= 2) {
+        sameSymbolObj[key] = symbolObj[key];
+      } else {
+        singleSymbolArr.push(symbolObj[key][0]);
       }
-      for (const key in symbolObj) {
-        if (symbolObj[key].length >= 2) {
-          sameSymbolObj[key] = symbolObj[key];
-        } else {
-          singleSymbolArr.push(symbolObj[key][0]);
-        }
+    }
+    // If there are no duplicated symbols,
+    if (Object.keys(sameSymbolObj).length === 0) {
+      // First drawing line is drawn to first usableLines.
+      for (let i = 0; i < lineInfos[0].length; i += 1) {
+        const slotY = usableLines[0][i];
+        slotLineInfo[i][slotY] = 1;
       }
-      // If there are no duplicated symbols,
-      if (Object.keys(sameSymbolObj).length === 0) {
-        // First drawing line is drawn to first usableLines.
-        for (let i = 0; i < lineInfos[0].length; i += 1) {
-          const slotY = usableLines[0][i];
-          slotLineInfo[i][slotY] = 1;
+      let drawingLine = {
+        lineNum: usableLines[0][5],
+        symbol: lineInfos[0].symbol,
+        length: lineInfos[0].length,
+      };
+      this.drawingLines.push(drawingLine);
+      let drawable = true;
+      for (let i = 1; i < needLineNum; i += 1) {
+        // If drawingLines.length < i means that we can't find drawing case.
+        // SO have to draw Big Wins.
+        if (this.drawingLines.length < i) {
+          drawable = false;
+          break;
         }
-        let drawingLine = {
-          lineNum: usableLines[0][5],
-          symbol: lineInfos[0].symbol,
-          length: lineInfos[0].length,
-        };
-        this.drawingLines.push(drawingLine);
-        let drawable = true;
-        for (let i = 1; i < needLineNum; i += 1) {
-          // If drawingLines.length < i means that we can't find drawing case.
-          // SO have to draw Big Wins.
-          if (this.drawingLines.length < i) {
-            drawable = false;
-            break;
+        for (let j = 1; j < lineNum; j += 1) {
+          // Check for overLapping Line
+          let overLapping = false;
+          for (let k = 0; k < lineInfos[i].length; k += 1) {
+            const slotY = usableLines[j][k];
+            if (slotLineInfo[k][slotY] !== undefined) {
+              overLapping = true;
+              break;
+            }
           }
-          for (let j = 1; j < lineNum; j += 1) {
-            // Check for overLapping Line
-            let overLapping = false;
+          // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines
+          if (!overLapping) {
             for (let k = 0; k < lineInfos[i].length; k += 1) {
               const slotY = usableLines[j][k];
-              if (slotLineInfo[k][slotY] !== undefined) {
-                overLapping = true;
-                break;
-              }
-            }
-            // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines
-            if (!overLapping) {
-              for (let k = 0; k < lineInfos[i].length; k += 1) {
-                const slotY = usableLines[j][k];
-                slotLineInfo[k][slotY] = 1;
-              }
-              drawingLine = {
-                lineNum: usableLines[j][5],
-                symbol: lineInfos[i].symbol,
-                length: lineInfos[i].length,
-              };
-              this.drawingLines.push(drawingLine);
-              break;
-            }
-          }
-        }
-        const result = drawable ? 'DRAW_LINE' : 'BIG_WIN';
-        return result;
-        // else, we have to draw duplicated symbol lines with minimum distance lines.
-      } else {
-        const distanceCompArr = new Array(ENTIRE_REEL_COUNT);
-        const sameSymbolArr = [];
-        let drawingLine;
-        // First draw sameSymbol Lines.
-        // i means same symbol Array.
-        for (let i = 0; i < Object.keys(sameSymbolObj).length; i += 1) {
-          const symbol = Object.keys(sameSymbolObj)[i];
-          sameSymbolArr.push(symbol);
-          const sameSymbolLinesNum = sameSymbolObj[symbol].length;
-          // LineIndexArr is set for getting random combination from usableLines
-          const lineIndexArr = [];
-          for (let p = 0; p < usableLines.length; p += 1) {
-            lineIndexArr.push(p);
-          }
-          const combArr = kComb(lineIndexArr, sameSymbolLinesNum);
-          // Finding combination that has minimum distance.
-          // j means symbol Arr combinations
-          let minDist = 15;
-          let minCombIndex; // undefined
-          for (let j = 0; j < combArr.length; j += 1) {
-            let overLapping = false;
-            // distanceCompArr Initialization
-            for (let q = 0; q < ENTIRE_REEL_COUNT; q += 1) {
-              distanceCompArr[q] = new Array(3).fill(undefined);
-            }
-            let distance = 0;
-            // Doing calculate Distance
-            // k means combination's element
-            for (let k = 0; k < combArr[j].length; k += 1) {
-              const lineIndex = combArr[j][k];
-              for (let l = 0; l < sameSymbolObj[symbol][k].length; l += 1) {
-                const slotY = usableLines[lineIndex][l];
-                if (slotLineInfo[l][slotY] !== undefined) {
-                  // It means overLapping
-                  overLapping = true;
-                  break;
-                } else if (distanceCompArr[l][slotY] === 1) {
-                  distanceCompArr[l][slotY] = 1;
-                } else {
-                  distanceCompArr[l][slotY] = 1;
-                  distance += 1;
-                }
-              }
-              if (overLapping) break;
-            }
-            if (!overLapping && distance < minDist) {
-              minDist = distance;
-              minCombIndex = j;
-            }
-          }
-          // minCombIndex is still undefined After loop, we can't draw it.
-          if (minCombIndex === undefined) return 'BIG_WIN';
-          // We have to insert that combination of lines to slotLineInfo.
-          for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
-            const lineIndex = combArr[minCombIndex][j];
-            for (let k = 0; k < sameSymbolObj[symbol][j].length; k += 1) {
-              const slotY = usableLines[lineIndex][k];
-              slotLineInfo[k][slotY] = symbol;
+              slotLineInfo[k][slotY] = 1;
             }
             drawingLine = {
-              lineNum: usableLines[lineIndex][5], // Fifth index is original win lineNum.
-              symbol: parseInt(symbol, 10),
-              length: sameSymbolObj[symbol][j].length,
+              lineNum: usableLines[j][5],
+              symbol: lineInfos[i].symbol,
+              length: lineInfos[i].length,
             };
             this.drawingLines.push(drawingLine);
+            break;
           }
-          // We have to delete lines where we find min distance for quality.
-          let lastIndex = 0;
-          const newUsableLines = [];
-          for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
-            newUsableLines.push(...usableLines.slice(lastIndex, combArr[minCombIndex][j]));
-            lastIndex = combArr[minCombIndex][j] + 1;
-          }
-          newUsableLines.push(...usableLines.slice(lastIndex, usableLines.length));
-          usableLines = newUsableLines;
         }
-        // After draw same symbol lines, we have to draw single symbol lines.
-        for (let i = 0; i < singleSymbolArr.length; i += 1) {
-          let drawable = false;
-          for (let j = 0; j < usableLines.length; j += 1) {
-            // Check for overLapping Line.
-            let overLapping = false;
-            for (let k = 0; k < singleSymbolArr[i].length; k += 1) {
-              const slotY = usableLines[j][k];
-              if (slotLineInfo[k][slotY] !== undefined) {
+      }
+      const result = drawable ? 'DRAW_LINE' : 'BIG_WIN';
+      return result;
+      // else, we have to draw duplicated symbol lines with minimum distance lines.
+    } else {
+      const distanceCompArr = new Array(ENTIRE_REEL_COUNT);
+      const sameSymbolArr = [];
+      let drawingLine;
+      // First draw sameSymbol Lines.
+      // i means same symbol Array.
+      for (let i = 0; i < Object.keys(sameSymbolObj).length; i += 1) {
+        const symbol = Object.keys(sameSymbolObj)[i];
+        sameSymbolArr.push(symbol);
+        const sameSymbolLinesNum = sameSymbolObj[symbol].length;
+        // LineIndexArr is set for getting random combination from usableLines
+        const lineIndexArr = [];
+        for (let p = 0; p < usableLines.length; p += 1) {
+          lineIndexArr.push(p);
+        }
+        const combArr = kComb(lineIndexArr, sameSymbolLinesNum);
+        // Finding combination that has minimum distance.
+        // j means symbol Arr combinations
+        let minDist = 15;
+        let minCombIndex; // undefined
+        for (let j = 0; j < combArr.length; j += 1) {
+          let overLapping = false;
+          // distanceCompArr Initialization
+          for (let q = 0; q < ENTIRE_REEL_COUNT; q += 1) {
+            distanceCompArr[q] = new Array(3).fill(undefined);
+          }
+          let distance = 0;
+          // Doing calculate Distance
+          // k means combination's element
+          for (let k = 0; k < combArr[j].length; k += 1) {
+            const lineIndex = combArr[j][k];
+            for (let l = 0; l < sameSymbolObj[symbol][k].length; l += 1) {
+              const slotY = usableLines[lineIndex][l];
+              if (slotLineInfo[l][slotY] !== undefined) {
+                // It means overLapping
                 overLapping = true;
                 break;
+              } else if (distanceCompArr[l][slotY] === 1) {
+                distanceCompArr[l][slotY] = 1;
+              } else {
+                distanceCompArr[l][slotY] = 1;
+                distance += 1;
               }
             }
-            // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines.
-            if (!overLapping) {
-              for (let k = 0; k < lineInfos[i].length; k += 1) {
-                const slotY = usableLines[j][k];
-                slotLineInfo[k][slotY] = singleSymbolArr[i].symbol;
-              }
-              drawingLine = {
-                lineNum: usableLines[j][5],
-                symbol: parseInt(singleSymbolArr[i].symbol, 10),
-                length: singleSymbolArr[i].length,
-              };
-              this.drawingLines.push(drawingLine);
-              drawable = true;
+            if (overLapping) break;
+          }
+          if (!overLapping && distance < minDist) {
+            minDist = distance;
+            minCombIndex = j;
+          }
+        }
+        // minCombIndex is still undefined After loop, we can't draw it.
+        if (minCombIndex === undefined) return 'BIG_WIN';
+        // We have to insert that combination of lines to slotLineInfo.
+        for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+          const lineIndex = combArr[minCombIndex][j];
+          for (let k = 0; k < sameSymbolObj[symbol][j].length; k += 1) {
+            const slotY = usableLines[lineIndex][k];
+            slotLineInfo[k][slotY] = symbol;
+          }
+          drawingLine = {
+            lineNum: usableLines[lineIndex][5], // Fifth index is original win lineNum.
+            symbol: parseInt(symbol, 10),
+            length: sameSymbolObj[symbol][j].length,
+          };
+          this.drawingLines.push(drawingLine);
+        }
+        // We have to delete lines where we find min distance for quality.
+        let lastIndex = 0;
+        const newUsableLines = [];
+        for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+          newUsableLines.push(...usableLines.slice(lastIndex, combArr[minCombIndex][j]));
+          lastIndex = combArr[minCombIndex][j] + 1;
+        }
+        newUsableLines.push(...usableLines.slice(lastIndex, usableLines.length));
+        usableLines = newUsableLines;
+      }
+      // After draw same symbol lines, we have to draw single symbol lines.
+      for (let i = 0; i < singleSymbolArr.length; i += 1) {
+        let drawable = false;
+        for (let j = 0; j < usableLines.length; j += 1) {
+          // Check for overLapping Line.
+          let overLapping = false;
+          for (let k = 0; k < singleSymbolArr[i].length; k += 1) {
+            const slotY = usableLines[j][k];
+            if (slotLineInfo[k][slotY] !== undefined) {
+              overLapping = true;
               break;
             }
           }
-          if (!drawable) return 'BIG_WIN';
+          // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines.
+          if (!overLapping) {
+            for (let k = 0; k < lineInfos[i].length; k += 1) {
+              const slotY = usableLines[j][k];
+              slotLineInfo[k][slotY] = singleSymbolArr[i].symbol;
+            }
+            drawingLine = {
+              lineNum: usableLines[j][5],
+              symbol: parseInt(singleSymbolArr[i].symbol, 10),
+              length: singleSymbolArr[i].length,
+            };
+            this.drawingLines.push(drawingLine);
+            drawable = true;
+            break;
+          }
         }
-        return 'DRAW_LINE';
+        if (!drawable) return 'BIG_WIN';
       }
+      return 'DRAW_LINE';
     }
   }
 

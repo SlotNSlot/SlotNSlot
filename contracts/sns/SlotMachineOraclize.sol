@@ -1,6 +1,7 @@
 pragma solidity ^0.4.0;
 
 import "../OraclizeAPI.sol";
+import '../zeppelin/ownership/Ownable.sol';
 
 contract SlotMachineOraclize is usingOraclize, Ownable {
 
@@ -38,7 +39,8 @@ contract SlotMachineOraclize is usingOraclize, Ownable {
         mIsGamePlaying = false;
     }
 
-    function __callback(bytes32 _queryId, string _result, bytes _proof) oraclize_randomDS_proofVerify(_queryId, _result, _proof)
+    function __callback(bytes32 _queryId, string _result, bytes _proof)
+    oraclize_randomDS_proofVerify(_queryId, _result, _proof)
     {
         if (msg.sender != oraclize_cbAddress()) throw;
         uint result;

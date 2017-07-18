@@ -2,10 +2,13 @@ import React from 'react';
 import SlotListItem from '../slotItem';
 import styles from '../slotList.scss';
 
-const SlotList = () => {
-  const items = [1, 2, 3, 4, 5, 6];
-  const slotItemsNode = items.map(item => {
-    return <SlotListItem key={item} />;
+const SlotList = ({ slotContracts }) => {
+  if (!slotContracts) {
+    return null;
+  }
+
+  const slotItemsNode = slotContracts.map(slotContract => {
+    return <SlotListItem slotContract={slotContract} key={slotContract.address} />;
   });
 
   return (

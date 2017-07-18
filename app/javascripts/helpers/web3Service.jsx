@@ -1,10 +1,11 @@
 import Web3 from 'web3';
 import EnvChecker from './envChecker';
+
 const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
-const CONTRACT_ADDRESS = '0x942b0ffdeb9a91345804bb6c03ac4fa8fee9143a';
+const SLOT_MANAGER_ADDRESS = '0xe4b8b1dd66d083017e4a5e761faae9c6f88b90f8';
 
 class Web3Service {
   constructor() {
@@ -17,7 +18,7 @@ class Web3Service {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
-      this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
+      this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
     } else {
       console.warn(
         "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
@@ -25,7 +26,7 @@ class Web3Service {
       if (EnvChecker.isDev()) {
         this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
         const SlotManagerContract = this.web3.eth.contract(managerABI);
-        this.slotManagerContract = SlotManagerContract.at(CONTRACT_ADDRESS);
+        this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
       }
     }
   }
@@ -95,6 +96,26 @@ class Web3Service {
           resolve(result);
         }
       });
+    });
+  }
+
+  async sendProivderEtherToSlotMachine({ ownerAddress, playerAddress, etherValue }) {
+    return new Promise((resolve, reject) => {
+      this.web3.eth.sendTransaction(
+        {
+          from: ownerAddress,
+          to: playerAddress,
+          value: this.web3.toWei(parseFloat(etherValue, 10), 'ether'),
+        },
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.log(result);
+            resolve(result);
+          }
+        },
+      );
     });
   }
 

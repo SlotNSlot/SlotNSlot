@@ -84,10 +84,7 @@ export function getAllSlotMachines() {
 
     await Promise.all(promiseArr)
       .then(resultArr => {
-        let slotContracts = List();
-        resultArr.forEach(resultList => {
-          slotContracts = slotContracts.concat(resultList);
-        });
+        const slotContracts = List(resultArr).flatten(true);
 
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,

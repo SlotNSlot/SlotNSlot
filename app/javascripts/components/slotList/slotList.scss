@@ -15,6 +15,12 @@
   height: 300px;
 }
 
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .background {
   background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListBackground.jpg");
   width: 100%;

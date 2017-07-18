@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getAllSlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
+import Spinner from '../common/spinner';
 import SortingHeader from './sortingHeader';
 import ListHeader from './listHeader';
 import SlotList from './slotList';
@@ -46,6 +47,22 @@ class SlotListContainer extends React.PureComponent {
   render() {
     const { slotListState } = this.props;
 
+    let content = null;
+    // Handle Loading State
+    if (slotListState.get('isLoading')) {
+      content = (
+        <div className={styles.spinnerContainer}>
+          <Spinner />
+        </div>
+      );
+    } else if (slotListState.get('hasError')) {
+      content = <div>Sorry. We had error to get slot machines.</div>;
+    } else if (!slotListState.get('allSlotContracts') || !slotListState.get('allSlotContracts').size === 0) {
+      content = <div>We don't have any slot machines yet.</div>;
+    } else {
+      content = <SlotList slotContracts={slotListState.get('allSlotContracts')} />;
+    }
+
     return (
       <div className={styles.slotListContainer}>
         <ListHeader />
@@ -56,7 +73,7 @@ class SlotListContainer extends React.PureComponent {
             isOpen={slotListState.get('isSortDropdownOpen')}
             handleToggle={this.handleToggleDropdown}
           />
-          <SlotList />
+          {content}
         </div>
       </div>
     );

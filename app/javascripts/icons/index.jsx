@@ -30,6 +30,8 @@ const ICONS = {
   MEDIUM: require('./medium.svg'),
   MEDIUM_FOR_FOOTER: require('./medium-for-footer.svg'),
   BLACK_DOT: require('./blackDot.svg'),
+  COMBINED_SHAPE: require('./combined-shape.svg'),
+  COMBINED_SHAPE_FILL: require('./combined-shape-2.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

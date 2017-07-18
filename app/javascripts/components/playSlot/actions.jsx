@@ -4,6 +4,8 @@ export const ACTION_TYPES = {
   SET_BANK_ROLL: 'play_slot.SET_BANK_ROLL',
   SPIN_START: 'play_slot.SPIN_START',
   SPIN_END: 'play_slot.SPIN_END',
+  TOGGLE_EMOTION: 'play_slot.TOGGLE_EMOTION',
+  SET_CATEGORY: 'play_slot.SET_CATEGORY',
 };
 
 export function setBetSize(betSize) {
@@ -42,5 +44,20 @@ export function spinStart() {
 export function spinEnd() {
   return {
     type: ACTION_TYPES.SPIN_END,
+  };
+}
+
+export function toggleEmotion() {
+  return {
+    type: ACTION_TYPES.TOGGLE_EMOTION,
+  };
+}
+
+export function setCategory(tableNum) {
+  return {
+    type: ACTION_TYPES.SET_CATEGORY,
+    payload: {
+      tableNum,
+    },
   };
 }

@@ -15,14 +15,44 @@ export const SLOT_LIST_INITIAL_STATE = fromJS({
   hasError: false,
   sortOption: SORT_OPTIONS.lastActive,
   isSortDropdownOpen: false,
-  slots: [],
+  allSlotContracts: [],
+  mySlotContracts: [],
   page: 1,
+  mySlotPage: 1,
 });
 
 export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
   switch (action.type) {
-    case ACTION_TYPES.START_TO_GET_SLOT_MACHINES: {
-      return state;
+    case ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES:
+    case ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('allSlotContracts', action.payload.slotContracts);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('mySlotContracts', action.payload.slotContracts);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES:
+    case ACTION_TYPES.FAILED_TO_GET_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
+      });
+    }
+
+    case ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
     }
 
     case ACTION_TYPES.TOGGLE_SORTING_DROPDOWN: {

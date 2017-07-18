@@ -6,7 +6,7 @@ import * as Actions from '../actions';
 import getMockStore from '../../../__tests__/mockStore';
 
 describe('MakeGame Action Creators', () => {
-  let store = getMockStore();
+  const store = getMockStore();
 
   beforeEach(() => {
     store.clearActions();

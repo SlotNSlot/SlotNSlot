@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getMySlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
+import Spinner from '../common/spinner';
 import SlotList from './slotList';
 import SortingHeader from './sortingHeader';
 import ListHeader from './listHeader';
@@ -26,8 +27,8 @@ class MySlotListContainer extends React.PureComponent {
     this.getSlotMachines();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.rootState.get('account')) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.rootState.get('account') !== this.props.rootState.get('account')) {
       this.getSlotMachines();
     }
   }
@@ -55,6 +56,22 @@ class MySlotListContainer extends React.PureComponent {
   render() {
     const { slotListState } = this.props;
 
+    let content = null;
+    // Handle Loading State
+    if (slotListState.get('isLoading')) {
+      content = (
+        <div className={styles.spinnerContainer}>
+          <Spinner />
+        </div>
+      );
+    } else if (slotListState.get('hasError')) {
+      content = <div>Sorry. We had error to get your slot machines.</div>;
+    } else if (!slotListState.get('mySlotContracts') || !slotListState.get('mySlotContracts').size === 0) {
+      content = <div>You don't have any slot machines yet.</div>;
+    } else {
+      content = <SlotList slotContracts={slotListState.get('mySlotContracts')} />;
+    }
+
     return (
       <div className={styles.slotListContainer}>
         <ListHeader />
@@ -65,7 +82,7 @@ class MySlotListContainer extends React.PureComponent {
             isOpen={slotListState.get('isSortDropdownOpen')}
             handleToggle={this.handleToggleDropdown}
           />
-          <SlotList />
+          {content}
         </div>
       </div>
     );

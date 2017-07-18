@@ -22,6 +22,47 @@ class Web3Service {
       account,
     });
   }
+
+  getNumOfSlotMachine(account) {
+    if (account === 'forceFail') {
+      return Promise.reject();
+    }
+    return Promise.resolve(3);
+  }
+
+  getSlotMachineAddressFromProvider(providerAddress, index) {
+    if (providerAddress === 'forceFail') {
+      return Promise.reject();
+    }
+    return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
+  }
+
+  getTheNumberOfProviders() {
+    return Promise.resolve(3);
+  }
+
+  getSlotMachineContract(slotAddress) {
+    if (slotAddress === 'forceFail') {
+      return undefined;
+    }
+    return {
+      abi: [1, 2, 3, 4, 6],
+      address: '3uisdfjksdnc3j2',
+    };
+  }
+
+  getProviderAddress(index) {
+    return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
+  }
+
+  getSlotMachines(account) {
+    if (account === 'forceFail') {
+      return Promise.reject();
+    }
+    return Promise.resolve({
+      account,
+    });
+  }
 }
 
 const web3Service = new Web3Service();

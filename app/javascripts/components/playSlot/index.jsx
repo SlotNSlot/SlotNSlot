@@ -1,7 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import ReactTable from 'react-table';
+import './react-table.scss';
 import SlotGame from './game';
 import * as Actions from './actions';
+import styles from './playSlot.scss';
+import EmotionButton from './emotionButton';
 
 let gameAlreadyLoaded = false;
 
@@ -49,13 +53,103 @@ class PlaySlot extends React.PureComponent {
   }
 
   render() {
+    const { root, playSlotState } = this.props;
+    const _data = playSlotState.get('betsData').toJS();
+    const tableCategory = playSlotState.get('tableCategory');
+
+    const columns = [
+      {
+        Header: 'ID',
+        accessor: 'id',
+      },
+      {
+        Header: 'TIME',
+        accessor: 'time',
+      },
+      {
+        Header: 'BET',
+        accessor: 'bet',
+      },
+      {
+        Header: 'RESULT',
+        accessor: 'result',
+      },
+      {
+        Header: 'PROFIT',
+        accessor: 'profit',
+      },
+    ];
+
     return (
-      <div>
-        <canvas
-          ref={canvas => {
-            this.canvas = canvas;
-          }}
-        />
+      <div className={styles.playSlotSection}>
+        <div className={styles.playSlotContainer}>
+          <div className={styles.innerHeader}>
+            <div className={styles.slotName}>Slot Name</div>
+            <div className={styles.rightBtns}>
+              <button
+                className={styles.helpBtn}
+                onClick={() => {
+                  alert('help');
+                }}
+              >
+                ?
+              </button>
+              <button
+                onClick={() => {
+                  alert('deposit');
+                }}
+                className={styles.headerBtn}
+              >
+                DEPOSIT
+              </button>
+              <button
+                onClick={() => {
+                  alert('cash out');
+                }}
+                className={styles.headerBtn}
+              >
+                CASH OUT
+              </button>
+            </div>
+          </div>
+          <canvas
+            ref={canvas => {
+              this.canvas = canvas;
+            }}
+          />
+        </div>
+        <EmotionButton />
+        <div className={styles.bottomSection}>
+          <div className={styles.bottomContainer}>
+            <div
+              onClick={() => {
+                this.props.dispatch(Actions.setCategory(0));
+              }}
+              className={`${styles.sectionMenu} ${tableCategory === 0 ? styles.active : ''}`}
+            >
+              YOUR BETS
+            </div>
+            <div
+              onClick={() => {
+                this.props.dispatch(Actions.setCategory(1));
+              }}
+              className={`${styles.sectionMenu} ${tableCategory === 1 ? styles.active : ''}`}
+            >
+              ALL BETS
+            </div>
+          </div>
+          <div className={styles.tableWrapper}>
+            <ReactTable
+              className=""
+              data={_data.filter(e => {
+                return tableCategory === 0 ? e.id === 1 : 1;
+              })}
+              columns={columns}
+              defaultPageSize={10}
+              showPageSizeOptions={false}
+            />
+          </div>
+        </div>
       </div>
     );
   }

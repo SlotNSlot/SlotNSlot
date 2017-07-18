@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getSlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
+import { getAllSlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
 import SortingHeader from './sortingHeader';
 import ListHeader from './listHeader';
 import SlotList from './slotList';
@@ -26,18 +26,9 @@ class SlotListContainer extends React.PureComponent {
     this.getSlotMachines();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.rootState.get('account')) {
-      this.getSlotMachines();
-    }
-  }
-
   getSlotMachines() {
-    const { dispatch, rootState } = this.props;
-
-    if (rootState.get('account')) {
-      dispatch(getSlotMachines(rootState.get('account')));
-    }
+    const { dispatch } = this.props;
+    dispatch(getAllSlotMachines());
   }
 
   handleToggleDropdown() {

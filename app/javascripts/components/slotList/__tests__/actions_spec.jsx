@@ -46,31 +46,28 @@ describe('Slot List Component Action Creators', () => {
 
   describe('getAllSlotMachines action creator', () => {
     describe('when fetching is succeeded', () => {
-      it.only(
-        'should return START_TO_GET_ALL_SLOT_MACHINES & SUCCEEDED_TO_GET_ALL_SLOT_MACHINES actions with proper balance payload',
-        async () => {
-          await store.dispatch(Actions.getAllSlotMachines('dsfsdvcxvcvwefwfwcdscsdf'));
-          const actions = await store.getActions();
+      it('should return START_TO_GET_ALL_SLOT_MACHINES & SUCCEEDED_TO_GET_ALL_SLOT_MACHINES actions with proper balance payload', async () => {
+        await store.dispatch(Actions.getAllSlotMachines('dsfsdvcxvcvwefwfwcdscsdf'));
+        const actions = await store.getActions();
 
-          expect(actions[0].type).toEqual(Actions.ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES);
-          expect(actions[1]).toEqual({
-            type: Actions.ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
-            payload: {
-              slotContracts: List([
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-                mockSlotMachineContract,
-              ]),
-            },
-          });
-        },
-      );
+        expect(actions[0].type).toEqual(Actions.ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES);
+        expect(actions[1]).toEqual({
+          type: Actions.ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
+          payload: {
+            slotContracts: List([
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+              mockSlotMachineContract,
+            ]),
+          },
+        });
+      });
     });
 
     describe('when fetching is failed', () => {

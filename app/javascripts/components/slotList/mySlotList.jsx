@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getSlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
+import { getMySlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
 import SlotList from './slotList';
 import SortingHeader from './sortingHeader';
 import ListHeader from './listHeader';
@@ -32,11 +32,11 @@ class MySlotListContainer extends React.PureComponent {
     }
   }
 
-  getSlotMachines() {
+  async getSlotMachines() {
     const { dispatch, rootState } = this.props;
 
     if (rootState.get('account')) {
-      dispatch(getSlotMachines(rootState.get('account')));
+      await dispatch(getMySlotMachines(rootState.get('account')));
     }
   }
 

@@ -68,6 +68,7 @@ class SlotListContainer extends React.PureComponent {
         <ListHeader />
         <div>
           <SortingHeader
+            headerTitle="All Slots"
             handleClickSortingOption={this.handleClickSortingOption}
             currentSortingOption={slotListState.get('sortOption')}
             isOpen={slotListState.get('isSortDropdownOpen')}

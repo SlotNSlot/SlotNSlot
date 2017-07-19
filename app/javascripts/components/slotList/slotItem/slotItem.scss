@@ -7,10 +7,10 @@
   border-radius: 4px;
   background-color: #ffffff;
   border: 2px solid #dcdbea;
+  cursor: pointer;
   margin-left: 20px;
   margin-bottom: 15px;
   padding-top: 32.5px;
-  cursor: pointer;
 
   &:hover {
     background-color: #eeeef3;
@@ -69,4 +69,51 @@
 .footerRight {
   position: absolute;
   right: 17px;
+}
+
+.plusButtonWrapper {
+  display: block;
+  text-align: center;
+  height: 50px;
+
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.newSlotListItem {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 300px;
+  height: 200px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border: 2px solid #dcdbea;
+  margin-left: 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eeeef3;
+  }
+}
+
+.newItemTitle {
+  margin-top: 15px;
+  font-size: 17px;
+  color: #c0bed4;
+  text-align: center;
+}
+
+.newSlotListItemContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
 }

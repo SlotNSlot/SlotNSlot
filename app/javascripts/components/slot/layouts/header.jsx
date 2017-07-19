@@ -19,7 +19,7 @@ const Header = ({ rootState, location }) =>
       </div>
       <div className={styles.rightItems}>
         <div className={styles.walletStatus}>
-          Your balance : {rootState.get('balance')} ETH
+          Your balance : {parseFloat(rootState.get('balance'), 10).toFixed(3)} ETH
         </div>
         <div className={styles.buttonWrapper}>
           <button className={styles.accountBtn}>

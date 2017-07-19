@@ -3,14 +3,14 @@ import SlotListItem from '../slotItem';
 import NewSlotListItem from '../slotItem/newItem';
 import styles from '../slotList.scss';
 
-const SlotList = ({ slotContracts, showMakeItem = false }) => {
+const SlotList = ({ slotContracts, isMaking = false, showMakeItem = false }) => {
   if (!slotContracts) {
     return null;
   }
 
   let newSlotNode = null;
   if (showMakeItem) {
-    newSlotNode = <NewSlotListItem />;
+    newSlotNode = <NewSlotListItem isMaking={isMaking} />;
   }
 
   const slotItemsNode = slotContracts.map(slotContract => {

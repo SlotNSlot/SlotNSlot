@@ -67,7 +67,13 @@ class MySlotListContainer extends React.PureComponent {
     } else if (slotListState.get('hasError')) {
       content = <div>Sorry. We had error to get your slot machines.</div>;
     } else {
-      content = <SlotList slotContracts={slotListState.get('mySlotContracts')} showMakeItem />;
+      content = (
+        <SlotList
+          slotContracts={slotListState.get('mySlotContracts')}
+          isMaking={slotListState.get('isMaking')}
+          showMakeItem
+        />
+      );
     }
 
     return (

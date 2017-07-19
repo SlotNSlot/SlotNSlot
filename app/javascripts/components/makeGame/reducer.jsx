@@ -23,9 +23,7 @@ export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.SUCCEED_TO_MAKE_GAME: {
-      return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('hasFailed', false);
-      });
+      return MAKE_GAME_INITIAL_STATE;
     }
 
     case ACTION_TYPES.FAILED_TO_MAKE_GAME: {

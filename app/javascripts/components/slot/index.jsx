@@ -19,10 +19,10 @@ const Slot = ({ match, location, rootState }) =>
   <div className={styles.slotContainer}>
     <Header rootState={rootState} location={location} />
     <Switch>
-      <Route exact path={`${match.url}/play`} component={PlaySlot} />
+      <Route exact path={`${match.url}/play`} component={SlotList} />
+      <Route path={`${match.url}/play/:address`} component={PlaySlot} />
+      <Route exact path={`${match.url}/make`} component={MySlotListContainer} />
       <Route path={`${match.url}/make/:step`} component={MakeGame} />
-      <Route path={`${match.url}/mine`} component={MySlotListContainer} />
-      <Route exact path={match.url} component={SlotList} />
       <Route component={Status404} />
     </Switch>
     <Footer />

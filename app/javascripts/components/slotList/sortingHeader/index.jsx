@@ -5,11 +5,13 @@ import styles from '../slotList.scss';
 
 class SortingHeader extends React.PureComponent {
   render() {
-    const { isOpen, handleToggle, currentSortingOption, handleClickSortingOption } = this.props;
+    const { headerTitle, isOpen, handleToggle, currentSortingOption, handleClickSortingOption } = this.props;
 
     return (
       <div className={styles.sortingHeader}>
-        <div className={styles.headerLeft}>All Slots</div>
+        <div className={styles.headerLeft}>
+          {headerTitle}
+        </div>
         <div className={styles.headerRight}>
           <Dropdown isOpen={isOpen} toggle={handleToggle}>
             <DropdownToggle className={styles.dropdownToggle} caret>

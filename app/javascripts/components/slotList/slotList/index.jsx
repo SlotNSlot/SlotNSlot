@@ -1,10 +1,16 @@
 import React from 'react';
 import SlotListItem from '../slotItem';
+import NewSlotListItem from '../slotItem/newItem';
 import styles from '../slotList.scss';
 
-const SlotList = ({ slotContracts }) => {
+const SlotList = ({ slotContracts, showMakeItem = false }) => {
   if (!slotContracts) {
     return null;
+  }
+
+  let newSlotNode = null;
+  if (showMakeItem) {
+    newSlotNode = <NewSlotListItem />;
   }
 
   const slotItemsNode = slotContracts.map(slotContract => {
@@ -14,6 +20,7 @@ const SlotList = ({ slotContracts }) => {
   return (
     <div className={styles.slotListWrapper}>
       <ul className={styles.slotList}>
+        {newSlotNode}
         {slotItemsNode}
       </ul>
       <div className={styles.paginationWrapper}>

@@ -1,12 +1,13 @@
 .footer {
-  padding: 15px 0;
+  display: flex;
   background: #f8f8f8;
-  font-family: Roboto;
   height: 120px;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .innerContainer {
-  max-width: 960px;
+  width: 960px;
   margin: 0 auto;
   position: relative;
 }

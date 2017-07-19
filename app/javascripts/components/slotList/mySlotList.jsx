@@ -66,10 +66,8 @@ class MySlotListContainer extends React.PureComponent {
       );
     } else if (slotListState.get('hasError')) {
       content = <div>Sorry. We had error to get your slot machines.</div>;
-    } else if (!slotListState.get('mySlotContracts') || !slotListState.get('mySlotContracts').size === 0) {
-      content = <div>You don't have any slot machines yet.</div>;
     } else {
-      content = <SlotList slotContracts={slotListState.get('mySlotContracts')} />;
+      content = <SlotList slotContracts={slotListState.get('mySlotContracts')} showMakeItem />;
     }
 
     return (
@@ -77,6 +75,7 @@ class MySlotListContainer extends React.PureComponent {
         <ListHeader />
         <div>
           <SortingHeader
+            headerTitle="My Slots"
             handleClickSortingOption={this.handleClickSortingOption}
             currentSortingOption={slotListState.get('sortOption')}
             isOpen={slotListState.get('isSortDropdownOpen')}

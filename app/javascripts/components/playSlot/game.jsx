@@ -1054,7 +1054,22 @@ export default class SlotGame {
     const spinBtn = new Sprite(TextureCache['spin.png']);
     spinBtn.interactive = true;
     spinBtn.buttonMode = true;
-    spinBtn.on('pointerdown', this.startSpin);
+    spinBtn.on('pointerdown', () => {
+      if (this.gameState === STATE_WAITING) {
+        this.winLines.clear();
+        this.gameState = STATE_SPINNING;
+        this.reelGroup.forEach(reel => {
+          reel.vy = 100;
+          reel.filters = [this.blurFilter];
+        });
+        this.spinStatus.fill(true);
+        this.bigWinContainer.visible = false;
+        this.winMoneyText.visible = false;
+        this.ovalBackground.visible = false;
+        this.drawingLines = [];
+        this.playGame();
+      }
+    });
     spinBtn.position.set(620, 580);
     spinBtn.width = 186;
     spinBtn.height = 65;

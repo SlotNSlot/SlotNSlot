@@ -21,26 +21,36 @@ class PlaySlot extends React.PureComponent {
     if (!this.canvas || gameAlreadyLoaded) {
       return;
     }
+    const slotAddress = this.props.match.params.slotAddress;
+    this.getSlotMachine(slotAddress);
+
     const { root, playSlotState } = this.props;
     gameAlreadyLoaded = true;
     this.slotGame = new SlotGame({
       canvas: this.canvas,
-      betSize: playSlotState.get('betSize'),
+      isLoading: playSlotState.get('isLoading'),
+      hasError: playSlotState.get('hasError'),
       lineNum: playSlotState.get('lineNum'),
+      betSize: playSlotState.get('betSize'),
       bankRoll: playSlotState.get('bankRoll'),
       betUnit: playSlotState.get('betUnit'),
       minBet: playSlotState.get('minBet'),
       maxBet: playSlotState.get('maxBet'),
       setBetSize: this.setBetSize.bind(this),
       setLineNum: this.setLineNum.bind(this),
-      spinStart: this.spinStart.bind(this),
+      playGame: this.playGame.bind(this),
       yourStake: root.get('balance'),
     });
   }
   shouldComponentUpdate(nextProps) {
     const { root, playSlotState } = nextProps;
-    this.slotGame.betSize = playSlotState.get('betSize');
+    this.slotGame.isLoading = playSlotState.get('isLoading');
     this.slotGame.lineNum = playSlotState.get('lineNum');
+    this.slotGame.betSize = playSlotState.get('betSize');
+    this.slotGame.betUnit = playSlotState.get('betUnit');
+    this.slotGame.maxBet = playSlotState.get('maxBet');
+    this.slotGame.minBet = playSlotState.get('minBet');
+    this.slotGame.hasError = playSlotState.get('hasError');
     this.slotGame.bankRoll = playSlotState.get('bankRoll');
     this.slotGame.yourStake = root.get('balance');
     return true;
@@ -164,9 +174,19 @@ class PlaySlot extends React.PureComponent {
     dispatch(Actions.setLineNum(lineNum));
   }
 
-  spinStart() {
+  playGame() {
+    const { dispatch, playSlotState } = this.props;
+    const gameInfo = {
+      slotAddress: playSlotState.get('slotAddress'),
+      betSize: playSlotState.get('betSize'),
+      lineNum: playSlotState.get('lineNum'),
+    };
+    dispatch(Actions.requestToPlayGame(gameInfo));
+  }
+
+  getSlotMachine(slotAddress) {
     const { dispatch } = this.props;
-    dispatch(Actions.spinStart());
+    dispatch(Actions.getSlotMachine(slotAddress));
   }
 }
 

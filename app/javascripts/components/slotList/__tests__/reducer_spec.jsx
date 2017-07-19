@@ -1,8 +1,10 @@
 jest.unmock('../reducer');
+jest.unmock('../../makeGame/actions');
 jest.unmock('../actions');
 
 import { List } from 'immutable';
 import { SLOT_LIST_INITIAL_STATE, SORT_OPTIONS, reducer } from '../reducer';
+import { ACTION_TYPES as MAKING_GAME_ACTION_TYPES } from '../../makeGame/actions';
 import { ACTION_TYPES } from '../actions';
 
 describe('Slot List Reducer', () => {
@@ -89,6 +91,38 @@ describe('Slot List Reducer', () => {
 
       expect(reducer(mockState, mockAction).get('isLoading')).toBeFalsy();
       expect(reducer(mockState, mockAction).get('mySlotContracts')).toEqual(List([mockContract]));
+    });
+  });
+
+  describe('when receive MAKING_GAME_ACTION_TYPES.START_TO_MAKE_GAME type action', () => {
+    it('should set isMaking state to true', () => {
+      mockAction = {
+        type: MAKING_GAME_ACTION_TYPES.START_TO_MAKE_GAME,
+      };
+
+      expect(reducer(SLOT_LIST_INITIAL_STATE, mockAction).get('isMaking')).toBeTruthy();
+    });
+  });
+
+  describe('when receive FAILED_TO_MAKE_GAME type action', () => {
+    it('should set isMaking state to false', () => {
+      mockState = SLOT_LIST_INITIAL_STATE.set('isMaking', true);
+      mockAction = {
+        type: MAKING_GAME_ACTION_TYPES.FAILED_TO_MAKE_GAME,
+      };
+
+      expect(reducer(mockState, mockAction).get('isMaking')).toBeFalsy();
+    });
+  });
+
+  describe('when receive SUCCEED_TO_MAKE_GAME type action', () => {
+    it('should set isMaking state to false', () => {
+      mockState = SLOT_LIST_INITIAL_STATE.set('isMaking', true);
+      mockAction = {
+        type: MAKING_GAME_ACTION_TYPES.SUCCEED_TO_MAKE_GAME,
+      };
+
+      expect(reducer(mockState, mockAction).get('isMaking')).toBeFalsy();
     });
   });
 

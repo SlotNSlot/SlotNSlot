@@ -100,7 +100,7 @@ class MakeGameCompleteStep extends React.PureComponent {
     const { dispatch, rootState } = this.props;
 
     dispatch(requestToMakeGame(rootState.get('account')));
-    dispatch(push('/slot/make/1'));
+    dispatch(push('/slot/make'));
   }
 
   goToPage(step) {

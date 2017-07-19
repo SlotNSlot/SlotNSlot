@@ -2,10 +2,12 @@ import React from 'react';
 import formatNumberAsK from '../../../helpers/kFormatter';
 import styles from './slotItem.scss';
 
-const SlotListItem = () => {
+const SlotListItem = ({ slotContract }) => {
   return (
     <li className={styles.slotListItem}>
-      <h2 className={styles.itemTitle}>Pang Pang Slot</h2>
+      <h2 className={styles.itemTitle}>
+        {slotContract.address}
+      </h2>
       <div className={styles.infoWrapper}>
         <span className={styles.itemInfo}>
           <div className={styles.infoTitle}>Total Stake</div>

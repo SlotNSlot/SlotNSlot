@@ -17,11 +17,18 @@
   }
 }
 
+.spinner {
+  margin: 0 auto;
+}
+
 .itemTitle {
   font-size: 22px;
   text-align: center;
+  max-width: 200px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
   color: #222135;
-  margin-bottom: 27.5px;
+  margin: 0 auto 27.5px auto;
 }
 
 .infoWrapper {

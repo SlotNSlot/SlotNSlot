@@ -1,4 +1,5 @@
 import { fromJS } from 'immutable';
+import { ACTION_TYPES as MAKING_GAME_ACTION_TYPES } from '../makeGame/actions';
 import { ACTION_TYPES } from './actions';
 
 export const SORT_OPTIONS = {
@@ -19,6 +20,7 @@ export const SLOT_LIST_INITIAL_STATE = fromJS({
   mySlotContracts: [],
   page: 1,
   mySlotPage: 1,
+  isMaking: false,
 });
 
 export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
@@ -40,6 +42,15 @@ export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
       return state.withMutations(currentState => {
         return currentState.set('isLoading', false).set('mySlotContracts', action.payload.slotContracts);
       });
+    }
+
+    case MAKING_GAME_ACTION_TYPES.START_TO_MAKE_GAME: {
+      return state.set('isMaking', true);
+    }
+
+    case MAKING_GAME_ACTION_TYPES.FAILED_TO_MAKE_GAME:
+    case MAKING_GAME_ACTION_TYPES.SUCCEED_TO_MAKE_GAME: {
+      return state.set('isMaking', false);
     }
 
     case ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES:

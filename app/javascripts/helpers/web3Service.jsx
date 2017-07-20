@@ -160,6 +160,94 @@ class Web3Service {
       );
     });
   }
+  async getSlotMachineInfo(slotMachineContract) {
+    const promiseArr = [
+      this.getSlotMachineAvailable(slotMachineContract),
+      this.getSlotMachineBankrupt(slotMachineContract),
+      this.getSlotMachineMaxBet(slotMachineContract),
+      this.getSlotMachineMinBet(slotMachineContract),
+      this.getSlotMachineProviderBalance(slotMachineContract),
+    ];
+    const payload = {};
+    await Promise.all(promiseArr).then(infoObjArr => {
+      infoObjArr.forEach(infoObj => {
+        payload[infoObj.infoKey] = infoObj.infoVal;
+      });
+    });
+    return payload;
+  }
+
+  getSlotMachineAvailable(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mAvailable((err, mAvailable) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (!mAvailable) reject('This slot is not avaliable!');
+          resolve({ infoKey: 'avaliable', infoVal: mAvailable });
+        }
+      });
+    });
+  }
+
+  getSlotMachineBankrupt(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mBankrupt((err, mBankrupt) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (mBankrupt) reject('This slot is bankrupted!');
+          resolve({ infoKey: 'bankrupt', infoVal: mBankrupt });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMaxBet(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMaxBet((err, mMaxBet) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'maxBet',
+            infoVal: this.getEthFromWei(parseInt(mMaxBet.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMinBet(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMinBet((err, mMinBet) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'minBet',
+            infoVal: this.getEthFromWei(parseInt(mMinBet.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineProviderBalance(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.providerBalance((err, providerBalance) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'bankRoll',
+            infoVal: this.getEthFromWei(parseInt(providerBalance.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
   async playSlotMachine(playInfo) {
     return await new Promise((resolve, reject) => {
       this.slotStorageContract.playSlotMachine(

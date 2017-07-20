@@ -5,7 +5,6 @@ import './react-table.scss';
 import SlotGame from './game';
 import * as Actions from './actions';
 import styles from './playSlot.scss';
-import EmotionButton from './emotionButton';
 
 let gameAlreadyLoaded = false;
 
@@ -42,18 +41,24 @@ class PlaySlot extends React.PureComponent {
       yourStake: root.get('balance'),
     });
   }
-  shouldComponentUpdate(nextProps) {
+
+  componentWillReceiveProps(nextProps) {
     const { root, playSlotState } = nextProps;
-    this.slotGame.isLoading = playSlotState.get('isLoading');
-    this.slotGame.lineNum = playSlotState.get('lineNum');
-    this.slotGame.betSize = playSlotState.get('betSize');
-    this.slotGame.betUnit = playSlotState.get('betUnit');
-    this.slotGame.maxBet = playSlotState.get('maxBet');
-    this.slotGame.minBet = playSlotState.get('minBet');
-    this.slotGame.hasError = playSlotState.get('hasError');
-    this.slotGame.bankRoll = playSlotState.get('bankRoll');
-    this.slotGame.yourStake = root.get('balance');
-    return true;
+
+    if (this.props.playSlotState !== playSlotState || this.props.root !== root) {
+      this.slotGame.isLoading = playSlotState.get('isLoading');
+      this.slotGame.lineNum = playSlotState.get('lineNum');
+      this.slotGame.betSize = playSlotState.get('betSize');
+      this.slotGame.betUnit = playSlotState.get('betUnit');
+      this.slotGame.maxBet = playSlotState.get('maxBet');
+      this.slotGame.minBet = playSlotState.get('minBet');
+      this.slotGame.hasError = playSlotState.get('hasError');
+      this.slotGame.bankRoll = playSlotState.get('bankRoll');
+      this.slotGame.yourStake = root.get('balance');
+      if (playSlotState.get('hasError')) {
+        this.slotGame.errorOccur();
+      }
+    }
   }
   componentWillUnmount() {
     if (this.slotGame) {
@@ -128,7 +133,6 @@ class PlaySlot extends React.PureComponent {
             }}
           />
         </div>
-        <EmotionButton />
         <div className={styles.bottomSection}>
           <div className={styles.bottomContainer}>
             <div
@@ -181,12 +185,18 @@ class PlaySlot extends React.PureComponent {
       betSize: playSlotState.get('betSize'),
       lineNum: playSlotState.get('lineNum'),
     };
-    dispatch(Actions.requestToPlayGame(gameInfo));
+    dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
   }
 
   getSlotMachine(slotAddress) {
     const { dispatch } = this.props;
     dispatch(Actions.getSlotMachine(slotAddress));
+  }
+
+  leaveSlotMachine() {
+    const { root, dispatch } = this.props;
+    const userAddress = root.get('account');
+    dispatch(Actions.getSlotMachine(userAddress));
   }
 }
 

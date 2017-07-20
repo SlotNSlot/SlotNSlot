@@ -72,8 +72,6 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          plugins: ['transform-runtime'],
-          presets: ['es2015', 'es2017', 'react', 'stage-0', 'stage-2'],
         }
       },
     ],

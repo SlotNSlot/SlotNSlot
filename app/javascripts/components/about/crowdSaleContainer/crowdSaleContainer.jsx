@@ -30,7 +30,7 @@ class CrowdSaleContainer extends React.PureComponent {
     return (
       <div className={styles.crowdSaleContainer}>
         <div className={styles.ticketContainer}>
-          <Icon icon="CROWDSALE_TICKET" />
+          <Icon className={styles.ticketBackground} icon="CROWDSALE_TICKET" />
           <div className={styles.ticketTitle}>
             <strong>CROWDSALE</strong> Starts on <br />
             <strong>August 15th 14:00 GMT</strong>, 2017

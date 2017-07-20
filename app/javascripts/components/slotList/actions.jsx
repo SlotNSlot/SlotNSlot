@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
 
 export const ACTION_TYPES = {
@@ -33,11 +33,16 @@ async function getSlotMachines(account) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
     await Web3Service.getSlotMachineInfo(contract)
       .then(slotInfo => {
-        slotMachineContracts.push({ ...contract, ...slotInfo });
+        slotMachineContracts.push({
+          contract,
+          meta: slotInfo,
+        });
       }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
-      .catch(err => {});
+      .catch(err => {
+        console.log(err);
+      });
   }
-  return List(slotMachineContracts);
+  return fromJS(slotMachineContracts);
 }
 
 export function getMySlotMachines(account) {

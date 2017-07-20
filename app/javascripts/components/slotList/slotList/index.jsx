@@ -14,8 +14,8 @@ const SlotList = ({ slotContracts, isMaking = false, showMakeItem = false }) => 
   }
 
   const slotItemsNode = slotContracts.map(slotContract => {
-    if (slotContract.avaliable && !slotContract.bankrupt) {
-      return <SlotListItem slotContract={slotContract} key={slotContract.address} />;
+    if (slotContract.get('meta').get('avaliable') && !slotContract.get('meta').get('bankrupt')) {
+      return <SlotListItem slotContract={slotContract} key={slotContract.get('contract').address} />;
     }
   });
 

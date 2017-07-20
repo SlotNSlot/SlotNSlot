@@ -15,13 +15,15 @@ for (let i = 0; i < 45; i += 1) {
 }
 
 export const PLAY_SLOT_INITIAL_STATE = fromJS({
+  isLoading: false,
+  isPlaying: false,
+  hasError: false,
   betSize: 20,
   lineNum: 20,
   bankRoll: 2000,
   betUnit: 2,
   minBet: 2,
   maxBet: 20,
-  isSpinning: false,
   emotionClicked: 0,
   emotionList: emotionTypes,
   betsData: _betsData,
@@ -30,6 +32,47 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
   switch (action.type) {
+    case ACTION_TYPES.START_TO_GET_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_GET_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState
+          .set('isLoading', false)
+          .set('hasError', false)
+          .set('minBet', parseFloat(action.payload.minBet).toFixed(3))
+          .set('betSize', parseFloat(action.payload.minBet).toFixed(3))
+          .set('maxBet', parseFloat(action.payload.maxBet).toFixed(3))
+          .set('betUnit', parseFloat(action.payload.minBet).toFixed(3))
+          .set('bankRoll', parseFloat(action.payload.bankRoll).toFixed(3));
+      });
+    }
+
+    case ACTION_TYPES.START_TO_PLAY_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isPlaying', true).set('hasError', false);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_PLAY_GAME: {
+      return state.set('hasError', true);
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isPlaying', false).update('betsData', list => list.concat(action.payload.betData));
+      });
+    }
+
     case ACTION_TYPES.SET_BET_SIZE: {
       return state.set('betSize', action.payload.betSize);
     }

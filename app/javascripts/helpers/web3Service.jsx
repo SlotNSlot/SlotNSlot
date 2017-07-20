@@ -188,7 +188,7 @@ class Web3Service {
       this.getSlotMachineMinBet(slotMachineContract),
       this.getSlotMachineProviderBalance(slotMachineContract),
     ];
-    const payload = {};
+    const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
       infoObjArr.forEach(infoObj => {
         payload[infoObj.infoKey] = infoObj.infoVal;

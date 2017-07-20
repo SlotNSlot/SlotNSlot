@@ -24,16 +24,17 @@ async function getSlotMachines(account) {
 
   const slotAddresses = [];
   const slotMachineContracts = [];
-  for (let i = 0; i < totalNumOfSlotMachine; i++) {
+  for (let i = totalNumOfSlotMachine - 1; i >= 0; i -= 1) {
     const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
     slotAddresses.push(slotAddress);
   }
 
-  slotAddresses.forEach(address => {
-    const contract = Web3Service.getSlotMachineContract(address);
-    slotMachineContracts.push(contract);
-  });
-
+  for (let i = 0; i < slotAddresses.length; i += 1) {
+    const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
+    await Web3Service.getSlotMachineInfo(contract).then(slotInfo => {
+      slotMachineContracts.push(slotInfo);
+    });
+  }
   return List(slotMachineContracts);
 }
 
@@ -72,7 +73,7 @@ export function getAllSlotMachines() {
     const bigNumOfProviders = await Web3Service.getTheNumberOfProviders();
     const numbOfProviders = parseInt(bigNumOfProviders.valueOf(), 10);
 
-    for (let i = 0; i < numbOfProviders; i++) {
+    for (let i = numbOfProviders - 1; i >= 0; i -= 1) {
       const address = await Web3Service.getProviderAddress(i);
       providerAddresses.push(address);
     }

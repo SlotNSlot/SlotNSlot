@@ -42,6 +42,10 @@ $top-navbar-height: 75px;
     font-weight: 300;
     height: 100%;
     cursor: pointer;
+
+    &:hover {
+      color: inherit;
+    }
   }
 
   @media (max-width: 800px) {

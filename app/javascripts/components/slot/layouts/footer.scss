@@ -2,13 +2,13 @@
   display: flex;
   background: #f8f8f8;
   height: 120px;
+  align-items: center;
   justify-content: center;
   flex-direction: column;
 }
 
 .innerContainer {
   width: 960px;
-  margin: 0 auto;
   position: relative;
 }
 

@@ -1,6 +1,7 @@
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
 import { refreshBalance } from '../../root/actions';
+import { getMySlotMachines } from '../slotList/actions';
 
 export const ACTION_TYPES = {
   SELECT_HIT_RATIO: 'make_game.SELECT_HIT_RATIO',
@@ -33,6 +34,7 @@ export function requestToMakeGame(myAccount) {
         payload: transaction,
       });
       dispatch(refreshBalance(myAccount));
+      dispatch(getMySlotMachines(myAccount));
     } catch (err) {
       console.error(err);
       Toast.notie.alert({

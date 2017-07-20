@@ -56,6 +56,16 @@
           font-weight: 100;
           padding: 0 12px;
         }
+
+        @media (max-width: 800px) {
+          margin-bottom: 30px;
+          .blockTitle {
+            font-size: 16px;
+          }
+          .blockText {
+            font-size: 14px;
+          }
+        }
       }
     }
   }

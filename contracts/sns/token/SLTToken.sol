@@ -4,22 +4,22 @@ pragma solidity ^0.4.0;
 import 'zeppelin-solidity/contracts/token/MintableToken.sol';
 
 
-contract SNSToken is MintableToken {
+contract SLTToken is MintableToken {
 
-    string public constant name = 'SNSToken';
+    string public constant name = 'SlotNSlot';
 
-    string public constant symbol = 'SNS';
+    string public constant symbol = 'SLT';
 
     uint public constant decimals = 18;
 
-    uint public constant LOCKOUT_PERIOD = 1 hours;
+    uint public constant MINTING_PERIOD = 2 weeks;
 
     mapping (address => uint) public illiquidBalance;
 
     uint public endMintingTime;
 
     modifier whenThrowable {
-        if (now < endMintingTime + LOCKOUT_PERIOD) throw;
+        if (now < endMintingTime) throw;
         _;
     }
 

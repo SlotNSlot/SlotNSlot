@@ -1,26 +1,28 @@
 pragma solidity ^0.4.0;
 
 
-import './SNSToken.sol';
+import './SLTToken.sol';
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 
-contract SNSCrowdsale {
-    uint public constant STAGE_ONE_TIME_END = 6 hours;
+contract SLTCrowdsale {
 
-    uint public constant STAGE_TWO_TIME_END = 12 hours;
+    /*
+        The funding goal is 50000 eth originally, but we set this into 100000 eth to prevent unexpected problem.
+    */
+    uint public constant FUNDING_GOAL = 100000000000000000000000;
 
-    uint public constant STAGE_THREE_TIME_END = 1 days;
+    uint public constant FUNDING_PERIOD = 2 weeks;
 
-    uint public constant STAGE_FOUR_TIME_END = 1 weeks;
+    uint public constant FUNDING_START_BLOCK_NUM = 560000;
 
-    uint public constant PRICE_STAGE_ONE = 480000;
+    uint public constant STAGE_ONE_TIME_END = 1 days;
 
-    uint public constant PRICE_STAGE_TWO = 440000;
+    uint public constant STAGE_TWO_TIME_END = 2 weeks;
 
-    uint public constant PRICE_STAGE_THREE = 400000;
+    uint public constant PRICE_STAGE_ONE = 12000;
 
-    uint public constant PRICE_STAGE_FOUR = 360000;
+    uint public constant PRICE_STAGE_TWO = 10000;
 
     uint public constant ALLOC_CROWDSALE = 60000000000;
 
@@ -32,11 +34,11 @@ contract SNSCrowdsale {
 
     address public ownerAddress;
 
-    SNSToken public plutoToken;
+    SLTToken public sltToken;
 
     uint public etherRaised;
 
-    uint public pltSold;
+    uint public sltSold;
 
     bool public halted;
 
@@ -57,20 +59,20 @@ contract SNSCrowdsale {
 
     event Buy(address indexed _recipient, uint _amount);
 
-    function SNSCrowdsale(address _multisigAddr, address _plutoToken, uint _startTime) {
+    function SNSCrowdsale(address _multisigAddr, address sltToken, uint _startTime) {
         multisigAddress = _multisigAddr;
         ownerAddress = msg.sender;
         startTime = _startTime;
         endTime = startTime + 1 weeks;
 
-        plutoToken = SNSToken(_plutoToken);
+        sltToken = SLTToken(sltToken);
     }
 
     function toggleHalt(bool _halted)
     onlyOwner
     {
         halted = _halted;
-        plutoToken.transferOwnership(msg.sender);
+        sltToken.transferOwnership(msg.sender);
     }
 
 
@@ -88,8 +90,6 @@ contract SNSCrowdsale {
     {
         if (now <= startTime + STAGE_ONE_TIME_END) return PRICE_STAGE_ONE;
         if (now <= startTime + STAGE_TWO_TIME_END) return PRICE_STAGE_TWO;
-        if (now <= startTime + STAGE_THREE_TIME_END) return PRICE_STAGE_THREE;
-        if (now <= startTime + STAGE_FOUR_TIME_END) return PRICE_STAGE_FOUR;
         else return 0;
     }
 
@@ -101,9 +101,9 @@ contract SNSCrowdsale {
 
         if (o_amount > _remaining) throw;
         if (!multisigAddress.send(msg.value)) throw;
-        if (!plutoToken.createToken(msg.sender, o_amount)) throw;
+        if (!sltToken.createToken(msg.sender, o_amount)) throw;
 
-        pltSold += o_amount;
+        sltSold += o_amount;
         etherRaised += msg.value;
     }
 
@@ -116,7 +116,7 @@ contract SNSCrowdsale {
             throw;
         }
 
-        uint amount = processPurchase(getPriceRate(), ALLOC_CROWDSALE - pltSold);
+        uint amount = processPurchase(getPriceRate(), ALLOC_CROWDSALE - sltSold);
         Buy(msg.sender, amount);
     }
 

@@ -35,6 +35,26 @@ class Web3Service {
     return this.web3.fromWei(weiValue, 'ether').valueOf();
   }
 
+  makeS3Sha(recursiveLength) {
+    const oldTime = new Date();
+    const originalString = Math.random().toString();
+    let shaValue;
+
+    for (let i = 0; i < recursiveLength; i++) {
+      if (shaValue) {
+        shaValue = this.web3.sha3(shaValue);
+      } else {
+        shaValue = this.web3.sha3(originalString);
+      }
+    }
+    const afterTime = new Date();
+
+    console.log(shaValue);
+    console.log(afterTime - oldTime);
+
+    return shaValue;
+  }
+
   async initializeStorageContract() {
     if (this.slotManagerContract) {
       await new Promise((resolve, reject) => {

@@ -81,7 +81,14 @@ describe('MakeGame Action Creators', () => {
   describe('requestToMakeGame action creator', () => {
     describe('when request is succeeded', () => {
       it('should dispatch START_TO_MAKE_GAME & SUCCEED_TO_MAKE_GAME actions', async () => {
-        await store.dispatch(Actions.requestToMakeGame('mockAccount'));
+        await store.dispatch(
+          Actions.requestToMakeGame({
+            account: 'mockAccount',
+            decider: 10000,
+            minBet: 0.001,
+            maxbet: 0.003,
+          }),
+        );
         const actions = await store.getActions();
 
         expect(actions[0].type).toEqual(Actions.ACTION_TYPES.START_TO_MAKE_GAME);
@@ -96,7 +103,14 @@ describe('MakeGame Action Creators', () => {
 
     describe('when request is failed', () => {
       it('should dispatch START_TO_MAKE_GAME & SUCCEED_TO_MAKE_GAME actions', async () => {
-        await store.dispatch(Actions.requestToMakeGame('forceFail'));
+        await store.dispatch(
+          Actions.requestToMakeGame({
+            account: 'forceFail',
+            decider: 10000,
+            minBet: 0.001,
+            maxbet: 0.003,
+          }),
+        );
         const actions = await store.getActions();
 
         expect(actions[0].type).toEqual(Actions.ACTION_TYPES.START_TO_MAKE_GAME);

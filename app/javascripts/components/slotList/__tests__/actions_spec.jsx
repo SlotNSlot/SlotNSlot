@@ -11,6 +11,9 @@ describe('Slot List Component Action Creators', () => {
   const mockSlotMachineContract = {
     abi: [1, 2, 3, 4, 6],
     address: '3uisdfjksdnc3j2',
+    minBet: 0.001,
+    maxBet: 0.003,
+    name: 'mockSlotMachine',
   };
 
   beforeEach(() => {

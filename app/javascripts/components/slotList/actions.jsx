@@ -33,7 +33,7 @@ async function getSlotMachines(account) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
     await Web3Service.getSlotMachineInfo(contract)
       .then(slotInfo => {
-        slotMachineContracts.push(slotInfo);
+        slotMachineContracts.push({ ...contract, ...slotInfo });
       }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
       .catch(err => {});
   }
@@ -51,7 +51,7 @@ export function getMySlotMachines(account) {
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
         payload: {
-          slotContracts: List(slotMachineContracts),
+          slotContracts: slotMachineContracts,
         },
       });
     } catch (err) {

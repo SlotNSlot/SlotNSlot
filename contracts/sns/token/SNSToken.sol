@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 
-import '../../zeppelin/token/MintableToken.sol';
+import 'zeppelin-solidity/contracts/token/MintableToken.sol';
 
 
 contract SNSToken is MintableToken {

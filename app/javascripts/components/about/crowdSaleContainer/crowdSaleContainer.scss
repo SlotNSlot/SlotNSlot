@@ -32,7 +32,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 20%;
+    top: 18%;
     text-align: center;
     font-size: 30px;
     letter-spacing: 0.9px;
@@ -90,12 +90,13 @@
         font-size: 45px;
       }
       .counterCell {
-        width: 100px;
+        width: 80px;
         .counterNumber {
-          font-size: 45px;
+          font-size: 40px;
         }
         .counterTag {
-          font-size: 14px;
+          bottom: -20px;
+          font-size: 12px;
         }
       }
     }

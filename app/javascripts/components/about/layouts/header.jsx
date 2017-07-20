@@ -82,7 +82,7 @@ class Header extends React.PureComponent {
 
     const top = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
 
-    if (parseInt(top, 10) < window.innerHeight) {
+    if (parseInt(top, 10) < 720) {
       dispatch(reactScrollTop());
     } else {
       dispatch(leaveScrollTop());

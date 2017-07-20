@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   entry: ['babel-polyfill', './app/javascripts/app.jsx'],
@@ -73,13 +72,6 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new CompressionPlugin({
-      asset: '[file]',
-      algorithm: 'gzip',
-      test: /\.(js|html)$/,
-      threshold: 10240,
-      minRatio: 0.8,
-    }),
     new HtmlWebpackPlugin({
       template: './app/index.ejs',
       inject: false,

@@ -31,9 +31,11 @@ async function getSlotMachines(account) {
 
   for (let i = 0; i < slotAddresses.length; i += 1) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
-    await Web3Service.getSlotMachineInfo(contract).then(slotInfo => {
-      slotMachineContracts.push(slotInfo);
-    });
+    await Web3Service.getSlotMachineInfo(contract)
+      .then(slotInfo => {
+        slotMachineContracts.push(slotInfo);
+      }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
+      .catch(err => {});
   }
   return List(slotMachineContracts);
 }

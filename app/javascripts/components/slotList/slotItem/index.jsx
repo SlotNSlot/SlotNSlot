@@ -30,7 +30,9 @@ const SlotListItem = ({ slotContract }) => {
         </div>
         <div className={styles.footer}>
           <span className={styles.footerLeft}>Played 28 times</span>
-          <span className={styles.footerRight}>BET Range 0.01 - 10 ETH</span>
+          <span className={styles.footerRight}>
+            {`BET Range${slotContract.minBet} - ${slotContract.maxBet} ETH`}
+          </span>
         </div>
       </li>
     </Link>

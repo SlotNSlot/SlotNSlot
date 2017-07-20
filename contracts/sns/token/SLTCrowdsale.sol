@@ -14,8 +14,6 @@ contract SLTCrowdsale {
 
     uint public constant FUNDING_PERIOD = 2 weeks;
 
-    uint public constant FUNDING_START_BLOCK_NUM = 560000;
-
     uint public constant STAGE_ONE_TIME_END = 1 days;
 
     uint public constant STAGE_TWO_TIME_END = 2 weeks;
@@ -24,55 +22,58 @@ contract SLTCrowdsale {
 
     uint public constant PRICE_STAGE_TWO = 10000;
 
-    uint public constant ALLOC_CROWDSALE = 60000000000;
+    address public mMultisigAddr;
 
-    uint public startTime;
+    address public mOwnerAddr;
 
-    uint public endTime;
+    SLTToken public mSLTToken;
 
-    address public multisigAddress;
+    uint public mStartTime;
 
-    address public ownerAddress;
+    uint public mEndTime;
 
-    SLTToken public sltToken;
+    uint public mEtherRaised;
 
-    uint public etherRaised;
+    uint public mSltSold;
 
-    uint public sltSold;
-
-    bool public halted;
+    bool public mPaused;
 
     modifier isCrowdfundPeriod() {
-        if (now < startTime || now >= endTime) throw;
+        require(now > mStartTime && now < mEndTime);
         _;
     }
 
     modifier onlyOwner() {
-        if (msg.sender != ownerAddress) throw;
+        require(msg.sender == mOwnerAddr);
         _;
     }
 
-    modifier isNotHalted() {
-        if (halted) throw;
+    modifier notPaused() {
+        require(!mPaused);
         _;
     }
 
-    event Buy(address indexed _recipient, uint _amount);
+    event Fund(address indexed _recipient, uint _amount);
 
-    function SNSCrowdsale(address _multisigAddr, address sltToken, uint _startTime) {
-        multisigAddress = _multisigAddr;
-        ownerAddress = msg.sender;
-        startTime = _startTime;
-        endTime = startTime + 1 weeks;
+    function SLTCrowdsale(address _multisigAddr, address _SLTToken, uint _startTime) {
+        mMultisigAddr = _multisigAddr;
+        mOwnerAddr = msg.sender;
 
-        sltToken = SLTToken(sltToken);
+        mStartTime = _startTime;
+        mEndTime = mStartTime + FUNDING_PERIOD;
+
+        mSLTToken = SLTToken(_SLTToken);
+
+        mEtherRaised = 0;
+        mSltSold = 0;
+        mPaused = false;
     }
 
-    function toggleHalt(bool _halted)
+    function togglePause(bool _paused)
     onlyOwner
     {
-        halted = _halted;
-        sltToken.transferOwnership(msg.sender);
+        mPaused = _paused;
+        mSLTToken.transferOwnership(msg.sender);
     }
 
 
@@ -80,49 +81,46 @@ contract SLTCrowdsale {
     onlyOwner
     {
         if (_newOwner != address(0)) {
-            ownerAddress = _newOwner;
+            mOwnerAddr = _newOwner;
         }
     }
 
-    function getPriceRate()
+    function getPrice()
     constant
     returns (uint o_rate)
     {
-        if (now <= startTime + STAGE_ONE_TIME_END) return PRICE_STAGE_ONE;
-        if (now <= startTime + STAGE_TWO_TIME_END) return PRICE_STAGE_TWO;
+        if (now <= mStartTime + STAGE_ONE_TIME_END) return PRICE_STAGE_ONE;
+        if (now <= mStartTime + STAGE_TWO_TIME_END) return PRICE_STAGE_TWO;
         else return 0;
     }
 
-    function processPurchase(uint _rate, uint _remaining)
+    function processPurchase(uint _rate)
     internal
     returns (uint o_amount)
     {
         o_amount = SafeMath.div(SafeMath.mul(msg.value, _rate), 1 ether);
 
-        if (o_amount > _remaining) throw;
-        if (!multisigAddress.send(msg.value)) throw;
-        if (!sltToken.createToken(msg.sender, o_amount)) throw;
+        mMultisigAddr.transfer(msg.value);
+        assert(mSLTToken.createIlliquidToken(msg.sender, o_amount));
 
-        sltSold += o_amount;
-        etherRaised += msg.value;
+        mSltSold += o_amount;
+        mEtherRaised += msg.value;
     }
 
     function()
     payable
     isCrowdfundPeriod
-    isNotHalted
+    notPaused
     {
-        if (msg.value == 0) {
-            throw;
-        }
+        require(msg.value != 0);
 
-        uint amount = processPurchase(getPriceRate(), ALLOC_CROWDSALE - sltSold);
-        Buy(msg.sender, amount);
+        uint amount = processPurchase(getPrice());
+        Fund(msg.sender, amount);
     }
 
     function drain()
     onlyOwner
     {
-        if(!ownerAddress.send(this.balance)) throw;
+        mOwnerAddr.transfer(this.balance);
     }
 }

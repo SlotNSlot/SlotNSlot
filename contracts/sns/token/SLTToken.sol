@@ -47,7 +47,7 @@ contract SLTToken is MintableToken {
     onlyOwner
     returns (bool o_success)
     {
-        illiquidBalance[_recipient] += _value;
+        illiquidBalance[_recipient] = illiquidBalance[_recipient].add(_value);
         return true;
     }
 

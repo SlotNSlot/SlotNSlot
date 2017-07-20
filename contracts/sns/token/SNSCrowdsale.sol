@@ -2,7 +2,7 @@ pragma solidity ^0.4.0;
 
 
 import './SNSToken.sol';
-import '../../zeppelin/SafeMath.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 
 contract SNSCrowdsale {

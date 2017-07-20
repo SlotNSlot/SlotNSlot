@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 import "../OraclizeAPI.sol";
-import '../zeppelin/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract SlotMachineOraclize is usingOraclize, Ownable {
 

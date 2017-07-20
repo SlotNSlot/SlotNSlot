@@ -36,7 +36,6 @@ class Web3Service {
   }
 
   makeS3Sha(recursiveLength) {
-    const oldTime = new Date();
     const originalString = Math.random().toString();
     let shaValue;
 
@@ -47,10 +46,6 @@ class Web3Service {
         shaValue = this.web3.sha3(originalString);
       }
     }
-    const afterTime = new Date();
-
-    console.log(shaValue);
-    console.log(afterTime - oldTime);
 
     return shaValue;
   }
@@ -152,12 +147,19 @@ class Web3Service {
     });
   }
 
+  makeWeiFromEther(etherValue) {
+    if (typeof etherValue !== 'number') {
+      throw new Error('You should insert ether value with number type');
+    }
+    return this.web3.toWei(etherValue, 'ether');
+  }
+
   async createSlotMachine({ account, decider, minBet, maxBet }) {
     return await new Promise((resolve, reject) => {
       this.slotManagerContract.createSlotMachine(
         decider,
-        minBet,
-        maxBet,
+        this.makeWeiFromEther(parseFloat(minBet, 10)),
+        this.makeWeiFromEther(parseFloat(maxBet, 10)),
         {
           gas: 1000000,
           from: account,

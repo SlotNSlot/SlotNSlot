@@ -97,9 +97,25 @@ class MakeGameCompleteStep extends React.PureComponent {
   }
 
   makeSlotMachine() {
-    const { dispatch, rootState } = this.props;
+    const { dispatch, rootState, makeGameState } = this.props;
 
-    dispatch(requestToMakeGame(rootState.get('account')));
+    const account = rootState.get('account');
+    const hitRatio = parseFloat(makeGameState.get('hitRatio'), 10);
+    const minBet = makeGameState.get('betMinValue');
+    const maxBet = makeGameState.get('betMaxValue');
+
+    if (!account || !makeGameState.get('hitRatio') > 0 || !minBet || !maxBet) {
+      return;
+    }
+
+    const makeGameParams = {
+      account,
+      minBet,
+      maxBet,
+      decider: hitRatio * 100,
+    };
+
+    dispatch(requestToMakeGame(makeGameParams));
     dispatch(push('/slot/make'));
   }
 

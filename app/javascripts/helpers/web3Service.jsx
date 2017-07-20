@@ -152,12 +152,12 @@ class Web3Service {
     });
   }
 
-  async createSlotMachine(account) {
+  async createSlotMachine({ account, decider, minBet, maxBet }) {
     return await new Promise((resolve, reject) => {
       this.slotManagerContract.createSlotMachine(
-        1,
-        10,
-        100,
+        decider,
+        minBet,
+        maxBet,
         {
           gas: 1000000,
           from: account,

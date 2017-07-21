@@ -152,9 +152,6 @@ class Web3Service {
   }
 
   makeEthFromWei(weiValue) {
-    if (typeof weiValue !== 'number') {
-      throw new Error('You should insert wei value with number type');
-    }
     return parseFloat(this.web3.fromWei(weiValue, 'ether').valueOf(), 10);
   }
 
@@ -173,7 +170,7 @@ class Web3Service {
           if (err) {
             reject(err);
           } else {
-            const event = this.slotManagerContract.slotMachineCreated();
+            const event = this.slotManagerContract.slotMachineCreated(null, { fromBlock: 'pending' });
             event.watch((error, result) => {
               if (error) {
                 reject(error);
@@ -295,11 +292,12 @@ class Web3Service {
   occupySlotMachine(slotMachineContract, playerAddress) {
     return new Promise((resolve, reject) => {
       const sha = this.makeS3Sha(10000);
+
       slotMachineContract.occupy(sha, { from: playerAddress }, (err, result1) => {
         if (err) {
           reject(err);
         } else {
-          const event = slotMachineContract.providerSeedInitialized();
+          const event = slotMachineContract.providerSeedInitialized(null, { fromBlock: 'pending' });
           event.watch((error, result2) => {
             if (error) {
               reject(error);
@@ -326,12 +324,33 @@ class Web3Service {
           } else {
             const event = slotMachineContract.providerSeedSet(null, { fromBlock: 'pending' });
             event.watch((error, result2) => {
-              if (error) reject(error);
-              const sha = this.makeS3Sha(10000);
-              slotMachineContract.setPlayerSeed(sha, { from: playInfo.playerAddress }, (err2, result3) => {
-                if (err2) reject(err2);
-                resolve(result2);
-              });
+              if (error) {
+                event.stopWatching();
+                reject(error);
+              } else {
+                const sha = this.makeS3Sha(10000);
+                slotMachineContract.setPlayerSeed(
+                  sha,
+                  {
+                    from: playInfo.playerAddress,
+                    gas: 1000000,
+                  },
+                  async (err2, result3) => {
+                    if (err2) {
+                      event.stopWatching();
+                      reject(err2);
+                    } else {
+                      // console.log('Done set player seed', result2);
+                      // const mCurrentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
+                      // console.log(mCurrentGameId, ' === mCurerntGameId');
+                      // const mGame = await this.getSlotMachineGame(slotMachineContract, mCurrentGameId);
+                      // console.log(mGame);
+                      event.stopWatching();
+                      resolve(result2);
+                    }
+                  },
+                );
+              }
             });
           }
         },
@@ -341,13 +360,15 @@ class Web3Service {
 
   async getSlotResult(slotMachineContract) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameConfirmed();
+      const event = slotMachineContract.gameConfirmed(null, { fromBlock: 'pending' });
       console.log('start to get slot result');
 
-      event.watch(async (error, result) => {
+      event.watch((error, result) => {
         if (error) {
           reject(error);
         } else {
+          event.stopWatching();
+          console.log(result);
           resolve(result);
         }
       });
@@ -380,7 +401,7 @@ class Web3Service {
 
   async watchGameOccupied(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameOccupied();
+      const event = slotMachineContract.gameOccupied(null, { fromBlock: 'pending' });
       event.watch((error, result) => {
         if (error) {
           reject(error);
@@ -400,7 +421,7 @@ class Web3Service {
 
   async watchGameInitialized(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameInitialized();
+      const event = slotMachineContract.gameInitialized(null, { fromBlock: 'pending' });
       event.watch((error, result) => {
         if (error) {
           reject(error);

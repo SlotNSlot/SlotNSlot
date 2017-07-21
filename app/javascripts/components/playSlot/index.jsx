@@ -162,7 +162,7 @@ class PlaySlot extends React.PureComponent {
             </div>
           </div>
           <div className={styles.tableWrapper}>
-            <ReactTable
+            {/* <ReactTable
               className=""
               data={_data.filter(e => {
                 return tableCategory === 0 ? e.id === 1 : 1;
@@ -170,7 +170,7 @@ class PlaySlot extends React.PureComponent {
               columns={columns}
               defaultPageSize={10}
               showPageSizeOptions={false}
-            />
+            /> */}
           </div>
         </div>
       </div>

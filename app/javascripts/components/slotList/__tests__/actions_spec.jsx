@@ -2,15 +2,22 @@ jest.unmock('../actions');
 jest.mock('../../../helpers/web3Service');
 
 import * as Actions from '../actions';
-import { List } from 'immutable';
+import { fromJS } from 'immutable';
 import getMockStore from '../../../__tests__/mockStore';
 
 describe('Slot List Component Action Creators', () => {
   const store = getMockStore();
 
   const mockSlotMachineContract = {
-    abi: [1, 2, 3, 4, 6],
-    address: '3uisdfjksdnc3j2',
+    contract: {
+      abi: [1, 2, 3, 4, 6],
+      address: '3uisdfjksdnc3j2',
+    },
+    meta: {
+      minBet: 0.001,
+      maxBet: 0.003,
+      name: 'mockSlotMachine',
+    },
   };
 
   beforeEach(() => {
@@ -27,7 +34,7 @@ describe('Slot List Component Action Creators', () => {
         expect(actions[1]).toEqual({
           type: Actions.ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
           payload: {
-            slotContracts: List([mockSlotMachineContract, mockSlotMachineContract, mockSlotMachineContract]),
+            slotContracts: fromJS([mockSlotMachineContract, mockSlotMachineContract, mockSlotMachineContract]),
           },
         });
       });
@@ -54,7 +61,7 @@ describe('Slot List Component Action Creators', () => {
         expect(actions[1]).toEqual({
           type: Actions.ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
           payload: {
-            slotContracts: List([
+            slotContracts: fromJS([
               mockSlotMachineContract,
               mockSlotMachineContract,
               mockSlotMachineContract,

@@ -14,12 +14,12 @@ class Web3Service {
     return this.MetaCoin;
   }
 
-  createSlotMachine(account) {
+  createSlotMachine({ account, decider, minBet, maxBet }) {
     if (account === 'forceFail') {
       return Promise.reject();
     }
     return Promise.resolve({
-      account,
+      account: 'mockAccount',
     });
   }
 
@@ -49,6 +49,17 @@ class Web3Service {
       abi: [1, 2, 3, 4, 6],
       address: '3uisdfjksdnc3j2',
     };
+  }
+
+  getSlotMachineInfo(slotMachineContract) {
+    if (slotMachineContract === 'forceFail') {
+      return Promise.reject();
+    }
+    return Promise.resolve({
+      minBet: 0.001,
+      maxBet: 0.003,
+      name: 'mockSlotMachine',
+    });
   }
 
   getProviderAddress(index) {

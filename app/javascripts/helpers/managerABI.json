@@ -16,32 +16,23 @@
         "constant": false,
         "inputs": [
             {
-                "name": "_idx",
+                "name": "_decider",
+                "type": "uint256"
+            },
+            {
+                "name": "_minBet",
+                "type": "uint256"
+            },
+            {
+                "name": "_maxBet",
+                "type": "uint256"
+            },
+            {
+                "name": "_maxPrize",
                 "type": "uint256"
             }
         ],
-        "name": "removeSlotMachine",
-        "outputs": [],
-        "payable": false,
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getStorageAddr",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "slotmachineStorage",
+        "name": "createSlotMachine",
         "outputs": [
             {
                 "name": "",
@@ -55,19 +46,19 @@
         "constant": false,
         "inputs": [
             {
-                "name": "_decider",
-                "type": "uint256"
-            },
-            {
-                "name": "_minBet",
-                "type": "uint256"
-            },
-            {
-                "name": "_maxBet",
+                "name": "_idx",
                 "type": "uint256"
             }
         ],
-        "name": "createSlotMachine",
+        "name": "removeSlotMachine",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getStorageAddr",
         "outputs": [
             {
                 "name": "",

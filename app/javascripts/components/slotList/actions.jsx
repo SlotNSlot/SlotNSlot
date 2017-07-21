@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
 
 export const ACTION_TYPES = {
@@ -24,17 +24,25 @@ async function getSlotMachines(account) {
 
   const slotAddresses = [];
   const slotMachineContracts = [];
-  for (let i = 0; i < totalNumOfSlotMachine; i++) {
+  for (let i = totalNumOfSlotMachine - 1; i >= 0; i -= 1) {
     const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
     slotAddresses.push(slotAddress);
   }
 
-  slotAddresses.forEach(address => {
-    const contract = Web3Service.getSlotMachineContract(address);
-    slotMachineContracts.push(contract);
-  });
-
-  return List(slotMachineContracts);
+  for (let i = 0; i < slotAddresses.length; i += 1) {
+    const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
+    await Web3Service.getSlotMachineInfo(contract)
+      .then(slotInfo => {
+        slotMachineContracts.push({
+          contract,
+          meta: slotInfo,
+        });
+      }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
+      .catch(err => {
+        console.log(err);
+      });
+  }
+  return fromJS(slotMachineContracts);
 }
 
 export function getMySlotMachines(account) {
@@ -48,7 +56,7 @@ export function getMySlotMachines(account) {
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
         payload: {
-          slotContracts: List(slotMachineContracts),
+          slotContracts: slotMachineContracts,
         },
       });
     } catch (err) {
@@ -72,7 +80,7 @@ export function getAllSlotMachines() {
     const bigNumOfProviders = await Web3Service.getTheNumberOfProviders();
     const numbOfProviders = parseInt(bigNumOfProviders.valueOf(), 10);
 
-    for (let i = 0; i < numbOfProviders; i++) {
+    for (let i = numbOfProviders - 1; i >= 0; i -= 1) {
       const address = await Web3Service.getProviderAddress(i);
       providerAddresses.push(address);
     }

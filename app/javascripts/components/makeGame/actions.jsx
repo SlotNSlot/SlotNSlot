@@ -16,7 +16,7 @@ export const ACTION_TYPES = {
   FAILED_TO_MAKE_GAME: 'make_game.FAILED_TO_MAKE_GAME',
 };
 
-export function requestToMakeGame(myAccount) {
+export function requestToMakeGame({ account, decider, minBet, maxBet }) {
   return async dispatch => {
     Toast.notie.alert({
       text: 'Start to making a slot machine',
@@ -25,7 +25,12 @@ export function requestToMakeGame(myAccount) {
       type: ACTION_TYPES.START_TO_MAKE_GAME,
     });
     try {
-      const transaction = await Web3Service.createSlotMachine(myAccount);
+      const transaction = await Web3Service.createSlotMachine({
+        account,
+        decider,
+        minBet,
+        maxBet,
+      });
       Toast.notie.alert({
         text: 'Finished to making a slot machine',
       });
@@ -33,8 +38,8 @@ export function requestToMakeGame(myAccount) {
         type: ACTION_TYPES.SUCCEED_TO_MAKE_GAME,
         payload: transaction,
       });
-      dispatch(refreshBalance(myAccount));
-      dispatch(getMySlotMachines(myAccount));
+      dispatch(refreshBalance(account));
+      dispatch(getMySlotMachines(account));
     } catch (err) {
       console.error(err);
       Toast.notie.alert({

@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import shuffle from 'lodash.shuffle';
+import Toast from '../../helpers/notieHelper';
 
 const ENTIRE_REEL_COUNT = 5;
 const ITEM_PER_ENTIRE_REEL = 12;
@@ -138,6 +139,8 @@ export default class SlotGame {
     this.calculateSlot = this.calculateSlot.bind(this);
     this.makeRandomPrize = this.makeRandomPrize.bind(this);
     this.drawBigWin = this.drawBigWin.bind(this);
+    this.errorOccur = this.errorOccur.bind(this);
+    this.autoSpinSwitch = this.autoSpinSwitch.bind(this);
     // PIXI Element
     this.renderer = null;
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
@@ -152,6 +155,7 @@ export default class SlotGame {
     this.slowingDistance = null;
     this.drawingLineIndex = null;
     this.winMoney = 0;
+    this.autoSpinStatus = false;
     // Animation Variable Initialization
     this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
     this.winMoneyTextVel = 0;
@@ -194,6 +198,7 @@ export default class SlotGame {
         'assets/images/slot/big-win-front@2x.png',
         'assets/images/slot/circle-big-win-15-x@2x.png',
         'assets/images/slot/oval-14@2x.png',
+        'assets/images/slot/auto-stop@2x.png',
       ])
       .on('progress', (loader, resource) => {
         console.log(loader);
@@ -257,7 +262,10 @@ export default class SlotGame {
         spinBtn.y = 525;
         spinBtn.interactive = true;
         spinBtn.buttonMode = true;
-        spinBtn.on('pointerdown', this.stopSpin);
+        spinBtn.on('pointerdown', () => {
+          const slotResult = this.calculateSlot();
+          this.stopSpin(slotResult);
+        });
         tempContainer.addChild(spinBtn);
 
         const stopBtn = new PIXI.Graphics();
@@ -283,18 +291,38 @@ export default class SlotGame {
   }
 
   startSpin() {
-    if (this.gameState === STATE_WAITING) {
-      this.winLines.clear();
-      this.gameState = STATE_SPINNING;
-      this.reelGroup.forEach(reel => {
-        reel.vy = 100;
-        reel.filters = [this.blurFilter];
+    if (this.gameState !== STATE_WAITING) return;
+    if (this.yourStake < this.betSize * this.lineNum) {
+      Toast.notie.alert({
+        type: 'error',
+        text: "You don't have enough stake. Deposit more eth!",
       });
-      this.spinStatus.fill(true);
-      this.bigWinContainer.visible = false;
-      this.winMoneyText.visible = false;
-      this.ovalBackground.visible = false;
-      this.drawingLines = [];
+      this.autoSpinSwitch();
+      return;
+    }
+    this.winLines.clear();
+    this.gameState = STATE_SPINNING;
+    this.reelGroup.forEach(reel => {
+      reel.vy = 100;
+      reel.filters = [this.blurFilter];
+    });
+    this.spinStatus.fill(true);
+    this.bigWinContainer.visible = false;
+    this.winMoneyText.visible = false;
+    this.ovalBackground.visible = false;
+    this.drawingLines = [];
+    this.playGame();
+  }
+
+  autoSpinSwitch() {
+    if (this.autoSpinStatus === false) {
+      this.autoSpinStatus = true;
+      this.autoBtn.visible = false;
+      this.autoStopBtn.visible = true;
+    } else {
+      this.autoSpinStatus = false;
+      this.autoBtn.visible = true;
+      this.autoStopBtn.visible = false;
     }
   }
 
@@ -316,6 +344,7 @@ export default class SlotGame {
         }
       }
       console.log('WAITING...');
+      if (this.autoSpinStatus) this.startSpin();
     } else if (this.gameState === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
         reel.y += reel.vy;
@@ -484,9 +513,8 @@ export default class SlotGame {
       this.changeSlot();
     }
   }
-  async stopSpin() {
+  async stopSpin(slotResult) {
     if (this.gameState === STATE_SPINNING) {
-      const slotResult = this.calculateSlot();
       if (slotResult === 'BIG_WIN') {
         this.drawBigWin();
         return;
@@ -513,6 +541,21 @@ export default class SlotGame {
       } else {
         this.gameState = STATE_WAITING;
       }
+    }
+  }
+
+  async errorOccur() {
+    if (this.gameState === STATE_SPINNING) {
+      await this.changeSlot();
+      this.reelGroup.forEach((reel, index) => {
+        this.reelGroup[index].destroy();
+        this.reelGroup[index] = null;
+        this.reelContainer.addChildAt(this.newReelGroup[index], index);
+        this.reelContainer.children[index].y += SLOWING_DISTANCE;
+      });
+      this.reelGroup = this.newReelGroup;
+      this.autoSpinSwitch();
+      this.gameState = STATE_WAITING;
     }
   }
 
@@ -774,108 +817,111 @@ export default class SlotGame {
   }
 
   changeSlot() {
-    this.newReelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
-    this.newReelGroup.forEach((reelItem, index) => {
-      this.newReelGroup[index] = new PIXI.Container();
-      this.newReelGroup[index].vy = 0;
-    });
-    // Save Slot Infos for avoiding inconsistency.
-    const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
-    for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
-      slotLineInfo[i] = [];
-    }
-    // If drawingLines exist, have not to draw that symbol.
-    let avoidSymbolArr = [];
-    for (let i = 0; i < this.drawingLines.length; i += 1) {
-      avoidSymbolArr.push(this.drawingLines[i].symbol);
-    }
-    // Delete duplicated value from avoidSymbolArr.
-    avoidSymbolArr = Array.from(new Set(avoidSymbolArr));
-    for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
-      for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
-        let randomNum;
-        do {
-          randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-        } while (avoidSymbolArr.indexOf(randomNum) !== -1);
-        const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
-        // Save Slot Infos for avoiding inconsistency.
-        // When reelNum is [0, 1, 2, 3, 4] and idx is [1, 2, 3]
-        if ([1, 2, 3].indexOf(idx) !== -1) {
-          slotLineInfo[reelNum].push(randomNum);
-        }
-        symbol.width = SYMBOL_WIDTH;
-        symbol.height = SYMBOL_HEIGHT;
-        symbol.x = 0;
-        symbol.y =
-          idx < ITEMS_PER_HALF_REEL
-            ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
-            : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
-        symbol.animationSpeed = 0.3;
-        symbol.play();
-        if (idx < ITEMS_PER_HALF_REEL) {
-          this.newReelGroup[reelNum * 2].addChild(symbol);
-        } else {
-          this.newReelGroup[reelNum * 2 + 1].addChild(symbol);
-        }
+    return new Promise(resolve => {
+      this.newReelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
+      this.newReelGroup.forEach((reelItem, index) => {
+        this.newReelGroup[index] = new PIXI.Container();
+        this.newReelGroup[index].vy = 0;
+      });
+      // Save Slot Infos for avoiding inconsistency.
+      const slotLineInfo = new Array(ENTIRE_REEL_COUNT);
+      for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
+        slotLineInfo[i] = [];
       }
-
-      // Set reel group position
-      this.newReelGroup[reelNum * 2].y = -1 * SLOWING_DISTANCE;
-      this.newReelGroup[reelNum * 2 + 1].y =
-        (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL - SLOWING_DISTANCE;
-      this.newReelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
-      this.newReelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
-    }
-
-    // We have to consider only visible part.
-    // So care about just newReelGroup[0 || 2 || 4 || 8][1 || 2 || 3]
-    if (this.drawingLines.length === 0) {
-      // In this case, Slot should have none of Win Lines.
-      const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
-      let i = 0;
-      while (i < 3) {
-        const symbolNum = slotLineInfo[2][i];
-        if (secondReelInfos.indexOf(symbolNum) === -1) {
-          // Pass
-          i += 1;
-        } else {
-          // have to Change
-          const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-          this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
-          slotLineInfo[2][i] = randomNum;
-        }
-      }
-    } else {
-      // First, change slot following drawingLines.
+      // If drawingLines exist, have not to draw that symbol.
+      let avoidSymbolArr = [];
       for (let i = 0; i < this.drawingLines.length; i += 1) {
-        const lineSymbol = this.drawingLines[i].symbol;
-        const lineNum = this.drawingLines[i].lineNum;
-        const lineLength = this.drawingLines[i].length;
-        for (let j = 0; j < lineLength; j += 1) {
-          const lineY = WIN_LINE[lineNum][j];
-          this.newReelGroup[j * 2].children[lineY + 1].textures = this.symbols[lineSymbol];
-          slotLineInfo[j][lineY] = '*'; // It means have to be not changed.
+        avoidSymbolArr.push(this.drawingLines[i].symbol);
+      }
+      // Delete duplicated value from avoidSymbolArr.
+      avoidSymbolArr = Array.from(new Set(avoidSymbolArr));
+      for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
+        for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
+          let randomNum;
+          do {
+            randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+          } while (avoidSymbolArr.indexOf(randomNum) !== -1);
+          const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
+          // Save Slot Infos for avoiding inconsistency.
+          // When reelNum is [0, 1, 2, 3, 4] and idx is [1, 2, 3]
+          if ([1, 2, 3].indexOf(idx) !== -1) {
+            slotLineInfo[reelNum].push(randomNum);
+          }
+          symbol.width = SYMBOL_WIDTH;
+          symbol.height = SYMBOL_HEIGHT;
+          symbol.x = 0;
+          symbol.y =
+            idx < ITEMS_PER_HALF_REEL
+              ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
+              : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
+          symbol.animationSpeed = 0.3;
+          symbol.play();
+          if (idx < ITEMS_PER_HALF_REEL) {
+            this.newReelGroup[reelNum * 2].addChild(symbol);
+          } else {
+            this.newReelGroup[reelNum * 2 + 1].addChild(symbol);
+          }
+        }
+
+        // Set reel group position
+        this.newReelGroup[reelNum * 2].y = -1 * SLOWING_DISTANCE;
+        this.newReelGroup[reelNum * 2 + 1].y =
+          (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL - SLOWING_DISTANCE;
+        this.newReelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+        this.newReelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+      }
+
+      // We have to consider only visible part.
+      // So care about just newReelGroup[0 || 2 || 4 || 8][1 || 2 || 3]
+      if (this.drawingLines.length === 0) {
+        // In this case, Slot should have none of Win Lines.
+        const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
+        let i = 0;
+        while (i < 3) {
+          const symbolNum = slotLineInfo[2][i];
+          if (secondReelInfos.indexOf(symbolNum) === -1) {
+            // Pass
+            i += 1;
+          } else {
+            // have to Change
+            const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+            this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
+            slotLineInfo[2][i] = randomNum;
+          }
+        }
+      } else {
+        // First, change slot following drawingLines.
+        for (let i = 0; i < this.drawingLines.length; i += 1) {
+          const lineSymbol = this.drawingLines[i].symbol;
+          const lineNum = this.drawingLines[i].lineNum;
+          const lineLength = this.drawingLines[i].length;
+          for (let j = 0; j < lineLength; j += 1) {
+            const lineY = WIN_LINE[lineNum][j];
+            this.newReelGroup[j * 2].children[lineY + 1].textures = this.symbols[lineSymbol];
+            slotLineInfo[j][lineY] = '*'; // It means have to be not changed.
+          }
+        }
+        // Second, slot should have none of Win Lines except drawingLines .
+        const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
+        let i = 0;
+        while (i < 3) {
+          const symbolNum = slotLineInfo[2][i];
+          if (symbolNum === '*') {
+            // Pass
+            i += 1;
+          } else if (secondReelInfos.indexOf(symbolNum) === -1 && avoidSymbolArr.indexOf(symbolNum) === -1) {
+            // Pass
+            i += 1;
+          } else {
+            // have to Change
+            const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+            this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
+            slotLineInfo[2][i] = randomNum;
+          }
         }
       }
-      // Second, slot should have none of Win Lines except drawingLines .
-      const secondReelInfos = Array.from(new Set(slotLineInfo[1]));
-      let i = 0;
-      while (i < 3) {
-        const symbolNum = slotLineInfo[2][i];
-        if (symbolNum === '*') {
-          // Pass
-          i += 1;
-        } else if (secondReelInfos.indexOf(symbolNum) === -1 && avoidSymbolArr.indexOf(symbolNum) === -1) {
-          // Pass
-          i += 1;
-        } else {
-          // have to Change
-          const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-          this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
-          slotLineInfo[2][i] = randomNum;
-        }
-      }
-    }
+      resolve('success');
+    });
   }
 
   removeCurrentGame() {
@@ -1059,12 +1105,22 @@ export default class SlotGame {
     spinBtn.width = 186;
     spinBtn.height = 65;
 
-    const autoBtn = new Sprite(TextureCache['auto.png']);
-    autoBtn.position.set(804, 580);
-    autoBtn.width = 93;
-    autoBtn.height = 65;
-    autoBtn.interactive = true;
-    autoBtn.buttonMode = true;
+    this.autoBtn = new Sprite(TextureCache['auto.png']);
+    this.autoBtn.interactive = true;
+    this.autoBtn.buttonMode = true;
+    this.autoBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoBtn.position.set(804, 580);
+    this.autoBtn.width = 93;
+    this.autoBtn.height = 65;
+
+    this.autoStopBtn = new Sprite.fromImage('assets/images/slot/auto-stop@2x.png');
+    this.autoStopBtn.interactive = true;
+    this.autoStopBtn.buttonMode = true;
+    this.autoStopBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoStopBtn.position.set(804, 580);
+    this.autoStopBtn.width = 93;
+    this.autoStopBtn.height = 65;
+    this.autoStopBtn.visible = false;
 
     this.stage.addChild(slotBackground);
     this.UIContainer.addChild(mergedBackground);
@@ -1080,7 +1136,8 @@ export default class SlotGame {
     this.UIContainer.addChild(lineMinusBtn);
     this.UIContainer.addChild(linePlusBtn);
     this.UIContainer.addChild(spinBtn);
-    this.UIContainer.addChild(autoBtn);
+    this.UIContainer.addChild(this.autoBtn);
+    this.UIContainer.addChild(this.autoStopBtn);
     // Text Component
     this.UIContainer.addChild(ribbonText);
     this.UIContainer.addChild(this.bankRollText);

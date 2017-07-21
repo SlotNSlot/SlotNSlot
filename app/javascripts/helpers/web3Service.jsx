@@ -5,7 +5,7 @@ const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
-const SLOT_MANAGER_ADDRESS = '0x3597f81e365f8b31100868a1639accc48820f0a6';
+const SLOT_MANAGER_ADDRESS = '0xf06322100ab41f5d3a253bf11e23780cf4bb1b43';
 
 class Web3Service {
   constructor() {

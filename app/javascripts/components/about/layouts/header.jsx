@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+import { Link as ScrollLink, animateScroll } from 'react-scroll';
 // actions
 import { reactScrollTop, leaveScrollTop } from './actions';
 // components
@@ -70,6 +71,11 @@ class Header extends React.PureComponent {
               <a className={styles.item} href="https://medium.com/@kkenji1024" target="_blank">
                 Blog
               </a>
+            </li>
+            <li className={styles.rightNavItem}>
+              <ScrollLink className={styles.crowdsaleBtn} to="crowdSaleContainer" duration={500} smooth={true}>
+                Crowdsale
+              </ScrollLink>
             </li>
           </ul>
         </div>

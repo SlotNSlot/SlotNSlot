@@ -12,7 +12,7 @@
 
 .ticketContainer {
   position: relative;
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
   height: 100%;
 
@@ -25,11 +25,11 @@
     content: '';
     display: block;
     position: absolute;
-    top: -50px;
+    top: -25px;
     left: 50%;
     transform: translate(-50%, 0);
-    width: 1122px;
-    height: 250px;
+    width: 940px;
+    height: 210px;
     background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
     background-size: cover;
   }
@@ -38,14 +38,19 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 18%;
+    top: 15%;
     text-align: center;
+    line-height: 1.25;
     font-size: 30px;
     letter-spacing: 0.9px;
     color: #1a0c3d;
 
     strong {
       font-weight: 500;
+    }
+
+    span {
+      font-size: 22px;
     }
 
     @media (max-width: 800px) {
@@ -57,7 +62,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 40%;
+    top: 33%;
     text-align: center;
 
     .timeColon {

@@ -33,10 +33,10 @@ class CrowdSaleContainer extends React.PureComponent {
           <Icon className={styles.ticketBackground} icon="CROWDSALE_TICKET" />
           <div className={styles.ticketTitle}>
             <span>
-              <strong>CROWDSALE</strong> Starts on{' '}
+              <strong>CROWDSALE</strong> Starts on
             </span>
             <br />
-            <strong>August 20th 08:00 GMT</strong>, 2017
+            <strong>August 20th 08:00 UTC+0</strong>, 2017
           </div>
           <div className={styles.timeCounter}>
             <div className={styles.counterCell}>

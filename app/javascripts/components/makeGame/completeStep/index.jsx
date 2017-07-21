@@ -114,7 +114,7 @@ class MakeGameCompleteStep extends React.PureComponent {
       account,
       minBet,
       maxBet,
-      decider: hitRatio * 100,
+      decider: hitRatio * 10,
       maxPrize,
       totalStake,
     };

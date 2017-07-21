@@ -304,7 +304,6 @@ class Web3Service {
             if (error) {
               reject(error);
             } else {
-              event.stopWatching();
               resolve(result2);
             }
           });
@@ -328,7 +327,6 @@ class Web3Service {
             const event = slotMachineContract.providerSeedSet(null, { fromBlock: 'pending' });
             event.watch((error, result2) => {
               if (error) reject(error);
-              event.stopWatching();
               const sha = this.makeS3Sha(10000);
               slotMachineContract.setPlayerSeed(sha, { from: playInfo.playerAddress }, (err2, result3) => {
                 if (err2) reject(err2);
@@ -350,7 +348,6 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          event.stopWatching();
           resolve(result);
         }
       });
@@ -388,7 +385,6 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          event.stopWatching();
           const sha = this.makeS3Sha(10000);
           slotMachineContract.initProviderSeed(sha, { from: providerAddress }, (err, result2) => {
             if (err) {
@@ -409,7 +405,6 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          event.stopWatching();
           const sha = this.makeS3Sha(10000);
           slotMachineContract.setProviderSeed(sha, { from: providerAddress }, (err, result2) => {
             if (err) {

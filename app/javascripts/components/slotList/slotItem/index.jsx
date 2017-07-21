@@ -5,16 +5,16 @@ import styles from './slotItem.scss';
 
 const SlotListItem = ({ slotContract }) => {
   return (
-    <Link to={`/slot/play/${slotContract.address}`}>
+    <Link to={`/slot/play/${slotContract.get('contract').address}`}>
       <li className={styles.slotListItem}>
         <h2 className={styles.itemTitle}>
-          {slotContract.address}
+          {slotContract.get('contract').address}
         </h2>
         <div className={styles.infoWrapper}>
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Total Stake</div>
             <div className={styles.infoValue}>
-              {`${formatNumberAsK(slotContract.bankRoll)} ETH`}
+              {`${formatNumberAsK(slotContract.get('meta').get('bankRoll'))} ETH`}
             </div>
           </span>
           <span className={styles.itemInfo}>
@@ -31,7 +31,7 @@ const SlotListItem = ({ slotContract }) => {
         <div className={styles.footer}>
           <span className={styles.footerLeft}>Played 28 times</span>
           <span className={styles.footerRight}>
-            {`BET Range${slotContract.minBet} - ${slotContract.maxBet} ETH`}
+            {`BET Range${slotContract.get('meta').get('minBet')} - ${slotContract.get('meta').get('maxBet')} ETH`}
           </span>
         </div>
       </li>

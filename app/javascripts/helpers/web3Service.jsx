@@ -161,7 +161,7 @@ class Web3Service {
         this.makeWeiFromEther(parseFloat(minBet, 10)),
         this.makeWeiFromEther(parseFloat(maxBet, 10)),
         {
-          gas: 1000000,
+          gas: 1500000,
           from: account,
         },
         (err, _transactionAddress) => {

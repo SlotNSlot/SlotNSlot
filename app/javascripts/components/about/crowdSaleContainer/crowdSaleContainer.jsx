@@ -28,12 +28,15 @@ class CrowdSaleContainer extends React.PureComponent {
   render() {
     const { aboutCrowdSale } = this.props;
     return (
-      <div className={styles.crowdSaleContainer}>
+      <div className={styles.crowdSaleContainer} id="crowdSaleContainer">
         <div className={styles.ticketContainer}>
           <Icon className={styles.ticketBackground} icon="CROWDSALE_TICKET" />
           <div className={styles.ticketTitle}>
-            <strong>CROWDSALE</strong> Starts on <br />
-            <strong>August 15th 14:00 GMT</strong>, 2017
+            <span>
+              <strong>CROWDSALE</strong> Starts on
+            </span>
+            <br />
+            <strong>August 20th 08:00 UTC+0</strong>, 2017
           </div>
           <div className={styles.timeCounter}>
             <div className={styles.counterCell}>

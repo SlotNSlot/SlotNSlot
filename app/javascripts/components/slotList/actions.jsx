@@ -67,13 +67,16 @@ export function getMySlotMachines(account) {
         },
       });
       slotMachineContracts.forEach(async slotMachineContract => {
-        await Web3Service.watchGameOccupied(slotMachineContract.get('contract')).then(result => {
-          console.log(result);
-          Toast.notie.alert({
-            text: 'Your Slotmachine is occupied.',
+        if (slotMachineContract.get('meta').get('mPlayer') === '0x0000000000000000000000000000000000000000') {
+          await Web3Service.watchGameOccupied(slotMachineContract.get('contract'), account).then(() => {
+            Toast.notie.alert({
+              text: 'Your Slotmachine is occupied.',
+            });
           });
-          dispatch({
-            type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_MY_SLOT_MACHINES,
+        }
+        await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
+          Toast.notie.alert({
+            text: 'Your Slotmachine is Initialized.',
           });
         });
       });

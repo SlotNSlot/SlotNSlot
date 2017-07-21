@@ -18,7 +18,7 @@ export const ACTION_TYPES = {
   FAILED_TO_OCCUPY_SLOT_MACHINE: 'play_slot.FAILED_TO_OCCUPY_SLOT_MACHINE',
 
   START_TO_PLAY_GAME: 'play_slot.START_TO_PLAY_GAME',
-  SUCCEEDED_TO_PLAY_GAME: 'play_slot.SUCCEED_TO_PLAY_GAME',
+  SUCCEEDED_TO_PLAY_GAME: 'play_slot.SUCCEEDED_TO_PLAY_GAME',
   FAILED_TO_PLAY_GAME: 'play_slot.FAILED_TO_PLAY_GAME',
 };
 
@@ -30,8 +30,10 @@ export function getSlotMachine(slotAddress, playerAddress) {
 
     try {
       const slotMachineContract = Web3Service.getSlotMachineContract(slotAddress);
+      let alreadyOccupied = false;
       await Web3Service.getSlotMachineInfo(slotMachineContract)
         .then(payload => {
+          if (payload.mPlayer === playerAddress) alreadyOccupied = true;
           dispatch({
             type: ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE,
             payload,
@@ -49,6 +51,7 @@ export function getSlotMachine(slotAddress, playerAddress) {
           });
           dispatch(push('/slot/play'));
         });
+      if (alreadyOccupied) return;
       await Web3Service.occupySlotMachine(slotMachineContract, playerAddress)
         .then(result => {
           dispatch({
@@ -113,7 +116,8 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     });
     try {
       const transaction = await Web3Service.playSlotMachine(playInfo);
-      stopSpinFunc(100);
+      const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
+      stopSpinFunc(reward);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
         payload: transaction,

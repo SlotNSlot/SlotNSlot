@@ -188,9 +188,10 @@ class PlaySlot extends React.PureComponent {
   }
 
   playGame() {
-    const { dispatch, playSlotState } = this.props;
+    const { dispatch, root, playSlotState } = this.props;
     const gameInfo = {
-      slotAddress: playSlotState.get('slotAddress'),
+      slotMachineContract: playSlotState.get('slotMachineContract'),
+      playerAddress: root.get('account'),
       betSize: playSlotState.get('betSize'),
       lineNum: playSlotState.get('lineNum'),
     };

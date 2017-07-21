@@ -15,6 +15,32 @@
   &:hover {
     background-color: #eeeef3;
   }
+
+  &.isOccupied:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #00dc5a;
+    border: solid 1.5px #dcdbea;
+  }
+
+  &.isBlank:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #929292;
+    border: solid 1.5px #dcdbea;
+  }
 }
 
 .spinner {

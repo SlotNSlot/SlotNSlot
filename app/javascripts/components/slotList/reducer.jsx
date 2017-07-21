@@ -60,9 +60,15 @@ export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
       });
     }
 
-    case ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES: {
+    case ACTION_TYPES.SUCCEEDED_TO_OCCUPY_MY_SLOT_MACHINES: {
       return state.withMutations(currentState => {
-        return currentState.set('isLoading', true).set('hasError', false);
+        return currentState.set('isLoading', false).set('hasError', false);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_OCCUPY_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
       });
     }
 

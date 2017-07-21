@@ -1,5 +1,11 @@
 import { List, fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
+import Toast from '../../helpers/notieHelper';
+
+export const USER_TYPES = {
+  PLAYER: 0,
+  MAKER: 1,
+};
 
 export const ACTION_TYPES = {
   START_TO_GET_ALL_SLOT_MACHINES: 'slot_list.START_TO_GET_ALL_SLOT_MACHINES',
@@ -9,12 +15,14 @@ export const ACTION_TYPES = {
   START_TO_GET_MY_SLOT_MACHINES: 'slot_list.START_TO_GET_MY_SLOT_MACHINES',
   SUCCEEDED_TO_GET_MY_SLOT_MACHINES: 'slot_list.SUCCEEDED_TO_GET_MY_SLOT_MACHINES',
   FAILED_TO_GET_MY_SLOT_MACHINES: 'slot_list.FAILED_TO_GET_MY_SLOT_MACHINES',
+  SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES: 'slot_list.SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES',
+  FAILED_TO_WATCH_MY_SLOT_MACHINES: 'slot_list.FAILED_TO_WATCH_MY_SLOT_MACHINES',
 
   TOGGLE_SORTING_DROPDOWN: 'slot_list.TOGGLE_SORTING_DROPDOWN',
   CHANGE_SORTING_OPTION: 'slot_list.CHANGE_SORTING_OPTION',
 };
 
-async function getSlotMachines(account) {
+async function getSlotMachines(account, userType) {
   const bigNumberOfTotalNumOfSlotMachine = await Web3Service.getNumOfSlotMachine(account);
   const totalNumOfSlotMachine = parseInt(bigNumberOfTotalNumOfSlotMachine.valueOf(), 10);
 
@@ -28,10 +36,9 @@ async function getSlotMachines(account) {
     const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
     slotAddresses.push(slotAddress);
   }
-
   for (let i = 0; i < slotAddresses.length; i += 1) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
-    await Web3Service.getSlotMachineInfo(contract)
+    await Web3Service.getSlotMachineInfo(contract, userType)
       .then(slotInfo => {
         slotMachineContracts.push({
           contract,
@@ -52,12 +59,23 @@ export function getMySlotMachines(account) {
     });
 
     try {
-      const slotMachineContracts = await getSlotMachines(account);
+      const slotMachineContracts = await getSlotMachines(account, USER_TYPES.MAKER);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
         payload: {
           slotContracts: slotMachineContracts,
         },
+      });
+      slotMachineContracts.forEach(async slotMachineContract => {
+        await Web3Service.watchGameOccupied(slotMachineContract.get('contract')).then(result => {
+          console.log(result);
+          Toast.notie.alert({
+            text: 'Your Slotmachine is occupied.',
+          });
+          dispatch({
+            type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_MY_SLOT_MACHINES,
+          });
+        });
       });
     } catch (err) {
       console.error(err);
@@ -87,7 +105,7 @@ export function getAllSlotMachines() {
 
     const promiseArr = [];
     providerAddresses.forEach(providerAddress => {
-      promiseArr.push(getSlotMachines(providerAddress));
+      promiseArr.push(getSlotMachines(providerAddress, USER_TYPES.PLAYER));
     });
 
     await Promise.all(promiseArr)

@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import EnvChecker from './envChecker';
+import { USER_TYPES } from '../components/slotList/actions';
 
 const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
@@ -183,14 +184,15 @@ class Web3Service {
       );
     });
   }
-  async getSlotMachineInfo(slotMachineContract) {
+  async getSlotMachineInfo(slotMachineContract, userType) {
+    // 0 [player], 1 [maker]
     const promiseArr = [
-      this.getSlotMachineAvailable(slotMachineContract),
-      this.getSlotMachineBankrupt(slotMachineContract),
+      this.getSlotMachinePlayer(slotMachineContract, userType),
+      this.getSlotMachineAvailable(slotMachineContract, userType),
+      this.getSlotMachineBankrupt(slotMachineContract, userType),
       this.getSlotMachineMaxBet(slotMachineContract),
       this.getSlotMachineMinBet(slotMachineContract),
       this.getSlotMachineProviderBalance(slotMachineContract),
-      this.getSlotMachinePlayer(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -201,13 +203,13 @@ class Web3Service {
     return payload;
   }
 
-  getSlotMachinePlayer(slotMachineContract) {
+  getSlotMachinePlayer(slotMachineContract, userType) {
     return new Promise((resolve, reject) => {
       slotMachineContract.mPlayer((err, mPlayer) => {
         if (err) {
           reject(err);
         } else {
-          if (mPlayer !== '0x0000000000000000000000000000000000000000') {
+          if (userType === USER_TYPES.PLAYER && mPlayer !== '0x0000000000000000000000000000000000000000') {
             reject('This slot is already occupied!');
           }
           resolve({ infoKey: 'mPlayer', infoVal: mPlayer });
@@ -216,26 +218,26 @@ class Web3Service {
     });
   }
 
-  getSlotMachineAvailable(slotMachineContract) {
+  getSlotMachineAvailable(slotMachineContract, userType) {
     return new Promise((resolve, reject) => {
       slotMachineContract.mAvailable((err, mAvailable) => {
         if (err) {
           reject(err);
         } else {
-          if (!mAvailable) reject('This slot is not avaliable!');
+          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not avaliable!');
           resolve({ infoKey: 'avaliable', infoVal: mAvailable });
         }
       });
     });
   }
 
-  getSlotMachineBankrupt(slotMachineContract) {
+  getSlotMachineBankrupt(slotMachineContract, userType) {
     return new Promise((resolve, reject) => {
       slotMachineContract.mBankrupt((err, mBankrupt) => {
         if (err) {
           reject(err);
         } else {
-          if (mBankrupt) reject('This slot is bankrupted!');
+          if (userType === USER_TYPES.PLAYER && mBankrupt) reject('This slot is bankrupted!');
           resolve({ infoKey: 'bankrupt', infoVal: mBankrupt });
         }
       });

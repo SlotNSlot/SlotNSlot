@@ -118,7 +118,8 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
       const transaction = await Web3Service.playSlotMachine(playInfo);
       console.log('THE END', transaction);
       const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
-      console.log('REWARDD', reward);
+      console.log('REWARD', reward);
+      console.log(Web3Service.makeEthFromWei(reward.args.reward));
       stopSpinFunc(reward);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,

@@ -6,7 +6,7 @@ const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
-const SLOT_MANAGER_ADDRESS = '0xf06322100ab41f5d3a253bf11e23780cf4bb1b43';
+const SLOT_MANAGER_ADDRESS = '0xc146898b075ba50ece601f39b73c2c694ecf6102';
 
 class Web3Service {
   constructor() {
@@ -325,7 +325,7 @@ class Web3Service {
           if (err) {
             reject(err);
           } else {
-            const event = slotMachineContract.providerSeedSet();
+            const event = slotMachineContract.providerSeedSet(null, { fromBlock: 'pending' });
             event.watch((error, result2) => {
               if (error) reject(error);
               event.stopWatching();
@@ -351,12 +351,7 @@ class Web3Service {
           reject(error);
         } else {
           event.stopWatching();
-          console.log('succeeded get slot result');
-          const currentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
-          console.log('succeeded to get currentGameId', currentGameId);
-          const currentGame = await this.getSlotMachineGame(slotMachineContract, currentGameId);
-          console.log('succeeded to get currentGame', currentGame);
-          resolve(currentGame);
+          resolve(result);
         }
       });
     });

@@ -91,7 +91,7 @@
                 "type": "address"
             }
         ],
-        "payable": false,
+        "payable": true,
         "type": "function"
     },
     {
@@ -225,6 +225,10 @@
         "inputs": [],
         "payable": false,
         "type": "constructor"
+    },
+    {
+        "payable": true,
+        "type": "fallback"
     },
     {
         "anonymous": false,

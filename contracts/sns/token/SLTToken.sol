@@ -73,7 +73,7 @@ contract SLTToken is ERC20, Ownable {
     returns (bool)
     {
         if(now < mLockEndTime) {
-            arrangeLiquidBalances(msg.sender, _to, _value);
+            transferLiquidBalances(msg.sender, _to, _value);
         }
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -199,18 +199,29 @@ contract SLTToken is ERC20, Ownable {
         return true;
     }
 
-    function liquiedBalanceOf(address _target)
+    /**
+     * @dev Gets the liquid balance of the specified address.
+     * @param _owner The address to query the liquid balance of.
+     * @return An uint256 representing the amount owned by the passed address.
+     */
+    function liquidBalanceOf(address _owner)
     constant
     returns (uint256 liquidBalance)
     {
-        return liquidBalances[_target];
+        return liquidBalances[_owner];
     }
 
     /**
      *  Internals
      */
 
-    function arrangeLiquidBalances(address _from, address _to, uint256 _value)
+    /**
+     * @dev Transfer liquid balances of specified addresses.
+     * @param _from The address to decrease the liquid balance of.
+     * @param _to The address to increase the liquid balance of.
+     * @param _value The amount of liquid balance to be transferred.
+     */
+    function transferLiquidBalances(address _from, address _to, uint256 _value)
     internal
     {
         decreaseLiquidBalance(_from, _value);

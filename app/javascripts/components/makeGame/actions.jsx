@@ -16,7 +16,7 @@ export const ACTION_TYPES = {
   FAILED_TO_MAKE_GAME: 'make_game.FAILED_TO_MAKE_GAME',
 };
 
-export function requestToMakeGame({ account, decider, minBet, maxBet }) {
+export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize }) {
   return async dispatch => {
     Toast.notie.alert({
       text: 'Start to making a slot machine',
@@ -30,6 +30,7 @@ export function requestToMakeGame({ account, decider, minBet, maxBet }) {
         decider,
         minBet,
         maxBet,
+        maxPrize,
       });
       Toast.notie.alert({
         text: 'Finished to making a slot machine',

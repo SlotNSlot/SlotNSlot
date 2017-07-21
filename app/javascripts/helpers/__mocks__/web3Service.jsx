@@ -14,7 +14,7 @@ class Web3Service {
     return this.MetaCoin;
   }
 
-  createSlotMachine({ account, decider, minBet, maxBet }) {
+  createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
     if (account === 'forceFail') {
       return Promise.reject();
     }

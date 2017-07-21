@@ -12,15 +12,11 @@ contract SLTCrowdsale {
     */
     uint public constant FUNDING_GOAL = 100000000000000000000000;
 
-    uint public constant FUNDING_PERIOD = 2 weeks;
+    uint public constant EARLY_BIRD_DURATION = 1 days;
 
-    uint public constant STAGE_ONE_TIME_END = 1 days;
+    uint public constant PRICE_EARLY_BIRD = 12000;
 
-    uint public constant STAGE_TWO_TIME_END = 2 weeks;
-
-    uint public constant PRICE_STAGE_ONE = 12000;
-
-    uint public constant PRICE_STAGE_TWO = 10000;
+    uint public constant PRICE_NORMAL = 10000;
 
     address public mMultisigAddr;
 
@@ -39,7 +35,12 @@ contract SLTCrowdsale {
     bool public mPaused;
 
     modifier isCrowdfundPeriod() {
-        require(now > mStartTime && now < mEndTime);
+        require(now >= mStartTime && now < mEndTime);
+        _;
+    }
+
+    modifier afterCroudfundPeriod() {
+        require(now > mEndTime);
         _;
     }
 
@@ -55,12 +56,12 @@ contract SLTCrowdsale {
 
     event Fund(address indexed _recipient, uint _amount);
 
-    function SLTCrowdsale(address _multisigAddr, address _SLTToken, uint _startTime) {
+    function SLTCrowdsale(address _multisigAddr, address _SLTToken, uint _startTime, uint _endTime) {
         mMultisigAddr = _multisigAddr;
         mOwnerAddr = msg.sender;
 
         mStartTime = _startTime;
-        mEndTime = mStartTime + FUNDING_PERIOD;
+        mEndTime = _endTime;
 
         mSLTToken = SLTToken(_SLTToken);
 
@@ -89,8 +90,8 @@ contract SLTCrowdsale {
     constant
     returns (uint o_rate)
     {
-        if (now <= mStartTime + STAGE_ONE_TIME_END) return PRICE_STAGE_ONE;
-        if (now <= mStartTime + STAGE_TWO_TIME_END) return PRICE_STAGE_TWO;
+        if (now <= mStartTime + EARLY_BIRD_DURATION) return PRICE_EARLY_BIRD;
+        if (now <= mEndTime) return PRICE_NORMAL;
         else return 0;
     }
 
@@ -101,7 +102,7 @@ contract SLTCrowdsale {
         o_amount = SafeMath.div(SafeMath.mul(msg.value, _rate), 1 ether);
 
         mMultisigAddr.transfer(msg.value);
-        assert(mSLTToken.createIlliquidToken(msg.sender, o_amount));
+        assert(mSLTToken.mint(msg.sender, o_amount));
 
         mSltSold += o_amount;
         mEtherRaised += msg.value;
@@ -118,9 +119,13 @@ contract SLTCrowdsale {
         Fund(msg.sender, amount);
     }
 
-    function drain()
+    function finalize()
     onlyOwner
+    afterCroudfundPeriod
     {
+        uint tokenRemainedAmount = SafeMath.div(mSltSold, 4);
+        assert(mSLTToken.mint(mMultisigAddr, tokenRemainedAmount));
+        assert(mSLTToken.finishMinting());
         mOwnerAddr.transfer(this.balance);
     }
 }

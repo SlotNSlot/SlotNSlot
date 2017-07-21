@@ -316,35 +316,49 @@ class Web3Service {
   playSlotMachine(playInfo) {
     return new Promise((resolve, reject) => {
       const slotMachineContract = playInfo.slotMachineContract;
+
       slotMachineContract.initGameforPlayer(
-        playInfo.betSize,
+        this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
         playInfo.lineNum,
         { from: playInfo.playerAddress },
         (err, result) => {
-          if (err) reject(err);
-          const event = slotMachineContract.providerSeedSet();
-          event.watch((error, result2) => {
-            if (error) reject(error);
-            event.stopWatching();
-            const sha = this.makeS3Sha(10000);
-            slotMachineContract.setPlayerSeed(sha, (err2, result3) => {
-              if (err2) reject(err2);
-              resolve(result2);
+          if (err) {
+            reject(err);
+          } else {
+            const event = slotMachineContract.providerSeedSet();
+            event.watch((error, result2) => {
+              if (error) reject(error);
+              event.stopWatching();
+              const sha = this.makeS3Sha(10000);
+              slotMachineContract.setPlayerSeed(sha, { from: playInfo.playerAddress }, (err2, result3) => {
+                if (err2) reject(err2);
+                resolve(result2);
+              });
             });
-          });
+          }
         },
       );
     });
   }
 
   async getSlotResult(slotMachineContract) {
-    const event = slotMachineContract.gameConfirmed();
-    await event.watch(async (error, result) => {
-      if (error) throw new Error('getSlotResult error');
-      event.stopWatching();
-      const currentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
-      const currentGame = await this.getSlotMachineGame(slotMachineContract, currentGameId);
-      return currentGame;
+    return await new Promise((resolve, reject) => {
+      const event = slotMachineContract.gameConfirmed();
+      console.log('start to get slot result');
+
+      event.watch(async (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          event.stopWatching();
+          console.log('succeeded get slot result');
+          const currentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
+          console.log('succeeded to get currentGameId', currentGameId);
+          const currentGame = await this.getSlotMachineGame(slotMachineContract, currentGameId);
+          console.log('succeeded to get currentGame', currentGame);
+          resolve(currentGame);
+        }
+      });
     });
   }
 
@@ -406,7 +420,7 @@ class Web3Service {
             if (err) {
               reject(err);
             } else {
-              resolve(result);
+              resolve(result2);
             }
           });
         }

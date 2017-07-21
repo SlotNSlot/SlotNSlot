@@ -154,14 +154,15 @@ class Web3Service {
     return this.web3.toWei(etherValue, 'ether');
   }
 
-  async createSlotMachine({ account, decider, minBet, maxBet }) {
+  async createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
     return await new Promise((resolve, reject) => {
       this.slotManagerContract.createSlotMachine(
         decider,
         this.makeWeiFromEther(parseFloat(minBet, 10)),
         this.makeWeiFromEther(parseFloat(maxBet, 10)),
+        maxPrize,
         {
-          gas: 1500000,
+          gas: 2200000,
           from: account,
         },
         (err, _transactionAddress) => {

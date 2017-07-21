@@ -111,13 +111,13 @@ class Web3Service {
     });
   }
 
-  async sendProivderEtherToSlotMachine({ ownerAddress, playerAddress, etherValue }) {
+  async sendProivderEtherToSlotMachine({ from, to, etherValue }) {
     return new Promise((resolve, reject) => {
       this.web3.eth.sendTransaction(
         {
-          from: ownerAddress,
-          to: playerAddress,
-          value: this.web3.toWei(parseFloat(etherValue, 10), 'ether'),
+          from,
+          to,
+          value: this.makeWeiFromEther(parseFloat(etherValue, 10)),
         },
         (err, result) => {
           if (err) {

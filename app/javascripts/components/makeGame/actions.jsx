@@ -16,7 +16,7 @@ export const ACTION_TYPES = {
   FAILED_TO_MAKE_GAME: 'make_game.FAILED_TO_MAKE_GAME',
 };
 
-export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize }) {
+export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, totalStake }) {
   return async dispatch => {
     Toast.notie.alert({
       text: 'Start to making a slot machine',
@@ -31,6 +31,12 @@ export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize }
         minBet,
         maxBet,
         maxPrize,
+      });
+      const slotAddr = transaction.args._slotaddr;
+      await Web3Service.sendProivderEtherToSlotMachine({
+        from: account,
+        to: slotAddr,
+        etherValue: totalStake,
       });
       Toast.notie.alert({
         text: 'Finished to making a slot machine',

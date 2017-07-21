@@ -28,6 +28,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   emotionList: emotionTypes,
   betsData: _betsData,
   tableCategory: 0,
+  slotMachineContract: null,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -47,13 +48,32 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState
-          .set('isLoading', false)
+          .set('isLoading', true)
           .set('hasError', false)
           .set('minBet', parseFloat(action.payload.minBet).toFixed(3))
           .set('betSize', parseFloat(action.payload.minBet).toFixed(3))
           .set('maxBet', parseFloat(action.payload.maxBet).toFixed(3))
           .set('betUnit', parseFloat(action.payload.minBet).toFixed(3))
-          .set('bankRoll', parseFloat(action.payload.bankRoll).toFixed(3));
+          .set('bankRoll', parseFloat(action.payload.bankRoll).toFixed(3))
+          .set('slotMachineContract', action.slotMachineContract);
+      });
+    }
+
+    case ACTION_TYPES.START_TO_OCCUPY_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
+    }
+
+    case ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', false);
       });
     }
 

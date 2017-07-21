@@ -190,6 +190,7 @@ class Web3Service {
       this.getSlotMachineMaxBet(slotMachineContract),
       this.getSlotMachineMinBet(slotMachineContract),
       this.getSlotMachineProviderBalance(slotMachineContract),
+      this.getSlotMachinePlayer(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -198,6 +199,21 @@ class Web3Service {
       });
     });
     return payload;
+  }
+
+  getSlotMachinePlayer(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mPlayer((err, mPlayer) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (mPlayer !== '0x0000000000000000000000000000000000000000') {
+            reject('This slot is already occupied!');
+          }
+          resolve({ infoKey: 'mPlayer', infoVal: mPlayer });
+        }
+      });
+    });
   }
 
   getSlotMachineAvailable(slotMachineContract) {
@@ -271,6 +287,20 @@ class Web3Service {
     });
   }
 
+  occupySlotMachine(slotMachineContract, playerAddress) {
+    return new Promise((resolve, reject) => {
+      let sha = this.makeS3Sha(10000);
+      console.log(sha);
+      slotMachineContract.occupy(sha, { from: playerAddress }, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
   async playSlotMachine(playInfo) {
     return await new Promise((resolve, reject) => {
       this.slotStorageContract.playSlotMachine(
@@ -297,6 +327,20 @@ class Web3Service {
           }
         },
       );
+    });
+  }
+
+  async watchGameOccupied(slotMachineContract) {
+    return await new Promise((resolve, reject) => {
+      const event = slotMachineContract.gameOccupied();
+      event.watch((error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          event.stopWatching();
+          resolve(result);
+        }
+      });
     });
   }
 }

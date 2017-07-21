@@ -201,8 +201,6 @@ export default class SlotGame {
         'assets/images/slot/auto-stop@2x.png',
       ])
       .on('progress', (loader, resource) => {
-        console.log(loader);
-        console.log(resource);
         console.log('LOADING...');
       })
       .load(() => {

@@ -84,6 +84,19 @@
     {
         "constant": true,
         "inputs": [],
+        "name": "rewardCheck",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
         "name": "mAvailable",
         "outputs": [
             {
@@ -232,6 +245,19 @@
     {
         "constant": true,
         "inputs": [],
+        "name": "mMaxPrize",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
         "name": "initialProviderSeedReady",
         "outputs": [
             {
@@ -307,19 +333,6 @@
             {
                 "name": "",
                 "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "hi",
-        "outputs": [
-            {
-                "name": "",
-                "type": "bytes32"
             }
         ],
         "payable": false,
@@ -438,6 +451,10 @@
             {
                 "name": "numofLines",
                 "type": "uint256"
+            },
+            {
+                "name": "reward",
+                "type": "uint256"
             }
         ],
         "payable": false,
@@ -472,6 +489,10 @@
             },
             {
                 "name": "_maxBet",
+                "type": "uint256"
+            },
+            {
+                "name": "_maxPrize",
                 "type": "uint256"
             }
         ],

@@ -5,7 +5,9 @@ import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 import 'zeppelin-solidity/contracts/token/ERC20.sol';
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-
+/**
+ * @title SLTToken
+ */
 contract SLTToken is ERC20, Ownable {
     using SafeMath for uint256;
 

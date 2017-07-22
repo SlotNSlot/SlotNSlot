@@ -10,14 +10,14 @@ var SlotLib = artifacts.require("./sns/SlotLib.sol");
 var SlotLib2 = artifacts.require("./sns/SlotLib2.sol");
 var Dispatcher = artifacts.require("./Dispatcher.sol");
 var DispatcherStorage = artifacts.require("./DispatcherStorage.sol");
-// var SlotMachine = artifacts.require("./sns/SlotMachine.sol");
+var SlotMachine = artifacts.require("./sns/SlotMachine.sol");
 
 module.exports = function(deployer) {
   // deployer.deploy(ConvertLib);
   // deployer.link(ConvertLib,MetaCoin);
   // deployer.deploy(MetaCoin);
     var slotmanager;
-
+    //
     deployer.deploy(SlotLib).then(function() {
       console.log('SlotLib address : ', SlotLib.address);
       return deployer.deploy(DispatcherStorage, SlotLib.address);
@@ -43,14 +43,14 @@ module.exports = function(deployer) {
         SlotMachineManager.link('LibInterface', Dispatcher.address);
         return deployer.deploy(SlotMachineManager, SlotMachineStorage.address).then(function (instance) {
           console.log('SlotMachineManager address : ', SlotMachineManager.address);
-        //  instance.setStorage(SlotMachineStorage.address);
           return;
         })
 
       });
     });
 
-
+    // deployer.deploy(SlotMachine,'0xfaeb848022e0278af3327ea18375144ecace567f',150,100,10000,1000);
+    // deployer.deploy(SlotMachineStorage);
     // deployer.deploy(SlotLib2).then(function() {
     //   console.log('SlotLib2 address : ', SlotLib2.address);
     // });

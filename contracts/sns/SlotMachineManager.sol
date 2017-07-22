@@ -16,7 +16,7 @@ contract SlotMachineManager {
         _;
     }
 
-    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
+    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _maxPrize, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _provider, address _slotaddr, uint _totalnum);
 
     function SlotMachineManager (address _storageaddr) {
@@ -33,7 +33,6 @@ contract SlotMachineManager {
     }
 
     function createSlotMachine(uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
-        payable
         returns (address)
     {
         address newslot;

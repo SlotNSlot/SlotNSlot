@@ -4,15 +4,14 @@ import "./SlotMachineStorage.sol";
 
 library SlotLib {
 
-    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr);
+    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _maxPrize, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _provider, address _slotaddr, uint _totalnum);
 
 
     //create new slotmachine
     function createSlotMachine (address _slotmachineStorage, address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize) returns (address) {
         address newslot = address(SlotMachineStorage(_slotmachineStorage).createSlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
-        slotMachineCreated(_provider, _decider, _minBet, _maxBet, SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider),newslot);
-
+        slotMachineCreated(_provider, _decider, _minBet, _maxBet, _maxPrize, SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider),newslot);
         return newslot;
 
     }

@@ -42,10 +42,12 @@ contract SlotMachineStorage is Ownable {
 
     function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
       //  onlyOwner
-        payable
+        /*payable*/
         returns (address)
     {
-        address newslot = address((new SlotMachine).value(msg.value)(_provider, _decider, _minBet, _maxBet, _maxPrize));
+      address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
+
+        /*address newslot = address((new SlotMachine).value(msg.value)(_provider, _decider, _minBet, _maxBet, _maxPrize));*/
         addProvider(_provider, 1);
         slotMachines[_provider].push(newslot);
         totalNumofSlotMachine++;

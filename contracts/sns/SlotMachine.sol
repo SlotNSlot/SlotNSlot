@@ -231,13 +231,7 @@ contract SlotMachine is Ownable {
         onlyAvailable
         notPlaying
     {
-        if (tx.origin != owner) {
-          throw;
-        }
-        /*mAvailable = false;
-        owner.transfer(this.balance);
-        providerLeft(owner);
-        providerBalance = 0;*/
+        
         selfdestruct(owner);
 
     }
@@ -289,9 +283,9 @@ contract SlotMachine is Ownable {
         onlyAvailable
     {
 
-        if(mGames[mCurrentGameId].gameState != GameState.INITIALIZED) {
+        /*if(mGames[mCurrentGameId].gameState != GameState.INITIALIZED) {
             throw;
-        }
+        }*/
 
         mGames[mCurrentGameId].providerSeed = _providerSeed;
         mGames[mCurrentGameId].gameState = GameState.PROVIDERSEEDSET;
@@ -304,11 +298,10 @@ contract SlotMachine is Ownable {
     function setPlayerSeed(bytes32 _playerSeed)
         onlyPlayer
         onlyAvailable
-        returns (uint)
     {
-        if(mGames[mCurrentGameId].gameState != GameState.PROVIDERSEEDSET) {
+        /*if(mGames[mCurrentGameId].gameState != GameState.PROVIDERSEEDSET) {
             throw;
-        }
+        }*/
 
         bytes32 playerSeed = _playerSeed;
         if(mUsedPlayerSeeds[playerSeed]) {
@@ -322,28 +315,31 @@ contract SlotMachine is Ownable {
         mGames[mCurrentGameId].playerSeedReady = true;
         playerSeedSet(playerSeed);
 
-        return confirmGame();
+        confirmGame();
     }
 
     function confirmGame()
-      returns (uint)
     {
         if(!mIsGamePlaying) {
             throw;
         }
 
         Game game = mGames[mCurrentGameId];
-        if(game.gameState != GameState.PLAYERSEEDSET) {
+        /*if(game.gameState != GameState.PLAYERSEEDSET) {
+            throw;
+        }*/
+        if(game.playerSeedReady == false || game.providerSeedReady == false){
             throw;
         }
 
-        /*if(previousProviderSeed != sha3(game.providerSeed) || previousPlayerSeed != sha3(game.playerSeed)) {
+        if(previousProviderSeed != sha3(game.providerSeed) || previousPlayerSeed != sha3(game.playerSeed)) {
             throw;
-        }*/
+        }
 
         uint reward = 0;
         uint factor = 0;
         uint divider = 100000000000;
+
         bytes32 rnseed = sha3(game.providerSeed ^ game.playerSeed);
         uint randomNumber = uint(rnseed) % divider;
         uint prize = mMaxPrize;
@@ -353,9 +349,10 @@ contract SlotMachine is Ownable {
           factor = 0;
           rnseed = rnseed<<1;
           randomNumber = uint(rnseed) % divider;
-          for(uint i=0;i<payTable[prize][prob].length-1;i++){
+          for(uint i=0; i<payTable[prize][prob].length-1; i++){
             if(factor <= randomNumber && randomNumber < factor + payTable[prize][prob][i+1].prob){
               reward += payTable[prize][prob][i+1].prize;
+              break;
             }
             factor += payTable[prize][prob][i+1].prob;
           }
@@ -377,7 +374,6 @@ contract SlotMachine is Ownable {
         previousPlayerSeed = game.playerSeed;
         gameConfirmed(mCurrentGameId, reward);
 
-        return reward;
     }
 
 

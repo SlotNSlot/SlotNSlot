@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('SCM CHECKOUT') {
             steps {
-                slackSend channel: "#web-build", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+                slackSend color: 'good', channel: "#web-build", message: "Build Started: ${env.JOB_NAME}"
                 checkout scm
                 sh 'git config user.email "sushi.otoro@outlook.com" && git config user.name "fish-sushi"'
                 sh 'git remote -v'
@@ -25,14 +25,14 @@ pipeline {
 
         stage('NPM INSTALL') {
             steps {
-                slackSend failOnError: true, message: "Build Failed at NPM INSTALL: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+                slackSend color: "danger", failOnError: true, message: "Build Failed at NPM INSTALL: ${env.JOB_NAME}"
                 sh 'npm install'
             }
         }
 
         stage('TEST') {
             steps {
-                slackSend failOnError: true, message: "Build Failed at TEST: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+                slackSend color: "danger", failOnError: true, message: "Build Failed at TEST: ${env.JOB_NAME}"
                 sh 'npm test'
             }
         }
@@ -42,7 +42,7 @@ pipeline {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
-                    slackSend failOnError: true, message: "Build Failed at BUILD & DEPLOY: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+                    slackSend color: "danger", failOnError: true, message: "Build Failed at BUILD & DEPLOY: ${env.JOB_NAME}"
                     sh 'npm run deploy:stage'
                 }
             }
@@ -52,11 +52,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'GITHUB_USERNAME_PASSWORD', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        slackSend color: "danger", failOnError: true, message: "Build Failed at GIT TAGGING: ${env.JOB_NAME}"
                         def GITTAG = readFile('version').trim()
                         echo GITTAG
                         sh "git tag -a ${GITTAG} -m 'Trying to deploy to S3' && git tag -af stage -m 'Trying to deploy to S3'"
                         sh 'git remote -v'
                         sh 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/SlotNSlot/SlotNSlot.git --tags -f'
+
+                        slackSend color: 'good', channel: "#web-build", message: "Build DONE! ${env.JOB_NAME} please check https://future.slotnslot.com"
                     }
                 }
             }

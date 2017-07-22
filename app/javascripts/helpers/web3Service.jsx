@@ -158,31 +158,39 @@ class Web3Service {
 
   async createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
     return await new Promise((resolve, reject) => {
-      this.slotManagerContract.createSlotMachine(
-        decider,
-        this.makeWeiFromEther(parseFloat(minBet, 10)),
-        this.makeWeiFromEther(parseFloat(maxBet, 10)),
-        maxPrize,
-        {
-          gas: 2200000,
-          from: account,
-        },
-        (err, _transactionAddress) => {
-          if (err) {
-            reject(err);
-          } else {
-            const event = this.slotManagerContract.slotMachineCreated(null, { fromBlock: 'pending' });
-            event.watch((error, result) => {
-              if (error) {
-                reject(error);
-              } else {
-                event.stopWatching();
-                resolve(result);
-              }
-            });
-          }
-        },
-      );
+      this.slotManagerContract
+        .createSlotMachine(
+          decider,
+          this.makeWeiFromEther(parseFloat(minBet, 10)),
+          this.makeWeiFromEther(parseFloat(maxBet, 10)),
+          maxPrize,
+          {
+            gas: 2200000,
+            from: account,
+          },
+          // (err, _transactionAddress) => {
+          //   if (err) {
+          //     reject(err);
+          //   } else {
+          //     const event = this.slotManagerContract.slotMachineCreated(null, { fromBlock: 'pending' });
+          //     event.watch((error, result) => {
+          //       if (error) {
+          // reject(error);
+          //       } else {
+          //         event.stopWatching();
+          //         resolve(result);
+          //       }
+          //     });
+          //   }
+          // },
+        )
+        .once('transactionHash', hash => {
+          console.log('transactionHash', hash);
+          resolve(hash);
+        })
+        .on('error', error => {
+          reject(error);
+        });
     });
   }
   async getSlotMachineInfo(slotMachineContract, userType) {

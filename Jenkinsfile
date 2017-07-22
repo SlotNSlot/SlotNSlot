@@ -10,6 +10,7 @@ pipeline {
     stages {
         stage('SCM CHECKOUT') {
             steps {
+                slackSend channel: "#web-build", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
                 checkout scm
                 sh 'git config user.email "sushi.otoro@outlook.com" && git config user.name "fish-sushi"'
                 sh 'git remote -v'
@@ -24,12 +25,14 @@ pipeline {
 
         stage('NPM INSTALL') {
             steps {
+                slackSend failOnError: true, message: "Build Failed at NPM INSTALL: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
                 sh 'npm install'
             }
         }
 
         stage('TEST') {
             steps {
+                slackSend failOnError: true, message: "Build Failed at TEST: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
                 sh 'npm test'
             }
         }
@@ -39,6 +42,7 @@ pipeline {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkins iam', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
+                    slackSend failOnError: true, message: "Build Failed at BUILD & DEPLOY: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
                     sh 'npm run deploy:stage'
                 }
             }

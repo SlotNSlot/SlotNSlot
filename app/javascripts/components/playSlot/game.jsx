@@ -512,8 +512,9 @@ export default class SlotGame {
     }
   }
   async stopSpin(slotResult) {
+    const calculateResult = this.calculateSlot(slotResult);
     if (this.gameState === STATE_SPINNING) {
-      if (slotResult === 'BIG_WIN') {
+      if (calculateResult === 'BIG_WIN') {
         this.drawBigWin();
         return;
       }
@@ -524,7 +525,7 @@ export default class SlotGame {
         await this.stopReel(i);
       }
       // After reels stop, draw win lines.
-      if (slotResult === 'DRAW_LINE') {
+      if (calculateResult === 'DRAW_LINE') {
         await this.drawLine();
         this.drawWinMoneyPercentage = 0;
         this.winMoneyTextVel = 0;
@@ -593,9 +594,8 @@ export default class SlotGame {
     return prize;
   }
 
-  calculateSlot() {
+  calculateSlot(sumPrize) {
     const lineNum = this.lineNum;
-    let sumPrize = this.makeRandomPrize(lineNum);
     this.winMoney = sumPrize;
     const lineInfos = []; // Minimum drawing line's info.
     if (sumPrize === 0) {

@@ -7,6 +7,7 @@ import * as Actions from './actions';
 import styles from './playSlot.scss';
 
 let gameAlreadyLoaded = false;
+let slotMachineLoaded = false;
 
 function mapStateToProps(appState) {
   return {
@@ -20,11 +21,14 @@ class PlaySlot extends React.PureComponent {
     if (!this.canvas || gameAlreadyLoaded) {
       return;
     }
-    const slotAddress = this.props.match.params.slotAddress;
-    this.getSlotMachine(slotAddress);
-
     const { root, playSlotState } = this.props;
     gameAlreadyLoaded = true;
+    if (root.get('account') !== null && !slotMachineLoaded) {
+      console.log('componentDidMount getSlotMachine');
+      const slotAddress = this.props.match.params.slotAddress;
+      this.getSlotMachine(slotAddress, root.get('account'));
+      slotMachineLoaded = true;
+    }
     this.slotGame = new SlotGame({
       canvas: this.canvas,
       isLoading: playSlotState.get('isLoading'),
@@ -57,6 +61,11 @@ class PlaySlot extends React.PureComponent {
       this.slotGame.yourStake = root.get('balance');
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
+      }
+      if (root.get('account') !== null && !slotMachineLoaded) {
+        const slotAddress = this.props.match.params.slotAddress;
+        this.getSlotMachine(slotAddress, root.get('account'));
+        slotMachineLoaded = true;
       }
     }
   }
@@ -153,7 +162,7 @@ class PlaySlot extends React.PureComponent {
             </div>
           </div>
           <div className={styles.tableWrapper}>
-            <ReactTable
+            {/* <ReactTable
               className=""
               data={_data.filter(e => {
                 return tableCategory === 0 ? e.id === 1 : 1;
@@ -161,7 +170,7 @@ class PlaySlot extends React.PureComponent {
               columns={columns}
               defaultPageSize={10}
               showPageSizeOptions={false}
-            />
+            /> */}
           </div>
         </div>
       </div>
@@ -179,18 +188,19 @@ class PlaySlot extends React.PureComponent {
   }
 
   playGame() {
-    const { dispatch, playSlotState } = this.props;
+    const { dispatch, root, playSlotState } = this.props;
     const gameInfo = {
-      slotAddress: playSlotState.get('slotAddress'),
+      slotMachineContract: playSlotState.get('slotMachineContract'),
+      playerAddress: root.get('account'),
       betSize: playSlotState.get('betSize'),
       lineNum: playSlotState.get('lineNum'),
     };
     dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
   }
 
-  getSlotMachine(slotAddress) {
+  getSlotMachine(slotAddress, playerAddress) {
     const { dispatch } = this.props;
-    dispatch(Actions.getSlotMachine(slotAddress));
+    dispatch(Actions.getSlotMachine(slotAddress, playerAddress));
   }
 
   leaveSlotMachine() {

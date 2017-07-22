@@ -104,6 +104,7 @@ class MakeGameCompleteStep extends React.PureComponent {
     const minBet = makeGameState.get('betMinValue');
     const maxBet = makeGameState.get('betMaxValue');
     const maxPrize = makeGameState.get('maxPrize');
+    const totalStake = makeGameState.get('totalStake');
 
     if (!account || !makeGameState.get('hitRatio') > 0 || !minBet || !maxBet) {
       return;
@@ -113,8 +114,9 @@ class MakeGameCompleteStep extends React.PureComponent {
       account,
       minBet,
       maxBet,
-      decider: hitRatio * 100,
+      decider: hitRatio * 10,
       maxPrize,
+      totalStake,
     };
 
     dispatch(requestToMakeGame(makeGameParams));

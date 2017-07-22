@@ -39,7 +39,7 @@
                 "type": "address"
             }
         ],
-        "payable": false,
+        "payable": true,
         "type": "function"
     },
     {

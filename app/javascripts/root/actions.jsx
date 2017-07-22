@@ -24,7 +24,7 @@ export function refreshBalance(account) {
       if (err) {
         console.error(err);
       } else {
-        dispatch(setCoinBalance(Web3Service.getEthFromWei(balance)));
+        dispatch(setCoinBalance(Web3Service.makeEthFromWei(parseFloat(balance, 10))));
       }
     });
   };

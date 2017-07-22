@@ -1,5 +1,11 @@
 import { List, fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
+import Toast from '../../helpers/notieHelper';
+
+export const USER_TYPES = {
+  PLAYER: 0,
+  MAKER: 1,
+};
 
 export const ACTION_TYPES = {
   START_TO_GET_ALL_SLOT_MACHINES: 'slot_list.START_TO_GET_ALL_SLOT_MACHINES',
@@ -9,12 +15,14 @@ export const ACTION_TYPES = {
   START_TO_GET_MY_SLOT_MACHINES: 'slot_list.START_TO_GET_MY_SLOT_MACHINES',
   SUCCEEDED_TO_GET_MY_SLOT_MACHINES: 'slot_list.SUCCEEDED_TO_GET_MY_SLOT_MACHINES',
   FAILED_TO_GET_MY_SLOT_MACHINES: 'slot_list.FAILED_TO_GET_MY_SLOT_MACHINES',
+  SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES: 'slot_list.SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES',
+  FAILED_TO_WATCH_MY_SLOT_MACHINES: 'slot_list.FAILED_TO_WATCH_MY_SLOT_MACHINES',
 
   TOGGLE_SORTING_DROPDOWN: 'slot_list.TOGGLE_SORTING_DROPDOWN',
   CHANGE_SORTING_OPTION: 'slot_list.CHANGE_SORTING_OPTION',
 };
 
-async function getSlotMachines(account) {
+async function getSlotMachines(account, userType) {
   const bigNumberOfTotalNumOfSlotMachine = await Web3Service.getNumOfSlotMachine(account);
   const totalNumOfSlotMachine = parseInt(bigNumberOfTotalNumOfSlotMachine.valueOf(), 10);
 
@@ -28,16 +36,16 @@ async function getSlotMachines(account) {
     const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
     slotAddresses.push(slotAddress);
   }
-
   for (let i = 0; i < slotAddresses.length; i += 1) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
-    await Web3Service.getSlotMachineInfo(contract)
+    const providerAddress = userType === USER_TYPES.MAKER ? account : null;
+    await Web3Service.getSlotMachineInfo(contract, userType)
       .then(slotInfo => {
         slotMachineContracts.push({
           contract,
           meta: slotInfo,
         });
-      }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
+      }) // Do nothing in this catch. Not available room is not necessary for slot list.
       .catch(err => {
         console.log(err);
       });
@@ -52,12 +60,26 @@ export function getMySlotMachines(account) {
     });
 
     try {
-      const slotMachineContracts = await getSlotMachines(account);
+      const slotMachineContracts = await getSlotMachines(account, USER_TYPES.MAKER);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
         payload: {
           slotContracts: slotMachineContracts,
         },
+      });
+      slotMachineContracts.forEach(async slotMachineContract => {
+        if (slotMachineContract.get('meta').get('mPlayer') === '0x0000000000000000000000000000000000000000') {
+          await Web3Service.watchGameOccupied(slotMachineContract.get('contract'), account).then(() => {
+            Toast.notie.alert({
+              text: 'Your Slotmachine is occupied.',
+            });
+          });
+        }
+        await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
+          Toast.notie.alert({
+            text: 'Your Slotmachine is Initialized.',
+          });
+        });
       });
     } catch (err) {
       console.error(err);
@@ -70,8 +92,6 @@ export function getMySlotMachines(account) {
 
 export function getAllSlotMachines() {
   return async dispatch => {
-    const startTime = new Date();
-
     dispatch({
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
     });
@@ -87,7 +107,7 @@ export function getAllSlotMachines() {
 
     const promiseArr = [];
     providerAddresses.forEach(providerAddress => {
-      promiseArr.push(getSlotMachines(providerAddress));
+      promiseArr.push(getSlotMachines(providerAddress, USER_TYPES.PLAYER));
     });
 
     await Promise.all(promiseArr)
@@ -100,12 +120,11 @@ export function getAllSlotMachines() {
             slotContracts,
           },
         });
-
-        const endTime = new Date();
-        console.log('time spent = ', endTime - startTime);
       })
       .catch(error => {
-        console.error(error);
+        if (error) {
+          console.error(error);
+        }
         dispatch({
           type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,
         });

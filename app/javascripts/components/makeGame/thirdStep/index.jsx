@@ -34,14 +34,6 @@ class MakeGameFirstStep extends React.PureComponent {
             <div className={styles.buttonContainer}>
               <JadeButton
                 onClickFunc={() => {
-                  this.setMaxPrize(100);
-                }}
-                isSelected={maxPrize === 100}
-                buttonText="x 100"
-                className={styles.hitButton}
-              />
-              <JadeButton
-                onClickFunc={() => {
                   this.setMaxPrize(1000);
                 }}
                 isSelected={maxPrize === 1000}
@@ -50,10 +42,18 @@ class MakeGameFirstStep extends React.PureComponent {
               />
               <JadeButton
                 onClickFunc={() => {
-                  this.setMaxPrize(3000);
+                  this.setMaxPrize(1500);
                 }}
-                isSelected={maxPrize === 3000}
-                buttonText="x 3k"
+                isSelected={maxPrize === 1500}
+                buttonText="x 1.5k"
+                className={styles.hitButton}
+              />
+              <JadeButton
+                onClickFunc={() => {
+                  this.setMaxPrize(2000);
+                }}
+                isSelected={maxPrize === 2000}
+                buttonText="x 2k"
                 className={styles.hitButton}
               />
             </div>

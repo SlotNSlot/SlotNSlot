@@ -5,8 +5,7 @@
     ],
     "plugins": [
         "react",
-        "babel",
-        "prettier"
+        "babel"
     ],
     "globals": {
         "alert": 1,

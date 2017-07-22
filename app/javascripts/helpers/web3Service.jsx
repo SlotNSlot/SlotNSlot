@@ -2,9 +2,9 @@ import Web3 from 'web3';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json');
-const storageABI = require('./storageABI.json');
-const slotMachineABI = require('./slotMachineABI.json');
+const managerABI = require('./managerABI.json').default;
+const storageABI = require('./storageABI.json').default;
+const slotMachineABI = require('./slotMachineABI.json').default;
 
 const SLOT_MANAGER_ADDRESS = '0xc146898b075ba50ece601f39b73c2c694ecf6102';
 
@@ -16,7 +16,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
@@ -158,39 +158,33 @@ class Web3Service {
 
   async createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
     return await new Promise((resolve, reject) => {
-      this.slotManagerContract
-        .createSlotMachine(
-          decider,
-          this.makeWeiFromEther(parseFloat(minBet, 10)),
-          this.makeWeiFromEther(parseFloat(maxBet, 10)),
-          maxPrize,
-          {
-            gas: 2200000,
-            from: account,
-          },
-          // (err, _transactionAddress) => {
-          //   if (err) {
-          //     reject(err);
-          //   } else {
-          //     const event = this.slotManagerContract.slotMachineCreated(null, { fromBlock: 'pending' });
-          //     event.watch((error, result) => {
-          //       if (error) {
-          // reject(error);
-          //       } else {
-          //         event.stopWatching();
-          //         resolve(result);
-          //       }
-          //     });
-          //   }
-          // },
-        )
-        .once('transactionHash', hash => {
-          console.log('transactionHash', hash);
-          resolve(hash);
-        })
-        .on('error', error => {
-          reject(error);
-        });
+      this.slotManagerContract.createSlotMachine(
+        decider,
+        this.makeWeiFromEther(parseFloat(minBet, 10)),
+        this.makeWeiFromEther(parseFloat(maxBet, 10)),
+        maxPrize,
+        {
+          gas: 2200000,
+          from: account,
+        },
+        (err, _transactionAddress) => {
+          if (err) {
+            reject(err);
+          } else {
+            const event = this.slotManagerContract.slotMachineCreated(null, {
+              fromBlock: 'pending',
+            });
+            event.watch((error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                event.stopWatching();
+                resolve(result);
+              }
+            });
+          }
+        },
+      );
     });
   }
   async getSlotMachineInfo(slotMachineContract, userType) {

@@ -19,7 +19,9 @@ class Web3Service {
       return Promise.reject();
     }
     return Promise.resolve({
-      account: 'mockAccount',
+      args: {
+        _slotaddr: 'mockAddress',
+      },
     });
   }
 
@@ -73,6 +75,10 @@ class Web3Service {
     return Promise.resolve({
       account,
     });
+  }
+
+  sendProivderEtherToSlotMachine({ from, to, etherValue }) {
+    return Promise.resolve();
   }
 }
 

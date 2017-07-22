@@ -14,6 +14,7 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
+    this.myOccupiedGameInitWatchers = {};
 
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
@@ -401,7 +402,16 @@ class Web3Service {
 
   async watchGameOccupied(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
+      const slotMachineContractAddress = slotMachineContract.address;
+
+      if (this.myOccupiedGameInitWatchers[slotMachineContractAddress]) {
+        return;
+      }
+
       const event = slotMachineContract.gameOccupied(null, { fromBlock: 'pending' });
+      // To check the game watcher already exist or not
+      this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
+
       event.watch((error, result) => {
         if (error) {
           reject(error);

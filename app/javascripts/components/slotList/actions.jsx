@@ -38,13 +38,14 @@ async function getSlotMachines(account, userType) {
   }
   for (let i = 0; i < slotAddresses.length; i += 1) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
+    const providerAddress = userType === USER_TYPES.MAKER ? account : null;
     await Web3Service.getSlotMachineInfo(contract, userType)
       .then(slotInfo => {
         slotMachineContracts.push({
           contract,
           meta: slotInfo,
         });
-      }) // Do nothing in this catch. Not avaliable room is not necessary for slot list.
+      }) // Do nothing in this catch. Not available room is not necessary for slot list.
       .catch(err => {
         console.log(err);
       });
@@ -91,8 +92,6 @@ export function getMySlotMachines(account) {
 
 export function getAllSlotMachines() {
   return async dispatch => {
-    const startTime = new Date();
-
     dispatch({
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
     });
@@ -121,12 +120,11 @@ export function getAllSlotMachines() {
             slotContracts,
           },
         });
-
-        const endTime = new Date();
-        console.log('time spent = ', endTime - startTime);
       })
       .catch(error => {
-        console.error(error);
+        if (error) {
+          console.error(error);
+        }
         dispatch({
           type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,
         });

@@ -55,14 +55,19 @@ pipeline {
                         sh "git tag -a ${GITTAG} -m 'Trying to deploy to S3' && git tag -af stage -m 'Trying to deploy to S3'"
                         sh 'git remote -v'
                         sh 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/SlotNSlot/SlotNSlot.git --tags -f'
-
-                        slackSend color: 'good', channel: "#web-build", message: "Build DONE! ${env.JOB_NAME} please check https://future.slotnslot.com"
                     }
                 }
             }
         }
     }
-    failure {
-        slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
+    post {
+        success {
+            slackSend color: 'good', channel: "#web-build", message: "Build DONE! ${env.JOB_NAME} please check https://future.slotnslot.com"
+        }
+
+        failure {
+            slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
     }
 }

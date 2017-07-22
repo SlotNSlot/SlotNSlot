@@ -604,7 +604,7 @@ export default class SlotGame {
     }
     for (let i = 0; i < PROBABILITY_VALUE_TABLE.length; i += 1) {
       // Prize has to be selected by reverse order.
-      const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
+      const prize = this.betSize * PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
       if (sumPrize >= prize) {
         const prizeNum = Math.floor(sumPrize / prize);
         for (let j = 0; j < prizeNum; j += 1) {

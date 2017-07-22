@@ -50,11 +50,11 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
         return currentState
           .set('isLoading', true)
           .set('hasError', false)
-          .set('minBet', parseFloat(action.payload.minBet).toFixed(3))
-          .set('betSize', parseFloat(action.payload.minBet).toFixed(3))
-          .set('maxBet', parseFloat(action.payload.maxBet).toFixed(3))
-          .set('betUnit', parseFloat(action.payload.minBet).toFixed(3))
-          .set('bankRoll', parseFloat(action.payload.bankRoll).toFixed(3))
+          .set('minBet', parseFloat(action.payload.minBet))
+          .set('betSize', parseFloat(action.payload.minBet))
+          .set('maxBet', parseFloat(action.payload.maxBet))
+          .set('betUnit', parseFloat(action.payload.minBet))
+          .set('bankRoll', parseFloat(action.payload.bankRoll))
           .set('slotMachineContract', action.slotMachineContract);
       });
     }

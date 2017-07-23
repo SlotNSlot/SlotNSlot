@@ -146,6 +146,17 @@ export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) 
   };
 }
 
+export function leaveSlotMachine(slotContract, playerAddress) {
+  return async dispatch => {
+    try {
+      await Web3Service.leaveSlotMachine(slotContract, playerAddress);
+      dispatch(push('/slot/play'));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+}
+
 export function requestToPlayGame(playInfo, stopSpinFunc) {
   return async dispatch => {
     dispatch({

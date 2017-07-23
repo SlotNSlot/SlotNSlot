@@ -14,8 +14,9 @@ class SortingHeader extends React.PureComponent {
         </div>
         <div className={styles.headerRight}>
           <Dropdown isOpen={isOpen} toggle={handleToggle}>
+            <span className={styles.sortLabel}>Sort : </span>
             <DropdownToggle className={styles.dropdownToggle} caret>
-              {`Sort: ${currentSortingOption}`}
+              {`${currentSortingOption}`}
             </DropdownToggle>
             <DropdownMenu className={styles.dropdownMenu} right>
               <DropdownItem

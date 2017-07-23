@@ -10,6 +10,7 @@ export const ACTION_TYPES = {
   SPIN_END: 'play_slot.SPIN_END',
   TOGGLE_EMOTION: 'play_slot.TOGGLE_EMOTION',
   SET_CATEGORY: 'play_slot.SET_CATEGORY',
+  SET_OCCUPIED_STATE: 'play_slot.SET_OCCUPIED_STATE',
 
   START_TO_GET_SLOT_MACHINE: 'play_slot.START_TO_GET_SLOT_MACHINE',
   SUCCEEDED_TO_GET_SLOT_MACHINE: 'play_slot.SUCCEED_TO_GET_SLOT_MACHINE',
@@ -17,10 +18,62 @@ export const ACTION_TYPES = {
   SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: 'play_slot.SUCCEED_TO_OCCUPY_SLOT_MACHINE',
   FAILED_TO_OCCUPY_SLOT_MACHINE: 'play_slot.FAILED_TO_OCCUPY_SLOT_MACHINE',
 
+  START_TO_OCCUPY_SLOT_MACHINE: 'play_slot.START_TO_OCCUPY_SLOT_MACHINE',
+  SET_DEPOSIT: 'play_slot.SET_DEPOSIT',
   START_TO_PLAY_GAME: 'play_slot.START_TO_PLAY_GAME',
   SUCCEEDED_TO_PLAY_GAME: 'play_slot.SUCCEEDED_TO_PLAY_GAME',
   FAILED_TO_PLAY_GAME: 'play_slot.FAILED_TO_PLAY_GAME',
+
+  START_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.START_TO_SEND_ETHER_TO_CONTRACT',
+  SEND_ETHER_TO_SLOT_CONTRACT: 'play_slot.SEND_ETHER_TO_SLOT_CONTRACT',
+  FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 };
+
+export function setDeposit(weiValue) {
+  return {
+    type: ACTION_TYPES.SET_DEPOSIT,
+    payload: {
+      weiValue,
+    },
+  };
+}
+
+export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiValue) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT,
+    });
+
+    try {
+      await Web3Service.sendEtherToAccount({
+        from: playerAccount,
+        to: slotMachineContract.address,
+        etherValue: Web3Service.makeEthFromWei(weiValue),
+      });
+
+      dispatch({
+        type: ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT,
+        payload: {
+          weiValue,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      dispatch({
+        type: ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT,
+      });
+    }
+  };
+}
+
+export function setOccupiedState(isOccupied) {
+  return {
+    type: ACTION_TYPES.SET_OCCUPIED_STATE,
+    payload: {
+      occupied: isOccupied,
+    },
+  };
+}
 
 export function getSlotMachine(slotAddress, playerAddress) {
   return async dispatch => {
@@ -30,78 +83,62 @@ export function getSlotMachine(slotAddress, playerAddress) {
 
     try {
       const slotMachineContract = Web3Service.getSlotMachineContract(slotAddress);
-      let alreadyOccupied = false;
-      await Web3Service.getSlotMachineInfo(slotMachineContract)
-        .then(payload => {
-          if (payload.mPlayer === playerAddress) alreadyOccupied = true;
-          dispatch({
-            type: ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE,
-            payload,
-            slotMachineContract,
-          });
-        })
-        .catch(reason => {
-          dispatch({
-            type: ACTION_TYPES.FAILED_TO_GET_SLOT_MACHINE,
-          });
-          Toast.notie.alert({
-            type: 'error',
-            text: `There was an error for accessing this slot machine. ${reason}`,
-            stay: true,
-          });
-          dispatch(push('/slot/play'));
-        });
-      if (alreadyOccupied) return;
-      await Web3Service.occupySlotMachine(slotMachineContract, playerAddress)
-        .then(result => {
-          dispatch({
-            type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
-          });
-        })
-        .catch(reason => {
-          dispatch({
-            type: ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE,
-          });
-          Toast.notie.alert({
-            type: 'error',
-            text: `There was an error for occupying this slot machine. ${reason}`,
-            stay: true,
-          });
-          dispatch(push('/slot/play'));
-        });
+      const slotInfo = await Web3Service.getSlotMachineInfo(slotMachineContract);
+
+      // Set occupied state
+      if (slotInfo.mPlayer === playerAddress) {
+        dispatch(setOccupiedState(true));
+      }
+
+      dispatch({
+        type: ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE,
+        payload: slotInfo,
+        slotMachineContract,
+      });
     } catch (err) {
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_SLOT_MACHINE,
       });
+
+      Toast.notie.alert({
+        type: 'error',
+        text: `There was an error for accessing this slot machine. ${err}`,
+        stay: true,
+      });
+
+      dispatch(push('/slot/play'));
     }
   };
 }
 
-export function occupySlotMachine(slotMachineContract, playerAddress) {
+export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
   return async dispatch => {
+    const slotInfo = await Web3Service.getSlotMachineInfo(slotMachineContract);
+    if (slotInfo.mPlayer === playerAddress) {
+      alert('game is already occupied');
+      return;
+    }
+
+    if (!weiValue) {
+      alert('You should set deposit');
+      return;
+    }
+
     dispatch({
       type: ACTION_TYPES.START_TO_OCCUPY_SLOT_MACHINE,
     });
 
     try {
-      await Web3Service.occupySlotMachine(slotMachineContract, playerAddress)
-        .then(result => {
-          dispatch({
-            type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
-          });
-        })
-        .catch(reason => {
-          dispatch({
-            type: ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE,
-          });
-          Toast.notie.alert({
-            type: 'error',
-            text: `There was an error for occupying this slot machine. ${reason}`,
-            stay: true,
-          });
-          dispatch(push('/slot/play'));
-        });
+      await Web3Service.occupySlotMachine(slotMachineContract, playerAddress, weiValue);
+      dispatch({
+        type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
+      });
     } catch (err) {
+      Toast.notie.alert({
+        type: 'error',
+        text: `There was an error for occupying this slot machine. ${err}`,
+        stay: true,
+      });
       dispatch({
         type: ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE,
       });
@@ -116,7 +153,6 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     });
     try {
       const transaction = await Web3Service.playSlotMachine(playInfo);
-      console.log('THE END', transaction);
       const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
       console.log('REWARD', reward);
       console.log(Web3Service.makeEthFromWei(reward.args.reward));

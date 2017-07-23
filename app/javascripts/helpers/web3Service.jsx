@@ -112,7 +112,7 @@ class Web3Service {
     });
   }
 
-  async sendProivderEtherToSlotMachine({ from, to, etherValue }) {
+  async sendEtherToAccount({ from, to, etherValue }) {
     return new Promise((resolve, reject) => {
       this.web3.eth.sendTransaction(
         {
@@ -124,7 +124,6 @@ class Web3Service {
           if (err) {
             reject(err);
           } else {
-            console.log(result);
             resolve(result);
           }
         },
@@ -185,6 +184,7 @@ class Web3Service {
       );
     });
   }
+
   async getSlotMachineInfo(slotMachineContract, userType) {
     // 0 [player], 1 [maker]
     const promiseArr = [
@@ -195,6 +195,7 @@ class Web3Service {
       this.getSlotMachineMinBet(slotMachineContract),
       this.getSlotMachineProviderBalance(slotMachineContract),
       this.getSlotMachineMaxPrize(slotMachineContract),
+      this.getPlayerBalance(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -203,6 +204,18 @@ class Web3Service {
       });
     });
     return payload;
+  }
+
+  getPlayerBalance(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.playerBalance((err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ infoKey: 'deposit', infoVal: result });
+        }
+      });
+    });
   }
 
   getSlotMachinePlayer(slotMachineContract, userType) {
@@ -306,20 +319,20 @@ class Web3Service {
     });
   }
 
-  occupySlotMachine(slotMachineContract, playerAddress) {
+  occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
       const sha = this.makeS3Sha(10000);
 
-      slotMachineContract.occupy(sha, { from: playerAddress, gas: 2200000 }, (err, result1) => {
+      slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
         } else {
           const event = slotMachineContract.providerSeedInitialized();
-          event.watch((error, result2) => {
+          event.watch((error, result) => {
             if (error) {
               reject(error);
             } else {
-              resolve(result2);
+              resolve(result);
             }
           });
         }

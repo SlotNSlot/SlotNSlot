@@ -77,7 +77,7 @@ class Web3Service {
     });
   }
 
-  sendProivderEtherToSlotMachine({ from, to, etherValue }) {
+  sendEtherToAccount({ from, to, etherValue }) {
     return Promise.resolve();
   }
 }

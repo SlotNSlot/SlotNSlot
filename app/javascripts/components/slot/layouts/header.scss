@@ -94,4 +94,9 @@ $top-navbar-height: 75px;
   font-weight: 500;
   text-align: center;
   color: #ffffff;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
 }

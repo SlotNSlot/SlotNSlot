@@ -194,6 +194,7 @@ class Web3Service {
       this.getSlotMachineMaxBet(slotMachineContract),
       this.getSlotMachineMinBet(slotMachineContract),
       this.getSlotMachineProviderBalance(slotMachineContract),
+      this.getSlotMachineMaxPrize(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -269,6 +270,21 @@ class Web3Service {
           resolve({
             infoKey: 'minBet',
             infoVal: this.makeEthFromWei(parseInt(mMinBet.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMaxPrize(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMaxPrize((err, mMaxPrize) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'maxPrize',
+            infoVal: mMaxPrize,
           });
         }
       });

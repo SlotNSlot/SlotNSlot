@@ -49,7 +49,7 @@ module.exports = function(deployer) {
       });
     });
 
-    // deployer.deploy(SlotMachine,'0xfaeb848022e0278af3327ea18375144ecace567f',150,100,10000,1000);
+    // deployer.deploy(SlotMachine,'0x551c8a4403eb796ae72b9f144a5934d7903684dc',150,100,10000,1000);
     // deployer.deploy(SlotMachineStorage);
     // deployer.deploy(SlotLib2).then(function() {
     //   console.log('SlotLib2 address : ', SlotLib2.address);

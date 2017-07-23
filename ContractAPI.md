@@ -1,21 +1,23 @@
 #SlotMachine API
+
+
+
 ---
 ## SlotMachineManager
 
-
-
 ###methods
 
-- createSlotMachine(uint _decider, uint _minBet, uint _maxBet) returns (address)
+- createSlotMachine(uint _decider, uint _minBet, uint _maxBet, uint _maxPrize) returns (address)
 
   create slotmachine with following parameters  
-  trigger event slotMachineCreated  
-  return address of created slotmachine
+  return address of created slotmachine  
+  event : slotMachineCreated  
 
 - removeSlotMachine(uint _idx)
 
   remove slotmachine[_idx] from slotmachine array, rest of arrays will be sorted automatically
-  trigger event slotMachineRemoved
+  refund slotmachine's deposit to provider
+  event : slotMachineRemoved
 
 - getStorageAddr() returns (address)
 
@@ -23,12 +25,12 @@
 
 
 ###events
-  - slotMachineCreated (address _provider, uint _decider, uint _minBet, uint _maxBet, uint _totalnum, address _slotaddr)  
+  - slotMachineCreated (address _provider, uint _decider, uint _minBet, uint _maxBet, uint _maxPrize, uint _totalnum, address _slotaddr)  
 
     arguments :  
 
     >_provider : address of provider  
-    _decider, _minBet, maxBet : given parameters  
+    _decider, _minBet, _maxBet, _maxPrize : given parameters  
     _totalnum : number of user's slotmachine after creation  
     _slotaddr : address of created slotmachine
 
@@ -86,13 +88,28 @@
 
   - address mPlayer
 
-    address of current playerBalance
+    address of current player  
+    if slot is not occupied, mPlayer = '0x0'    
 
   - uint mDecider
+
+    hit rate of slotmachine * 1000  
+    e.g) hit rate : 15%(0.15) => mDecider : 150
+
   - uint mMinBet
+
+    minBet of slotmachine(wei)
+
   - uint mMaxBet
 
+    maxBet of slotmachine(wei)
+
   - uint mMaxPrize
+
+  - bool mIsGamePlaying;
+
+    true if game is initialized by initGameforPlayer, until game is confirmed by setPlayerSeed
+    after gameConfirmed event triggered, it is set false;
 
   - uint providerBalance
 
@@ -102,13 +119,73 @@
 
     player's balance in slotmachine (wei)
 
-  - bytes32 previousPlayerSeed;
-  - bytes32 previousProviderSeed;
+  - bytes32 previousPlayerSeed
 
-  - mapping (bytes32 => game) mGames;
-    - 
+    stores playerseed of the previous game
+
+  - bytes32 previousProviderSeed
+
+    stores providerseed of the previous game
+
+  - bool public initialPlayerSeedReady
+
+    true if initial player seed is set by *occupy*
+
+  - bool public initialProviderSeedReady
+
+    true if initial provider seed is set by *setProviderSeed*
+
+  - mapping (address => uint) public mNumGamePlayedByUser;
+
+    increased if game is initialized by *initGameforPlayer*
+
+  - mapping (bytes32 => bool) public mUsedPlayerSeeds;
+
+  - bytes32 mCurrentGameId;
+
+    stores current game id, which is set in *initGameforPlayer*  
+
+  - Game mGames[bytes32 gameid];
+
+    stores game information for each round  
+
+    ```solidity
+    struct Game {
+        GameState gameState;
+        address player;
+        uint bet;
+        bytes32 providerSeed;
+        uint providerNumber;
+        bytes32 playerSeed;
+        uint playerNumber;
+        uint randomNumber;
+        bool providerSeedReady;
+        bool playerSeedReady;
+        uint numofLines;
+        uint reward;
+    }
+    ```
+
+  - all public variables have getter function
+    ```js
+      //get game informations in struct Game
+      slot.mGames(gameid)
+
+      //get current game id
+      slot.mCurrentGameId()
+
+      //get player balance
+      slot.playerBalance()
+
+      //get number of games played by user
+      slot.mNumGamePlayedByUser(useraddress)
+      ...
+    ```
+
 
 ### methods
+
+
   - occupy(bytes32 _playerSeed)
 
     player enters the game  
@@ -138,6 +215,7 @@
     onlyPlayer  
     set current game seed for player  
     play confirm, caculate the game  
+    event : playerSeedSet
     event : gameConfirmed
 
   - leave()  
@@ -147,6 +225,15 @@
     player leaves the game  
     give back the balance to player  
     event : playerLeft
+
+(for developer)
+  - checksha(bytes32 data) constant returns (bytes32)
+
+    return value of sha3 in solidity
+
+  - checkseed() constant returns (bytes32, bytes32)
+
+    return (sha3(mGames[mCurrentGameId].providerSeed), sha3(mGames[mCurrentGameId].playerSeed))
 
 ### events
   - playerLeft(address player, uint playerBalance)  
@@ -193,7 +280,7 @@ web3.eth.sendTransaction({from:provider, to:slotaddr, value : web3.toWei(1,"ethe
 slot.providerBalance()
 
 //player occupies the slotmachine, send ether
- slot.occupy('0x11',{from:user2,value:web3.toWei(2,"ether")})
+ slot.occupy('0x11',{from:player,value:web3.toWei(2,"ether")})
 
 //set initial provider seed
 slot.initProviderSeed('0x22')
@@ -206,8 +293,6 @@ slot.setProviderSeed('0x99')
 
 //player sets seed for current game, caculate reward
 slot.setPlayerSeed('0x88',{from:user2})
-
-
 
 
 

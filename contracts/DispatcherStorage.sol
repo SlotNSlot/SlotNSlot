@@ -7,7 +7,7 @@ contract DispatcherStorage {
   //TODO : sizes mapping should be completed;
 
   function DispatcherStorage(address newLib) {
-    sizes[bytes4(sha3("getUint(LibInterface.S storage)"))] = 40;
+    sizes[bytes4(sha3("getUint(LibInterface.S storage)"))] = 32;
   //  sizes[bytes4(sha3("getData2(LibInterface.S storage)"))] = 32;
     replace(newLib);
   }

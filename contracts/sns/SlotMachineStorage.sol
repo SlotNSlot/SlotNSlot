@@ -12,23 +12,20 @@ contract SlotMachineStorage is Ownable {
     mapping (address => address[]) public slotMachines;
 
     uint public totalNumofSlotMachine;
-    uint private test;
 
-    event providerAdded(address _provider, uint _slotnum);
+    uint test;
+  //  event providerAdded(address _provider, uint _slotnum);
 
     function SlotMachineStorage (){
         totalNumofSlotMachine = 0;
-        test = 1000;
+        test = 100;
     }
 
-    function () payable {
-
-    }
 
     function addProvider(address _provider, uint _slotnum) private {
         if (!isValidProvider(_provider)){
           provideraddress.push(_provider);
-          providerAdded(_provider, _slotnum);
+        //  providerAdded(_provider, _slotnum);
         }
     }
 

@@ -22,6 +22,7 @@ class PlaySlot extends React.PureComponent {
     super(props);
 
     this.setDeposit = this.setDeposit.bind(this);
+    this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
   }
 
   componentDidMount() {
@@ -138,12 +139,7 @@ class PlaySlot extends React.PureComponent {
               <button onClick={this.setDeposit} className={styles.headerBtn}>
                 DEPOSIT
               </button>
-              <button
-                onClick={() => {
-                  alert('cash out');
-                }}
-                className={styles.headerBtn}
-              >
+              <button onClick={this.leaveSlotMachine} className={styles.headerBtn}>
                 CASH OUT
               </button>
             </div>
@@ -240,9 +236,8 @@ class PlaySlot extends React.PureComponent {
   }
 
   leaveSlotMachine() {
-    const { root, dispatch } = this.props;
-    const userAddress = root.get('account');
-    dispatch(Actions.getSlotMachine(userAddress));
+    const { dispatch, root, playSlotState } = this.props;
+    dispatch(Actions.leaveSlotMachine(playSlotState.get('slotMachineContract'), root.get('account')));
   }
 }
 

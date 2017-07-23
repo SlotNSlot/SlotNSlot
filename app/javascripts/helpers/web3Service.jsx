@@ -185,6 +185,19 @@ class Web3Service {
     });
   }
 
+  async leaveSlotMachine(slotMachineContract, playerAddress) {
+    return new Promise((resolve, reject) => {
+      console.log(playerAddress);
+      slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   async getSlotMachineInfo(slotMachineContract, userType) {
     // 0 [player], 1 [maker]
     const promiseArr = [

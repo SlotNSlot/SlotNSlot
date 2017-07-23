@@ -33,7 +33,7 @@ export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, 
         maxPrize,
       });
       const slotAddr = transaction.args._slotaddr;
-      await Web3Service.sendProivderEtherToSlotMachine({
+      await Web3Service.sendEtherToAccount({
         from: account,
         to: slotAddr,
         etherValue: totalStake,

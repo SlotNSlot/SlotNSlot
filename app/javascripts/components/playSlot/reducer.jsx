@@ -17,9 +17,11 @@ for (let i = 0; i < 45; i += 1) {
 export const PLAY_SLOT_INITIAL_STATE = fromJS({
   isLoading: false,
   isPlaying: false,
+  isOccupied: false,
   hasError: false,
   betSize: 20,
   lineNum: 20,
+  deposit: 0,
   bankRoll: 2000,
   betUnit: 2,
   minBet: 2,
@@ -33,6 +35,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
   switch (action.type) {
+    case ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT:
     case ACTION_TYPES.START_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState.set('isLoading', true).set('hasError', false);
@@ -45,6 +48,14 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
       });
     }
 
+    case ACTION_TYPES.SET_DEPOSIT: {
+      return state.set('deposit', action.payload.weiValue);
+    }
+
+    case ACTION_TYPES.SET_OCCUPIED_STATE: {
+      return state.set('isOccupied', action.payload.occupied);
+    }
+
     case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState
@@ -55,7 +66,17 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
           .set('maxBet', parseFloat(action.payload.maxBet))
           .set('betUnit', parseFloat(action.payload.minBet))
           .set('bankRoll', parseFloat(action.payload.bankRoll))
+          .set('deposit', action.payload.deposit)
           .set('slotMachineContract', action.slotMachineContract);
+      });
+    }
+
+    case ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT: {
+      return state.withMutations(currentState => {
+        return currentState
+          .set('deposit', parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10))
+          .set('isLoading', true)
+          .set('hasError', false);
       });
     }
 
@@ -65,6 +86,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
       });
     }
 
+    case ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT:
     case ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState.set('isLoading', false).set('hasError', true);
@@ -73,7 +95,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: {
       return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('hasError', false);
+        return currentState.set('isLoading', false).set('hasError', false).set('isOccupied', true);
       });
     }
 

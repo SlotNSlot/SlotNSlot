@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactTable from 'react-table';
-import './react-table.scss';
 import SlotGame from './game';
 import * as Actions from './actions';
+import Web3Service from '../../helpers/web3Service';
 import styles from './playSlot.scss';
+import './react-table.scss';
 
 let gameAlreadyLoaded = false;
 let slotMachineLoaded = false;
@@ -17,18 +18,26 @@ function mapStateToProps(appState) {
 }
 
 class PlaySlot extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.setDeposit = this.setDeposit.bind(this);
+  }
+
   componentDidMount() {
     if (!this.canvas || gameAlreadyLoaded) {
       return;
     }
+
     const { root, playSlotState } = this.props;
+
     gameAlreadyLoaded = true;
     if (root.get('account') !== null && !slotMachineLoaded) {
-      console.log('componentDidMount getSlotMachine');
       const slotAddress = this.props.match.params.slotAddress;
       this.getSlotMachine(slotAddress, root.get('account'));
       slotMachineLoaded = true;
     }
+
     this.slotGame = new SlotGame({
       canvas: this.canvas,
       isLoading: playSlotState.get('isLoading'),
@@ -39,10 +48,10 @@ class PlaySlot extends React.PureComponent {
       betUnit: playSlotState.get('betUnit'),
       minBet: playSlotState.get('minBet'),
       maxBet: playSlotState.get('maxBet'),
+      yourStake: Web3Service.makeEthFromWei(playSlotState.get('deposit')),
       setBetSize: this.setBetSize.bind(this),
       setLineNum: this.setLineNum.bind(this),
       playGame: this.playGame.bind(this),
-      yourStake: root.get('balance'),
     });
   }
 
@@ -58,10 +67,12 @@ class PlaySlot extends React.PureComponent {
       this.slotGame.minBet = playSlotState.get('minBet');
       this.slotGame.hasError = playSlotState.get('hasError');
       this.slotGame.bankRoll = playSlotState.get('bankRoll');
-      this.slotGame.yourStake = root.get('balance');
+      this.slotGame.yourStake = Web3Service.makeEthFromWei(playSlotState.get('deposit'));
+
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
       }
+
       if (root.get('account') !== null && !slotMachineLoaded) {
         const slotAddress = this.props.match.params.slotAddress;
         this.getSlotMachine(slotAddress, root.get('account'));
@@ -69,6 +80,7 @@ class PlaySlot extends React.PureComponent {
       }
     }
   }
+
   componentWillUnmount() {
     if (this.slotGame) {
       this.slotGame.removeCurrentGame();
@@ -77,7 +89,7 @@ class PlaySlot extends React.PureComponent {
   }
 
   render() {
-    const { root, playSlotState } = this.props;
+    const { playSlotState } = this.props;
     const _data = playSlotState.get('betsData').toJS();
     const tableCategory = playSlotState.get('tableCategory');
 
@@ -118,12 +130,7 @@ class PlaySlot extends React.PureComponent {
               >
                 ?
               </button>
-              <button
-                onClick={() => {
-                  alert('deposit');
-                }}
-                className={styles.headerBtn}
-              >
+              <button onClick={this.setDeposit} className={styles.headerBtn}>
                 DEPOSIT
               </button>
               <button
@@ -175,6 +182,26 @@ class PlaySlot extends React.PureComponent {
         </div>
       </div>
     );
+  }
+
+  setDeposit() {
+    const { dispatch, root, playSlotState } = this.props;
+    const ethValue = prompt('Please insert the maximum Ethereum value you want to bet');
+
+    if (root.get('balance') < ethValue) {
+      alert('Your bet amount should be under your balance');
+      return;
+    }
+
+    const slotMachineContract = playSlotState.get('slotMachineContract');
+    const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
+
+    if (playSlotState.get('isOccupied')) {
+      dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
+    } else {
+      dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
+      dispatch(Actions.setDeposit(parseFloat(weiValue, 10)));
+    }
   }
 
   setBetSize(betSize) {

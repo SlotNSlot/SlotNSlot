@@ -84,8 +84,6 @@ contract SlotMachine is Ownable {
         require(!mIsGamePlaying);
         _;
     }
-
-
     /*
         EVENTS
     */
@@ -111,7 +109,6 @@ contract SlotMachine is Ownable {
         playerBalance += msg.value;
       } else {
         invalidEtherSent(msg.sender, msg.value);
-        //throw;
       }
     }
 
@@ -259,9 +256,6 @@ contract SlotMachine is Ownable {
     {
 
         require(mGames[mCurrentGameId].gameState == GameState.INITIALIZED);
-        /*if(mGames[mCurrentGameId].gameState != GameState.INITIALIZED) {
-            throw;
-        }*/
 
         mGames[mCurrentGameId].providerSeed = _providerSeed;
         mGames[mCurrentGameId].gameState = GameState.PROVIDERSEEDSET;
@@ -305,19 +299,13 @@ contract SlotMachine is Ownable {
 
 
         Game game = mGames[mCurrentGameId];
-        /*if(game.gameState != GameState.PLAYERSEEDSET) {
-            throw;
-        }*/
+
         require(game.gameState == GameState.PLAYERSEEDSET);
         require(game.playerSeedReady && game.providerSeedReady);
-        /*require(previousPlayerSeed == sha3(game.providerSeed) && previousPlayerSeed == sha3(game.playerSeed));*/
-        /*if(game.playerSeedReady == false || game.providerSeedReady == false){
-            return;
-        }*/
 
         if(previousProviderSeed != sha3(game.providerSeed) || previousPlayerSeed != sha3(game.playerSeed)) {
             invalidSeed();
-            return;
+            throw;
         }
 
         uint reward = 0;
@@ -358,11 +346,6 @@ contract SlotMachine is Ownable {
         previousPlayerSeed = game.playerSeed;
         gameConfirmed(mCurrentGameId, reward);
 
-    }
-
-
-    function getCount(address _player) returns (uint) {
-        return mNumGamePlayedByUser[_player];
     }
 
     function getInfo() constant returns (uint, uint, uint) {

@@ -5,8 +5,6 @@ import '../zeppelin/ownership/Ownable.sol';
 import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
-//    user[] public userdata;
-    /*struct slot {address slotaddress; bool deleted;}*/
 
     address[] public provideraddress;
     mapping (address => address[]) public slotMachines;
@@ -14,7 +12,6 @@ contract SlotMachineStorage is Ownable {
     uint public totalNumofSlotMachine;
 
     uint test;
-  //  event providerAdded(address _provider, uint _slotnum);
 
     function SlotMachineStorage (){
         totalNumofSlotMachine = 0;
@@ -25,7 +22,6 @@ contract SlotMachineStorage is Ownable {
     function addProvider(address _provider, uint _slotnum) private {
         if (!isValidProvider(_provider)){
           provideraddress.push(_provider);
-        //  providerAdded(_provider, _slotnum);
         }
     }
 
@@ -38,13 +34,10 @@ contract SlotMachineStorage is Ownable {
     }
 
     function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
-      //  onlyOwner
-        /*payable*/
+        onlyOwner
         returns (address)
     {
-      address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
-
-        /*address newslot = address((new SlotMachine).value(msg.value)(_provider, _decider, _minBet, _maxBet, _maxPrize));*/
+        address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
         addProvider(_provider, 1);
         slotMachines[_provider].push(newslot);
         totalNumofSlotMachine++;

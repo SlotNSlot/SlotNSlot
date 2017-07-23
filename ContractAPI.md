@@ -1,6 +1,7 @@
 #SlotMachine API
 
-
+SlotMachine => Game struct changed
+SlotMachineManager => event slotMachineCreated => parameter maxPrize added
 
 ---
 ## SlotMachineManager
@@ -164,21 +165,29 @@
         uint numofLines;
         uint reward;
     }
+
+    enum GameState {
+        INITIALIZED,  //initGameforPlayer()
+        PROVIDERSEEDSET,  //setProviderSeed()
+        PLAYERSEEDSET,  //setPlayerSeed()
+        END //gameConfirmed;
+    }
     ```
 
   - all public variables have getter function
     ```js
       //get game informations in struct Game
-      slot.mGames(gameid)
+      gameid = slot.mCurrentGameId();
+      slot.mGames(gameid);
 
       //get current game id
-      slot.mCurrentGameId()
+      slot.mCurrentGameId();
 
       //get player balance
-      slot.playerBalance()
+      slot.playerBalance();
 
       //get number of games played by user
-      slot.mNumGamePlayedByUser(useraddress)
+      slot.mNumGamePlayedByUser(useraddress);
       ...
     ```
 

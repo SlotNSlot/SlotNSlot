@@ -39,9 +39,9 @@ class Web3Service {
 
     for (let i = 0; i < recursiveLength; i++) {
       if (shaValue) {
-        shaValue = this.web3.sha3(shaValue);
+        shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
       } else {
-        shaValue = this.web3.sha3(originalString);
+        shaValue = this.web3.sha3(originalString, { encoding: 'hex' });
       }
     }
 
@@ -379,7 +379,7 @@ class Web3Service {
                 reject(error);
               } else {
                 console.log('providerSeedSet over!', event);
-                const sha = this.makeS3Sha(10000);
+                const sha = this.makeS3Sha(9999);
                 event.stopWatching();
                 slotMachineContract.setPlayerSeed(
                   sha,
@@ -489,7 +489,7 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          const sha = this.makeS3Sha(10000);
+          const sha = this.makeS3Sha(9999);
           console.log('watch over! GameInitialized', result);
           slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
             if (err) {

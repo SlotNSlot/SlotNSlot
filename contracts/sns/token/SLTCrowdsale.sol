@@ -124,7 +124,7 @@ contract SLTCrowdsale {
     internal
     returns (uint o_amount)
     {
-        o_amount = SafeMath.div(SafeMath.mul(msg.value, _rate), 1 ether);
+        o_amount = SafeMath.mul(msg.value, _rate);
 
         mMultisigAddr.transfer(msg.value);
         assert(mSLTToken.mint(msg.sender, o_amount));
@@ -151,6 +151,7 @@ contract SLTCrowdsale {
         uint tokenRemainedAmount = SafeMath.div(mSltSold, 4);
         assert(mSLTToken.mint(mMultisigAddr, tokenRemainedAmount));
         assert(mSLTToken.finishMinting());
+        mSLTToken.transferOwnership(msg.sender);
         mOwnerAddr.transfer(this.balance);
         
         CrowdsaleEnd();

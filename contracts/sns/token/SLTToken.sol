@@ -21,7 +21,7 @@ contract SLTToken is ERC20, Ownable {
      * SLT transfer will be locked until the crowd sale ends.
      * After crowd sale ends, SLT exceeding LOCKUP_LIMIT_AMOUNT will be locked for 100 days.
      */
-    uint256 public constant LOCKUP_LIMIT_AMOUNT = 10000000;
+    uint256 public constant LOCKUP_LIMIT_AMOUNT = 10000000000000000000000000;
 
     uint256 public constant LOCKUP_PERIOD = 100 days;
 

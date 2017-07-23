@@ -337,6 +337,7 @@ class Web3Service {
     return new Promise((resolve, reject) => {
       const sha = this.makeS3Sha(10000);
       this.genesisRandomNumber = sha;
+      console.log('genesis sha', sha);
 
       slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
@@ -385,6 +386,9 @@ class Web3Service {
                   alert('You need genesisRandomNumber');
                 }
                 const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
+                console.log('current sha', sha);
+                console.log('genesis sha', this.genesisRandomNumber);
+                console.log('current sha sha', Web3Service.getWeb3().sha3(sha, { encoding: 'hex' }));
 
                 event.stopWatching();
                 slotMachineContract.setPlayerSeed(
@@ -475,6 +479,7 @@ class Web3Service {
           console.log('gameOccupied over!', result);
           const sha = this.makeS3Sha(10000);
           this.genesisRandomNumber = sha;
+          console.log('genesis sha', sha);
 
           slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
             if (err) {
@@ -501,6 +506,9 @@ class Web3Service {
             alert('You need genesisRandomNumber');
           }
           const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
+          console.log('current sha', sha);
+          console.log('genesis sha', this.genesisRandomNumber);
+          console.log('current sha sha', Web3Service.getWeb3().sha3(sha, { encoding: 'hex' }));
           console.log('watch over! GameInitialized', result);
           slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
             if (err) {

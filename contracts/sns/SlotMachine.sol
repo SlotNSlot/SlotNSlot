@@ -210,15 +210,6 @@ contract SlotMachine is Ownable {
         require(_bet >= mMinBet && _bet <= mMaxBet);
         require(_bet * _lines <= playerBalance);
 
-        /*if(_bet > mMaxBet || _bet < mMinBet) {
-            throw;
-        }*/
-
-
-        /*if(_bet * _lines > playerBalance) {
-            throw;
-        }*/
-
         if(_bet * _lines > providerBalance) {
             mBankrupt = true;
             throw;

@@ -34,7 +34,6 @@ contract SlotMachineStorage is Ownable {
     }
 
     function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
-        onlyOwner
         returns (address)
     {
         address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
@@ -60,14 +59,12 @@ contract SlotMachineStorage is Ownable {
     }
 
     function getNumofSlotMachine(address _provider)
-    //    onlyOwner
         constant returns (uint)
     {
         return slotMachines[_provider].length;
     }
 
     function getSlotMachine(address _provider, uint _idx)
-      //  onlyOwner
         constant returns(address)
     {
         if (_idx < slotMachines[_provider].length) {

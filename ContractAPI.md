@@ -1,8 +1,13 @@
 #SlotMachine API
 
-SlotMachine => Game struct changed
-SlotMachineManager => event slotMachineCreated => parameter maxPrize added
 
+SlotMachineManager
+  - event slotMachineCreated :  parameter maxPrize added
+  - removeSlotMachine : refunding to owner added
+
+SlotMachine
+  - Game struct changed
+  - function *checksha, checkseed* added;
 ---
 ## SlotMachineManager
 

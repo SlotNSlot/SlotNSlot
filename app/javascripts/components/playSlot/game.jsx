@@ -181,7 +181,6 @@ export default class SlotGame {
     this.symbols = new Array(ALL_SYMBOL_COUNT);
 
     this.UIContainer = new PIXI.Container();
-    const tempContainer = new PIXI.Container();
     this.reelContainer = new PIXI.Container();
 
     this.reelGroup = new Array(ENTIRE_REEL_COUNT * 2).fill(1);
@@ -250,37 +249,6 @@ export default class SlotGame {
         this.reelContainer.x = SLOT_START_X;
         this.reelContainer.y = SLOWING_DISTANCE;
         this.stage.addChild(this.reelContainer);
-
-        // Add UI Elements.
-        const spinBtn = new PIXI.Graphics();
-        spinBtn.beginFill(0x6495ed, 1);
-        spinBtn.lineStyle(2, 0x000000, 1);
-        spinBtn.drawRect(0, 0, 100, 50);
-        spinBtn.endFill();
-        spinBtn.x = 700;
-        spinBtn.y = 525;
-        spinBtn.interactive = true;
-        spinBtn.buttonMode = true;
-        spinBtn.on('pointerdown', () => {
-          const slotResult = this.calculateSlot();
-          this.stopSpin(slotResult);
-        });
-        tempContainer.addChild(spinBtn);
-
-        const stopBtn = new PIXI.Graphics();
-        stopBtn.beginFill(0xcc0000, 1);
-        stopBtn.lineStyle(2, 0x000000, 1);
-        stopBtn.drawRect(0, 0, 100, 50);
-        stopBtn.endFill();
-        stopBtn.x = 800;
-        stopBtn.y = 525;
-        stopBtn.interactive = true;
-        stopBtn.buttonMode = true;
-
-        stopBtn.on('pointerdown', this.calculateSlot);
-        tempContainer.addChild(stopBtn);
-
-        this.stage.addChild(tempContainer);
         this.stage.addChild(this.UIContainer);
         // Tell the `renderer` to `render` the `stage`
         this.renderer.render(this.stage);
@@ -941,9 +909,9 @@ export default class SlotGame {
     mergedBackground.height = 660;
 
     const slotBackground = new Sprite(TextureCache['slot-background.png']);
-    slotBackground.position.set(43, 120);
-    slotBackground.width = 855;
-    slotBackground.height = 461;
+    slotBackground.position.set(35, 110);
+    slotBackground.width = 867;
+    slotBackground.height = 481;
 
     const ribbon = new Sprite(TextureCache['ribbon.png']);
     ribbon.position.set(132, 77);

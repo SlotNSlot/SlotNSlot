@@ -158,6 +158,7 @@ export default class SlotGame {
     this.autoSpinStatus = false;
     // Animation Variable Initialization
     this.bigWinPopping = 1; // Inflates when this value is 1, shrinks when this value is -1.
+    this.requestId = null;
     this.winMoneyTextVel = 0;
     this.winMoneyTextAcc = 0.003;
     this.drawingLines = [];
@@ -485,7 +486,7 @@ export default class SlotGame {
     }
 
     // Render the stage to see the animation
-    window.requestAnimationFrame(this.gameLoop);
+    this.requestId = window.requestAnimationFrame(this.gameLoop);
     this.renderer.render(this.stage);
   }
 
@@ -925,6 +926,7 @@ export default class SlotGame {
   removeCurrentGame() {
     PIXI.loader.reset();
     this.canvas.remove();
+    window.cancelAnimationFrame(this.requestId);
   }
 
   drawUI() {

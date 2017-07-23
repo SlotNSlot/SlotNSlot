@@ -278,7 +278,7 @@ class Web3Service {
 
   getSlotMachineMaxPrize(slotMachineContract) {
     return new Promise((resolve, reject) => {
-      slotMachineContract.mMinBet((err, mMaxPrize) => {
+      slotMachineContract.mMaxPrize((err, mMaxPrize) => {
         if (err) {
           reject(err);
         } else {

@@ -25,7 +25,7 @@ const SlotListItem = ({ slotContract }) => {
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Max Win Prize</div>
             <div className={styles.infoValue}>
-              {`x ${formatNumberAsK(slotContract.get('meta').get('maxPrize'))}`}
+              {`x ${slotContract.get('meta').get('maxPrize')}`}
             </div>
           </span>
           <span className={styles.itemInfo}>

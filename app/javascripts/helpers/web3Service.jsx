@@ -16,7 +16,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
@@ -312,7 +312,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'bankRoll',
-            infoVal: this.makeEthFromWei(parseInt(providerBalance.valueOf(), 10)),
+            infoVal: providerBalance,
           });
         }
       });
@@ -367,6 +367,7 @@ class Web3Service {
               } else {
                 console.log('providerSeedSet over!', event);
                 const sha = this.makeS3Sha(10000);
+                event.stopWatching();
                 slotMachineContract.setPlayerSeed(
                   sha,
                   {
@@ -376,7 +377,6 @@ class Web3Service {
                   async (err2, result3) => {
                     console.log('playerSeed!', result3);
                     if (err2) {
-                      event.stopWatching();
                       reject(err2);
                     } else {
                       // console.log('Done set player seed', result2);
@@ -384,7 +384,6 @@ class Web3Service {
                       // console.log(mCurrentGameId, ' === mCurerntGameId');
                       // const mGame = await this.getSlotMachineGame(slotMachineContract, mCurrentGameId);
                       // console.log(mGame);
-                      event.stopWatching();
                       resolve(result2);
                     }
                   },

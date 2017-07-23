@@ -11,6 +11,7 @@ const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
 class Web3Service {
   constructor() {
     this.web3 = null;
+    this.genesisRandomNumber = null;
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
@@ -33,8 +34,8 @@ class Web3Service {
     }
   }
 
-  makeS3Sha(recursiveLength) {
-    const originalString = Math.random().toString();
+  makeS3Sha(recursiveLength, genesisRandomNumber) {
+    const originalString = genesisRandomNumber ? genesisRandomNumber : Math.random().toString();
     let shaValue;
 
     for (let i = 0; i < recursiveLength; i++) {
@@ -335,6 +336,7 @@ class Web3Service {
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
       const sha = this.makeS3Sha(10000);
+      this.genesisRandomNumber = sha;
 
       slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
@@ -379,7 +381,11 @@ class Web3Service {
                 reject(error);
               } else {
                 console.log('providerSeedSet over!', event);
-                const sha = this.makeS3Sha(9999);
+                if (!this.genesisRandomNumber) {
+                  alert('You need genesisRandomNumber');
+                }
+                const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
+
                 event.stopWatching();
                 slotMachineContract.setPlayerSeed(
                   sha,
@@ -468,6 +474,8 @@ class Web3Service {
         } else {
           console.log('gameOccupied over!', result);
           const sha = this.makeS3Sha(10000);
+          this.genesisRandomNumber = sha;
+
           slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
             if (err) {
               reject(err);
@@ -489,7 +497,10 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          const sha = this.makeS3Sha(9999);
+          if (!this.genesisRandomNumber) {
+            alert('You need genesisRandomNumber');
+          }
+          const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
           console.log('watch over! GameInitialized', result);
           slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
             if (err) {

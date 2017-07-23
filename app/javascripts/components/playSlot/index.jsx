@@ -44,10 +44,10 @@ class PlaySlot extends React.PureComponent {
       hasError: playSlotState.get('hasError'),
       lineNum: playSlotState.get('lineNum'),
       betSize: playSlotState.get('betSize'),
-      bankRoll: playSlotState.get('bankRoll'),
       betUnit: playSlotState.get('betUnit'),
       minBet: playSlotState.get('minBet'),
       maxBet: playSlotState.get('maxBet'),
+      bankRoll: Web3Service.makeEthFromWei(playSlotState.get('bankRoll')),
       yourStake: Web3Service.makeEthFromWei(playSlotState.get('deposit')),
       setBetSize: this.setBetSize.bind(this),
       setLineNum: this.setLineNum.bind(this),
@@ -66,7 +66,7 @@ class PlaySlot extends React.PureComponent {
       this.slotGame.maxBet = playSlotState.get('maxBet');
       this.slotGame.minBet = playSlotState.get('minBet');
       this.slotGame.hasError = playSlotState.get('hasError');
-      this.slotGame.bankRoll = playSlotState.get('bankRoll');
+      this.slotGame.bankRoll = Web3Service.makeEthFromWei(playSlotState.get('bankRoll'));
       this.slotGame.yourStake = Web3Service.makeEthFromWei(playSlotState.get('deposit'));
 
       if (playSlotState.get('hasError')) {
@@ -92,6 +92,11 @@ class PlaySlot extends React.PureComponent {
     const { playSlotState } = this.props;
     const _data = playSlotState.get('betsData').toJS();
     const tableCategory = playSlotState.get('tableCategory');
+
+    let loader = null;
+    if (playSlotState.get('isLoading') || !playSlotState.get('isOccupied')) {
+      loader = <div className={styles.loadingBlocker} />;
+    }
 
     const columns = [
       {
@@ -143,11 +148,14 @@ class PlaySlot extends React.PureComponent {
               </button>
             </div>
           </div>
-          <canvas
-            ref={canvas => {
-              this.canvas = canvas;
-            }}
-          />
+          <div className={styles.gameContainer}>
+            <canvas
+              ref={canvas => {
+                this.canvas = canvas;
+              }}
+            />
+            {loader}
+          </div>
         </div>
         <div className={styles.bottomSection}>
           <div className={styles.bottomContainer}>
@@ -195,12 +203,13 @@ class PlaySlot extends React.PureComponent {
 
     const slotMachineContract = playSlotState.get('slotMachineContract');
     const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
+    const weiValueBigNumber = Web3Service.getWeb3().toBigNumber(weiValue);
 
     if (playSlotState.get('isOccupied')) {
       dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
     } else {
       dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
-      dispatch(Actions.setDeposit(parseFloat(weiValue, 10)));
+      dispatch(Actions.setDeposit(weiValueBigNumber));
     }
   }
 

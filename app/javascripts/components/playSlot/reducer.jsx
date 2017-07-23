@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import { ACTION_TYPES } from './actions';
+import Web3Service from '../../helpers/web3Service';
 
 const emotionTypes = ['Thank', 'Threaten', 'Oops', 'Sorry', 'Well Played', 'Greetings'];
 
@@ -22,7 +23,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   betSize: 20,
   lineNum: 20,
   deposit: 0,
-  bankRoll: 2000,
+  bankRoll: 0,
   betUnit: 2,
   minBet: 2,
   maxBet: 20,
@@ -59,24 +60,24 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState
-          .set('isLoading', true)
+          .set('isLoading', false)
           .set('hasError', false)
           .set('minBet', parseFloat(action.payload.minBet))
           .set('betSize', parseFloat(action.payload.minBet))
           .set('maxBet', parseFloat(action.payload.maxBet))
           .set('betUnit', parseFloat(action.payload.minBet))
-          .set('bankRoll', parseFloat(action.payload.bankRoll))
-          .set('deposit', action.payload.deposit)
+          .set('bankRoll', action.payload.bankRoll) // Big Number
+          .set('deposit', action.payload.deposit) // Big Number
           .set('slotMachineContract', action.slotMachineContract);
       });
     }
 
     case ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT: {
       return state.withMutations(currentState => {
-        return currentState
-          .set('deposit', parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10))
-          .set('isLoading', true)
-          .set('hasError', false);
+        const bigNumber = Web3Service.getWeb3().toBigNumber(
+          parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10),
+        );
+        return currentState.set('deposit', bigNumber).set('isLoading', false).set('hasError', false);
       });
     }
 
@@ -111,7 +112,11 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME: {
       return state.withMutations(currentState => {
-        return currentState.set('isPlaying', false).update('betsData', list => list.concat(action.payload.betData));
+        return currentState
+          .set('isPlaying', false)
+          .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.weiReward, 10)))
+          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.weiReward, 10)))
+          .update('betsData', list => list.concat(action.payload.transaction.betData));
       });
     }
 

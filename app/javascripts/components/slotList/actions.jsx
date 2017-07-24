@@ -68,6 +68,7 @@ export function getMySlotMachines(account) {
         },
       });
       slotMachineContracts.forEach(async slotMachineContract => {
+        Web3Service.createGenesisRandomNumber(slotMachineContract.get('contract').address);
         if (slotMachineContract.get('meta').get('mPlayer') === '0x0000000000000000000000000000000000000000') {
           await Web3Service.watchGameOccupied(slotMachineContract.get('contract'), account).then(() => {
             Toast.notie.alert({

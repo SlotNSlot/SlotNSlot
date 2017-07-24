@@ -23,6 +23,8 @@ class PlaySlot extends React.PureComponent {
 
     this.setDeposit = this.setDeposit.bind(this);
     this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
+    this.slotAddress = this.props.match.params.slotAddress;
+    Web3Service.createGenesisRandomNumber(this.slotAddress);
   }
 
   componentDidMount() {
@@ -34,8 +36,7 @@ class PlaySlot extends React.PureComponent {
 
     gameAlreadyLoaded = true;
     if (root.get('account') !== null && !slotMachineLoaded) {
-      const slotAddress = this.props.match.params.slotAddress;
-      this.getSlotMachine(slotAddress, root.get('account'));
+      this.getSlotMachine(this.slotAddress, root.get('account'));
       slotMachineLoaded = true;
     }
 
@@ -75,8 +76,7 @@ class PlaySlot extends React.PureComponent {
       }
 
       if (root.get('account') !== null && !slotMachineLoaded) {
-        const slotAddress = this.props.match.params.slotAddress;
-        this.getSlotMachine(slotAddress, root.get('account'));
+        this.getSlotMachine(this.slotAddress, root.get('account'));
         slotMachineLoaded = true;
       }
     }

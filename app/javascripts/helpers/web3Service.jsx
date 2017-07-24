@@ -2,9 +2,9 @@ import Web3 from 'web3';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json').default;
-const storageABI = require('./storageABI.json').default;
-const slotMachineABI = require('./slotMachineABI.json').default;
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
 const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
 

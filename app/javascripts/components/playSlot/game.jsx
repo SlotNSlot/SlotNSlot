@@ -270,7 +270,7 @@ export default class SlotGame {
     this.winLines.clear();
     this.gameState = STATE_SPINNING;
     this.reelGroup.forEach(reel => {
-      reel.vy = 100;
+      reel.vy = 15;
       reel.filters = [this.blurFilter];
     });
     this.spinStatus.fill(true);

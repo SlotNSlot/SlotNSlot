@@ -165,16 +165,15 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     try {
       const transaction = await Web3Service.playSlotMachine(playInfo);
       const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
+      const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
       const ethReward = Web3Service.makeEthFromWei(reward.args.reward);
-
-      console.log('reward.args.reward', reward.args.reward);
-
+      const diffMoney = reward.args.reward - betMoney;
       stopSpinFunc(ethReward);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
         payload: {
           transaction,
-          weiReward: reward.args.reward,
+          diffMoney,
         },
       });
     } catch (err) {

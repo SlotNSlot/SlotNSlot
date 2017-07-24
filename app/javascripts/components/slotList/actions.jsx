@@ -68,6 +68,7 @@ export function getMySlotMachines(account) {
         },
       });
       slotMachineContracts.forEach(async slotMachineContract => {
+        Web3Service.createGenesisRandomNumber(slotMachineContract.get('contract').address);
         if (slotMachineContract.get('meta').get('mPlayer') === '0x0000000000000000000000000000000000000000') {
           await Web3Service.watchGameOccupied(slotMachineContract.get('contract'), account).then(() => {
             Toast.notie.alert({
@@ -75,11 +76,14 @@ export function getMySlotMachines(account) {
             });
           });
         }
-        await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
-          Toast.notie.alert({
-            text: 'Your Slotmachine is Initialized.',
+        while (1) {
+          await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
+            Toast.notie.alert({
+              text: 'Your Slotmachine is Initialized.',
+            });
           });
-        });
+          const reward = await Web3Service.getSlotResult(slotMachineContract.get('contract'));
+        }
       });
     } catch (err) {
       console.error(err);

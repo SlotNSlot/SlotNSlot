@@ -1,41 +1,529 @@
 import Web3 from 'web3';
-import contract from 'truffle-contract';
-import metacoinArtifacts from '../../../build/contracts/MetaCoin.json';
+import EnvChecker from './envChecker';
+import { USER_TYPES } from '../components/slotList/actions';
+
+const managerABI = require('./managerABI.json').default;
+const storageABI = require('./storageABI.json').default;
+const slotMachineABI = require('./slotMachineABI.json').default;
+
+const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
 
 class Web3Service {
   constructor() {
     this.web3 = null;
-    this.MetaCoin = null;
+    this.genesisRandomNumber = null;
+    this.slotManagerContract = null;
+    this.slotStorageContract = null;
+    this.storageAddr = null;
+    this.myOccupiedGameInitWatchers = {};
 
     if (typeof web3 !== 'undefined') {
-      console.warn(
-        "Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask",
-      );
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
+      const SlotManagerContract = this.web3.eth.contract(managerABI);
+      this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
     } else {
       console.warn(
-        "No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
+        "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
       );
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      if (EnvChecker.isDev()) {
+        this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+        const SlotManagerContract = this.web3.eth.contract(managerABI);
+        this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
+      }
+    }
+  }
+
+  makeS3Sha(recursiveLength, genesisRandomNumber) {
+    const originalString = genesisRandomNumber ? genesisRandomNumber : Math.random().toString();
+    let shaValue;
+
+    for (let i = 0; i < recursiveLength; i++) {
+      if (shaValue) {
+        shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
+      } else {
+        shaValue = this.web3.sha3(originalString, { encoding: 'hex' });
+      }
     }
 
-    // Set MetaCoin Provider
-    this.getMetaCoinContract().setProvider(this.web3.currentProvider);
+    return shaValue;
+  }
+
+  async initializeStorageContract() {
+    if (this.slotManagerContract) {
+      await new Promise((resolve, reject) => {
+        this.slotManagerContract.getStorageAddr((err, storageAddr) => {
+          if (err) {
+            reject(err);
+          } else {
+            this.storageAddr = storageAddr;
+            resolve(storageAddr);
+          }
+        });
+      });
+      const SlotStorageContract = this.web3.eth.contract(storageABI);
+      this.slotStorageContract = SlotStorageContract.at(this.storageAddr);
+    }
+  }
+
+  getSlotMachineContract(contractAddress) {
+    const SlotStorageContract = this.web3.eth.contract(slotMachineABI);
+    return SlotStorageContract.at(contractAddress);
   }
 
   getWeb3() {
     return this.web3;
   }
 
-  getMetaCoinContract() {
-    if (!this.MetaCoin) {
-      this.MetaCoin = contract(metacoinArtifacts);
+  getNumOfSlotMachine(account) {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getNumofSlotMachine(account, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTheNumberOfProviders() {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getNumofProvider((err, TheNumOfProvider) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(TheNumOfProvider);
+        }
+      });
+    });
+  }
+
+  async getProviderAddress(index) {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.provideraddress(index, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async sendEtherToAccount({ from, to, etherValue }) {
+    return new Promise((resolve, reject) => {
+      this.web3.eth.sendTransaction(
+        {
+          from,
+          to,
+          value: this.makeWeiFromEther(parseFloat(etherValue, 10)),
+        },
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        },
+      );
+    });
+  }
+
+  async getSlotMachineAddressFromProvider(account, index) {
+    return new Promise((resolve, reject) => {
+      this.slotStorageContract.getSlotMachine(account, index, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  makeWeiFromEther(etherValue) {
+    if (typeof etherValue !== 'number') {
+      throw new Error('You should insert ether value with number type');
     }
-    return this.MetaCoin;
+    return parseInt(this.web3.toWei(etherValue, 'ether'), 10);
+  }
+
+  makeEthFromWei(weiValue) {
+    return parseFloat(this.web3.fromWei(weiValue, 'ether').valueOf(), 10);
+  }
+
+  async createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
+    return await new Promise((resolve, reject) => {
+      this.slotManagerContract.createSlotMachine(
+        decider,
+        this.makeWeiFromEther(parseFloat(minBet, 10)),
+        this.makeWeiFromEther(parseFloat(maxBet, 10)),
+        maxPrize,
+        {
+          gas: 2200000,
+          from: account,
+        },
+        (err, _transactionAddress) => {
+          if (err) {
+            reject(err);
+          } else {
+            const event = this.slotManagerContract.slotMachineCreated();
+            event.watch((error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                event.stopWatching();
+                resolve(result);
+              }
+            });
+          }
+        },
+      );
+    });
+  }
+
+  async leaveSlotMachine(slotMachineContract, playerAddress) {
+    return new Promise((resolve, reject) => {
+      console.log(playerAddress);
+      slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async getSlotMachineInfo(slotMachineContract, userType) {
+    // 0 [player], 1 [maker]
+    const promiseArr = [
+      this.getSlotMachinePlayer(slotMachineContract, userType),
+      this.getSlotMachineAvailable(slotMachineContract, userType),
+      this.getSlotMachineBankrupt(slotMachineContract, userType),
+      this.getSlotMachineMaxBet(slotMachineContract),
+      this.getSlotMachineMinBet(slotMachineContract),
+      this.getSlotMachineProviderBalance(slotMachineContract),
+      this.getSlotMachineMaxPrize(slotMachineContract),
+      this.getPlayerBalance(slotMachineContract),
+    ];
+    const payload = { address: slotMachineContract.address };
+    await Promise.all(promiseArr).then(infoObjArr => {
+      infoObjArr.forEach(infoObj => {
+        payload[infoObj.infoKey] = infoObj.infoVal;
+      });
+    });
+    return payload;
+  }
+
+  getPlayerBalance(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.playerBalance((err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ infoKey: 'deposit', infoVal: result });
+        }
+      });
+    });
+  }
+
+  getSlotMachinePlayer(slotMachineContract, userType) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mPlayer((err, mPlayer) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (userType === USER_TYPES.PLAYER && mPlayer !== '0x0000000000000000000000000000000000000000') {
+            reject('This slot is already occupied!');
+          }
+          resolve({ infoKey: 'mPlayer', infoVal: mPlayer });
+        }
+      });
+    });
+  }
+
+  getSlotMachineAvailable(slotMachineContract, userType) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mAvailable((err, mAvailable) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not avaliable!');
+          resolve({ infoKey: 'avaliable', infoVal: mAvailable });
+        }
+      });
+    });
+  }
+
+  getSlotMachineBankrupt(slotMachineContract, userType) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mBankrupt((err, mBankrupt) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (userType === USER_TYPES.PLAYER && mBankrupt) reject('This slot is bankrupted!');
+          resolve({ infoKey: 'bankrupt', infoVal: mBankrupt });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMaxBet(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMaxBet((err, mMaxBet) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'maxBet',
+            infoVal: this.makeEthFromWei(parseInt(mMaxBet.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMinBet(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMinBet((err, mMinBet) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'minBet',
+            infoVal: this.makeEthFromWei(parseInt(mMinBet.valueOf(), 10)),
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineMaxPrize(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mMaxPrize((err, mMaxPrize) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'maxPrize',
+            infoVal: mMaxPrize,
+          });
+        }
+      });
+    });
+  }
+
+  getSlotMachineProviderBalance(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.providerBalance((err, providerBalance) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            infoKey: 'bankRoll',
+            infoVal: providerBalance,
+          });
+        }
+      });
+    });
+  }
+
+  occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
+    return new Promise((resolve, reject) => {
+      const sha = this.makeS3Sha(10000);
+      this.genesisRandomNumber = sha;
+      console.log('genesis sha', sha);
+
+      slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          const event = slotMachineContract.providerSeedInitialized();
+          event.watch((error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  playSlotMachine(playInfo) {
+    return new Promise((resolve, reject) => {
+      const slotMachineContract = playInfo.slotMachineContract;
+
+      console.log('play!', playInfo);
+      console.log('betSize info is ', this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)));
+      slotMachineContract.initGameforPlayer(
+        this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
+        playInfo.lineNum,
+        {
+          from: playInfo.playerAddress,
+          gas: 1592450,
+        },
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.log('initGameforPlayer Over.', result);
+            const event = slotMachineContract.providerSeedSet();
+            console.log('providerSeedSet watching start', event);
+            event.watch((error, result2) => {
+              if (error) {
+                event.stopWatching();
+                reject(error);
+              } else {
+                console.log('providerSeedSet over!', event);
+                if (!this.genesisRandomNumber) {
+                  alert('You need genesisRandomNumber');
+                }
+                const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
+                console.log('current sha', sha);
+                console.log('genesis sha', this.genesisRandomNumber);
+                console.log('current sha sha', Web3Service.getWeb3().sha3(sha, { encoding: 'hex' }));
+
+                event.stopWatching();
+                slotMachineContract.setPlayerSeed(
+                  sha,
+                  {
+                    from: playInfo.playerAddress,
+                    gas: 1000000,
+                  },
+                  async (err2, result3) => {
+                    console.log('playerSeed!', result3);
+                    if (err2) {
+                      reject(err2);
+                    } else {
+                      // console.log('Done set player seed', result2);
+                      // const mCurrentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
+                      // console.log(mCurrentGameId, ' === mCurerntGameId');
+                      // const mGame = await this.getSlotMachineGame(slotMachineContract, mCurrentGameId);
+                      // console.log(mGame);
+                      resolve(result2);
+                    }
+                  },
+                );
+              }
+            });
+          }
+        },
+      );
+    });
+  }
+
+  async getSlotResult(slotMachineContract) {
+    return await new Promise((resolve, reject) => {
+      const event = slotMachineContract.gameConfirmed();
+      console.log('start to get slot result');
+
+      event.watch((error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          event.stopWatching();
+          console.log(result);
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getSlotMachineCurrentGameId(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mCurrentGameId((err, mCurrentGameId) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(mCurrentGameId);
+        }
+      });
+    });
+  }
+
+  getSlotMachineGame(slotMachineContract, gameId) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mGames(gameId, (err, mGame) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(mGame);
+        }
+      });
+    });
+  }
+
+  async watchGameOccupied(slotMachineContract, providerAddress) {
+    return await new Promise((resolve, reject) => {
+      const slotMachineContractAddress = slotMachineContract.address;
+      if (this.myOccupiedGameInitWatchers[slotMachineContractAddress]) {
+        return;
+      }
+
+      const event = slotMachineContract.gameOccupied();
+      console.log('gameOccupied watching!', event);
+      // To check the game watcher already exist or not
+      this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
+
+      event.watch((error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          console.log('gameOccupied over!', result);
+          const sha = this.makeS3Sha(10000);
+          this.genesisRandomNumber = sha;
+          console.log('genesis sha', sha);
+
+          slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
+            if (err) {
+              reject(err);
+            } else {
+              console.log('initProviderSeed!', result2);
+              resolve(result);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  async watchGameInitialized(slotMachineContract, providerAddress) {
+    return await new Promise((resolve, reject) => {
+      const event = slotMachineContract.gameInitialized();
+      console.log('watching GameInitialized', event);
+      event.watch((error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          if (!this.genesisRandomNumber) {
+            alert('You need genesisRandomNumber');
+          }
+          const sha = this.makeS3Sha(9999, this.genesisRandomNumber);
+          console.log('current sha', sha);
+          console.log('genesis sha', this.genesisRandomNumber);
+          console.log('current sha sha', Web3Service.getWeb3().sha3(sha, { encoding: 'hex' }));
+          console.log('watch over! GameInitialized', result);
+          slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
+            if (err) {
+              reject(err);
+            } else {
+              console.log('setProviderSeed!', result2);
+              resolve(result2);
+            }
+          });
+        }
+      });
+    });
   }
 }
 
 const web3Service = new Web3Service();
+
 export default web3Service;

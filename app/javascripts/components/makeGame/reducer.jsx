@@ -1,55 +1,62 @@
 import { fromJS } from 'immutable';
 import { ACTION_TYPES } from './actions';
-import { INPUT_TYPES } from './';
+
+const AVAILABLE_HIT_RATIO = [10, 12.5, 15];
 
 export const MAKE_GAME_INITIAL_STATE = fromJS({
-  slotName: '',
-  slotNameError: '',
-  playerChance: 0,
-  playerChanceError: '',
-  minimumValue: 0,
-  minimumValueError: '',
-  maximumValue: 0,
-  maximumValueError: '',
-  deposit: 0,
-  depositError: '',
+  hitRatio: null,
+  totalStake: 0,
+  maxPrize: 0,
+  betMinValue: 0,
+  betMaxValue: 0,
+  slotname: '',
   isLoading: false,
+  hasFailed: false,
 });
 
 export function reducer(state = MAKE_GAME_INITIAL_STATE, action) {
   switch (action.type) {
-    case ACTION_TYPES.HANDLE_INPUT_CHANGE: {
-      const { type, value } = action.payload;
-      if (type === INPUT_TYPES.SLOT_NAME) {
-        return state.set('slotName', value);
-      } else if (type === INPUT_TYPES.PLAYER_CHANCE) {
-        return state.set('playerChance', parseFloat(value));
-      } else if (type === INPUT_TYPES.MINIMUM_VALUE) {
-        return state.set('minimumValue', parseFloat(value));
-      } else if (type === INPUT_TYPES.MAXIMUM_VALUE) {
-        return state.set('maximumValue', parseFloat(value));
-      } else if (type === INPUT_TYPES.DEPOSIT) {
-        return state.set('deposit', parseFloat(value));
+    case ACTION_TYPES.START_TO_MAKE_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasFailed', false);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEED_TO_MAKE_GAME: {
+      return MAKE_GAME_INITIAL_STATE;
+    }
+
+    case ACTION_TYPES.FAILED_TO_MAKE_GAME: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasFailed', true);
+      });
+    }
+
+    case ACTION_TYPES.SELECT_HIT_RATIO: {
+      if (!AVAILABLE_HIT_RATIO.includes(action.payload.hitRatio)) {
+        return state;
       }
-      return state;
+      return state.set('hitRatio', action.payload.hitRatio);
     }
 
-    case ACTION_TYPES.ERROR_OCCURRED: {
-      return state.withMutations(currentState => {
-        for (const key in action.payload) {
-          currentState.set(key, action.payload[key]);
-        }
-      });
+    case ACTION_TYPES.CHANGE_TOTAL_STAKE: {
+      return state.set('totalStake', action.payload.totalStake);
     }
 
-    case ACTION_TYPES.START_TO_POST_FORM: {
-      return state.set('isLoading', true);
+    case ACTION_TYPES.SET_MAX_PRIZE: {
+      return state.set('maxPrize', action.payload.maxPrize);
     }
 
-    case ACTION_TYPES.SUCCEEDED_TO_POST_FORM: {
-      return state.withMutations(currentState => {
-        return currentState.set('isLoading', false);
-      });
+    case ACTION_TYPES.SET_BET_MIN_VALUE: {
+      return state.set('betMinValue', action.payload.value);
+    }
+
+    case ACTION_TYPES.SET_BET_MAX_VALUE: {
+      return state.set('betMaxValue', action.payload.value);
+    }
+
+    case ACTION_TYPES.SET_SLOT_NAME: {
+      return state.set('slotname', action.payload.slotname);
     }
 
     default:

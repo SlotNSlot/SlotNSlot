@@ -1,0 +1,115 @@
+.crowdSaleContainer {
+  height: 560px;
+  padding-top: 100px;
+  background-color: #e9e7f2;
+  overflow: hidden;
+
+  @media (max-width: 800px) {
+    padding-top: 60px;
+    height: 360px;
+  }
+}
+
+.ticketContainer {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  height: 100%;
+
+  .ticketBackground {
+    display: block;
+    height: 100%;
+  }
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 940px;
+    height: 210px;
+    background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
+    background-size: cover;
+  }
+
+  .ticketTitle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 15%;
+    text-align: center;
+    line-height: 1.25;
+    font-size: 30px;
+    letter-spacing: 0.9px;
+    color: #1a0c3d;
+
+    strong {
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 22px;
+    }
+
+    @media (max-width: 800px) {
+      font-size: 20px;
+    }
+  }
+
+  .timeCounter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 33%;
+    text-align: center;
+
+    .timeColon {
+      display: inline-block;
+      font-size: 70px;
+      letter-spacing: 2px;
+      color: #d2c9ea;
+    }
+
+    .counterCell {
+      position: relative;
+      display: inline-block;
+      width: 150px;
+
+      .counterNumber {
+        font-size: 70px;
+        line-height: 0.6;
+        letter-spacing: 2px;
+        text-align: center;
+        color: #1a0c3d;
+      }
+
+      .counterTag {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        right: 0;
+        font-size: 22px;
+        letter-spacing: 0.6px;
+        color: #1a0c3d;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .timeColon {
+        font-size: 45px;
+      }
+      .counterCell {
+        width: 80px;
+        .counterNumber {
+          font-size: 40px;
+        }
+        .counterTag {
+          bottom: -20px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

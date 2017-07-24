@@ -1,0 +1,97 @@
+.progressContainer {
+  display: flex;
+  justify-content: center;
+  height: 42px;
+  margin-top: 35.2px;
+  margin-bottom: 25.3px;
+}
+
+.progressBar {
+  position: relative;
+  width: 445px;
+  height: 3px;
+  background-color: #3f3d4f;
+}
+
+%stepContainer {
+  position: absolute;
+  top: 0;
+  font-weight: 300;
+  font-size: 15.2px;
+  letter-spacing: 1.1px;
+  text-align: center;
+  color: #64617f;
+}
+
+.activeStep {
+  color: #8c83ef;
+}
+
+.stepContainer1 {
+  @extend %stepContainer;
+  left: 0;
+}
+
+.stepContainer2 {
+  @extend %stepContainer;
+  left: 33.3%;
+}
+
+.stepContainer3 {
+  @extend %stepContainer;
+  left: 66.6%;
+}
+
+.stepContainer4 {
+  @extend %stepContainer;
+  right: -27.5px;
+}
+
+.currentProgress {
+  position: absolute;
+  top: 0;
+  height: 3px;
+  z-index: 10;
+  background-color: #6257da;
+}
+
+.stepCount {
+  margin-left: -27.5px;
+  margin-top: 30px;
+}
+
+.activeBall {
+  position: absolute;
+  left: -16.6px;
+  top: -16.95px;
+  width: 33.2px;
+  height: 33.9px;
+  border-radius: 50%;
+  background-color: #3b3766;
+  z-index: 10;
+  cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 8.7px;
+    left: 8.55px;
+    z-index: 2;
+    width: 17.1px;
+    height: 17.4px;
+    border-radius: 50%;
+    background-color: #6257da;
+    z-index: 10;
+  }
+}
+
+.deactiveBall {
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  top: -9.5px;
+  left: -9.5px;
+  border-radius: 50%;
+  background-color: #3f3d4f;
+  cursor: not-allowed;
+}

@@ -1,8 +1,9 @@
+import Axios from 'axios';
 import React from 'react';
 import styles from './mailingContainer.scss';
 
 class MailingContainer extends React.PureComponent {
-  subscribeEmail(e) {
+  async subscribeEmail(e) {
     e.preventDefault();
     const emailInput = this.emailInput.value;
     console.log(emailInput);
@@ -11,7 +12,13 @@ class MailingContainer extends React.PureComponent {
     if (!reg.test(emailInput)) {
       alert('Please input valid e-mail');
     } else {
-      // TODO MAKE EMAIL SUBSCRIBE FUNCTION
+      try {
+        await Axios.post(`https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`);
+        alert('You are on the subscribe list now');
+        this.emailInput.value = '';
+      } catch (err) {
+        alert(`Failed: ${err.response.data.error}`);
+      }
     }
   }
   render() {

@@ -1,52 +1,102 @@
+$top-navbar-height: 75px;
+
 .header {
   background: #2d2c44;
-  color: #f2f2f2;
-  font-family: sans-serif;
-  height: 160px;
-  padding-top: 20px;
-  padding-left: 100px;
+  height: $top-navbar-height;
 }
 
-.title {
-  font-size: 40px;
+.headerContainer {
+  position: relative;
+  width: 960px;
+  height: 100%;
+  margin: 0 auto;
+
+  .leftItems {
+    position: absolute;
+    top: 0;
+    left: 230px;
+    height: $top-navbar-height;
+    line-height: $top-navbar-height;
+  }
+
+  .navItem {
+    font-size: 15px;
+    text-align: center;
+    color: #a5a4af;
+    margin-right: 18px;
+  }
+
+  .navItemActive {
+    color: #d3d1e0;
+  }
+
+  .rightItems {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: $top-navbar-height;
+    line-height: $top-navbar-height;
+  }
 }
 
-.item {
-  text-align: right;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  color: #f2f2f2;
-  font-size: 18px;
-}
-.item:hover {
-  background: #f2f2f2;
-  color: #6c808c;
+.logo {
+  display: flex;
+  align-items: center;
+  width: 135px;
+  height: $top-navbar-height;
+  line-height: $top-navbar-height;
+
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 135px;
+  }
 }
 
-.item:active,
-.item.active {
-  background: #f2f2f2;
-  color: #5c7cfa;
+.triangle {
+  display: inline-block;
+  vertical-align: top;
+  width: 8.6px;
+  height: 5.5px;
+  margin-left: 8px;
+
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 8.6px;
+  }
 }
 
 .walletStatus {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 15px;
+  font-weight: 300;
+  color: #fff;
+  margin-right: 33px;
+}
+
+.buttonWrapper {
+  display: inline-block;
+  vertical-align: top;
 }
 
 .accountBtn {
+  display: flex;
+  align-items: center;
+  height: 39px;
+  line-height: 39px;
+  border-radius: 81.1px;
+  border: 1.5px solid #7b45c9;
+  padding: 0 17px;
+  margin-top: 18px;
+  font-size: 15px;
+  font-weight: 500;
   text-align: center;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  color: #f2f2f2;
-  font-size: 18px;
-}
+  color: #ffffff;
+  cursor: pointer;
 
-.accountBtn:hover {
-  background: #f2f2f2;
-  color: #6c808c;
-}
-
-.accountBtn:active,
-.accountBtn.active {
-  background: #f2f2f2;
-  color: #5c7cfa;
+  &:focus {
+    outline: none;
+  }
 }

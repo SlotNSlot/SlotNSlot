@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link, NavLink, withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+import { Link as ScrollLink, animateScroll } from 'react-scroll';
 // actions
 import { reactScrollTop, leaveScrollTop } from './actions';
 // components
@@ -43,43 +44,38 @@ class Header extends React.PureComponent {
         className={styles.header}
       >
         <div className={styles.navbarContainer}>
-          <Link exact to="/" className={styles.item}>
+          <Link to="/" className={styles.item}>
             <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
           </Link>
           <ul className={styles.rightNavItemsWrapper}>
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
-                onClick={() => {
-                  window.open('http://whitepaper.com', '', '');
-                }}
+                href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
+                target="_blank"
               >
                 White Paper
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                onClick={() => {
-                  window.open('http://blog.com', '', '');
-                }}
-              >
+              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+                GitHub
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
+              <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
+                Chat
+              </a>
+            </li>
+            <li className={styles.rightNavItem}>
+              <a className={styles.item} href="https://medium.com/@kkenji1024" target="_blank">
                 Blog
               </a>
             </li>
-
             <li className={styles.rightNavItem}>
-              <NavLink exact to="/" className={styles.item} activeClassName="active">
-                FAQ
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <NavLink exact to="/slot" className={styles.item} activeClassName="active">
-                Prototype
-              </NavLink>
-            </li>
-            <li className={styles.rightNavItem}>
-              <a className={styles.contributionBtn}>contribution</a>
+              <ScrollLink className={styles.crowdsaleBtn} to="crowdSaleContainer" duration={500} smooth={true}>
+                Crowdsale
+              </ScrollLink>
             </li>
           </ul>
         </div>
@@ -92,7 +88,7 @@ class Header extends React.PureComponent {
 
     const top = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
 
-    if (parseInt(top, 10) < window.innerHeight) {
+    if (parseInt(top, 10) < 720) {
       dispatch(reactScrollTop());
     } else {
       dispatch(leaveScrollTop());

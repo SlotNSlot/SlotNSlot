@@ -5,10 +5,11 @@
   color: white;
 
   .innerContainer {
-    width: 960px;
+    max-width: 960px;
     position: relative;
     padding: 40px 0;
     margin: 0 auto;
+    overflow: hidden;
   }
 }
 
@@ -24,7 +25,7 @@
 .bubbleBlock {
   position: relative;
   height: 300px;
-  background: url(http://slot-n-slot-assets.s3.amazonaws.com/about/time-line.png) no-repeat;
+  background: url(https://slot-n-slot-assets.s3.amazonaws.com/about/time-line.png) no-repeat;
   background-size: contain;
   background-position: center;
 }
@@ -36,7 +37,7 @@
 
   .bubbleContext {
     position: absolute;
-    top: 18px;
+    top: 10px;
     left: 36px;
 
     .bubbleTitle {
@@ -76,6 +77,6 @@
 
 .roadmapBubble.roadmapBubbleDown {
   .bubbleContext {
-    top: 48px;
+    top: 40px;
   }
 }

@@ -29,7 +29,6 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: ['style-loader', 'css-loader'],
       },
       {
@@ -42,7 +41,6 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        exclude: /node_modules/,
         use: [
           { loader: 'style-loader' },
           {
@@ -74,14 +72,15 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          presets: ['es2015', 'react', 'stage-0', 'stage-2'],
         }
       },
     ],
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
+      'process.env': {
+        NODE_ENV: JSON.stringify('development')
+      }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
@@ -89,6 +88,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './app/index.ejs',
       inject: false,
+      NODE_ENV: 'development',
     }),
   ],
 };

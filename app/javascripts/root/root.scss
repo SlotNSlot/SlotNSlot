@@ -8,6 +8,8 @@
 * {
   font-family: 'Roboto', sans-serif !important;
   box-sizing: border-box;
+  min-height: 0;
+  min-width: 0;
 }
 
 a {
@@ -23,6 +25,14 @@ a:visited {
 
 a:hover {
   text-decoration: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 html,
@@ -129,7 +139,6 @@ section {
 }
 body {
   line-height: 1;
-  background: #e0e0e0;
 }
 ol,
 ul {

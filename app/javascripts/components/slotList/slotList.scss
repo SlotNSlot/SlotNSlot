@@ -1,0 +1,167 @@
+.slotListContainer {
+  background-color: #fff;
+  padding-bottom: 30px;
+}
+
+.sortingHeader {
+  position: relative;
+  width: 937.5px;
+  border-bottom: solid 1.5px #eeeef3;
+  margin: 18.5px auto 22.5px auto;
+  height: 48px;
+  line-height: 48px;
+}
+
+.carouselWrapper {
+  height: 300px;
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.background {
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListBackground.jpg");
+  width: 100%;
+  height: 300px;
+  background-color: #3b212f;
+  background-position: center top;
+  background-size: auto 300px;
+  background-repeat: no-repeat;
+}
+
+.background2 {
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/slotListWelcome.png");
+  width: 100%;
+  height: 300px;
+  background-position: center top;
+  background-size: auto 300px;
+  background-repeat: no-repeat;
+}
+
+.headerContainer {
+  width: 937.5px;
+  height: 300px;
+  margin: 0 auto;
+  padding-top: 49.5px;
+}
+
+.headerTitle {
+  font-size: 29.5px;
+  font-weight: 300;
+  line-height: 1.29;
+  color: #2d2c44;
+  width: 475.5px;
+  margin-bottom: 28.5px;
+}
+
+.slotListWrapper {
+  width: 980.5px;
+  margin: 0 auto;
+}
+
+.headerLeft {
+  position: absolute;
+  font-size: 22px;
+  letter-spacing: 0.6px;
+  color: #222135;
+  top: 0;
+  left: 0;
+}
+
+.paginationWrapper {
+  text-align: center;
+
+  span {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 5px;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
+
+.infoButton {
+  width: 204.5px;
+  height: 50px;
+  border-radius: 50px;
+  background-color: #ff1c71;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    transform: translate3d(0, 1px, 0);
+  }
+}
+
+.headerRight {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  font-size: 21px;
+  letter-spacing: 0.6px;
+  color: #9494ac;
+
+  .sortLabel {
+    cursor: default;
+  }
+
+  .dropdownToggle {
+    color: inherit;
+    border-radius: 2.5px;
+    background-color: #ffffff;
+    border: solid 1px #dcdbea;
+    width: 173px;
+    height: 48px;
+    cursor: pointer;
+    padding: 0 15px;
+    text-align: left;
+    position: relative;
+  }
+
+  .dropdownMenu {
+    color: inherit;
+    width: 173px;
+    border: solid 1px #dcdbea;
+    border-radius: 2.5px;
+    margin-top: 0;
+    padding: 0;
+    min-width: initial;
+  }
+
+  .dropdownItem {
+    color: inherit;
+    width: 173px;
+    height: 45px;
+    line-height: 39px;
+    cursor: pointer;
+    padding: 3px 15px;
+
+    &:hover {
+      color: inherit;
+    }
+  }
+}
+
+:global {
+  .dropdown-toggle:after {
+    top: 20px;
+    right: 10px;
+    position: absolute;
+  }
+  .dropdown-toggle.active:after {
+    transform: rotate(180deg);
+  }
+}

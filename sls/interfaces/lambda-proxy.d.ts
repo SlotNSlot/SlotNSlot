@@ -75,6 +75,7 @@ export interface EventStageVariables {
 export interface Response extends Base.Response {
   statusCode: number;
   headers: {
+    "Access-Control-Allow-Origin"?: string;
     'Content-Type'?: string;
     Location?: string;
   };

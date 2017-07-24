@@ -6,13 +6,17 @@
         "lint": "eslint ./",
         "clean": "rm -rf dst && rm -rf dst-sls && rm -rf temp && rm -f dst.zip && mkdir dst",
         "build": "webpack --config webpack.prod.config.js -p",
+        "build:stage": "webpack --config webpack.stage.config.js -p",
         "build-sls": "tsc",
-        "pack": "rm -f dst.zip && cp version dst-sls/version && cp sls/package.json dst-sls/package.json && cd dst-sls && npm install --production && zip -r ../dst.zip . ** && cd ..",
+        "pack": "rm -f dst.zip && cp version dst-sls/version && cp sls/package.json dst-sls/package.json && cd dst-sls && npm install --production && zip -q -r ../dst.zip . ** && cd ..",
         "dev": "webpack-dev-server --content-base app/ --hot --progress --colors --host 0.0.0.0",
         "deploy": "node dst-sls/deploy/deploy.js",
-        "deploy:prod": "npm run clean && npm run build && npm run build-sls && npm run deploy && npm run pack && serverless deploy -s prod && ts-node ./sls/deploy/helpers/expireCloudFrontCache",
+        "deploy:stage": "npm run clean && npm run build:stage && npm run build-sls && NODE_ENV=stage npm run deploy && npm run pack && serverless deploy -s stage && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
+        "deploy:prod": "npm run clean && npm run build && npm run build-sls && NODE_ENV=production npm run deploy && npm run pack && serverless deploy -s prod && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
         "precommit": "lint-staged",
-        "prepush": "truffle compile"
+        "prepush": "truffle compile",
+        "test": "jest --no-cache",
+        "test:watch": "jest --watch --no-cache"
     },
     "lint-staged": {
         "{app,__{tests,mocks}__}/**/*.{js,jsx,scss}": [
@@ -20,7 +24,7 @@
             "git add"
         ]
     },
-    "author": "Douglas von Kohorn",
+    "author": "Slot N Slot",
     "license": "MIT",
     "devDependencies": {
         "@types/fs-extra": "^3.0.3",
@@ -30,6 +34,7 @@
         "babel-cli": "^6.24.1",
         "babel-core": "^6.25.0",
         "babel-eslint": "^7.0.0",
+        "babel-jest": "^20.0.3",
         "babel-loader": "^6.4.1",
         "babel-plugin-syntax-async-functions": "^6.13.0",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
@@ -45,6 +50,7 @@
         "babel-register": "^6.24.1",
         "copy-webpack-plugin": "^4.0.1",
         "css-loader": "^0.26.4",
+        "enzyme": "^2.9.1",
         "eslint": "^3.2.2",
         "eslint-config-airbnb": "^15.0.1",
         "eslint-config-standard": "^6.2.1",
@@ -52,6 +58,7 @@
         "eslint-plugin-import": "^2.3.0",
         "eslint-plugin-jsx-a11y": "^5.0.3",
         "eslint-plugin-mocha": "^4.10.1",
+        "eslint-plugin-prettier": "^2.1.2",
         "eslint-plugin-promise": "^3.5.0",
         "eslint-plugin-react": "^7.1.0",
         "eslint-plugin-standard": "^2.3.1",
@@ -59,6 +66,7 @@
         "fs-extra": "^3.0.1",
         "html-webpack-plugin": "^2.28.0",
         "husky": "^0.14.1",
+        "jest": "^20.0.4",
         "json-loader": "^0.5.4",
         "lint-staged": "^4.0.0",
         "node-sass": "^4.5.3",
@@ -67,6 +75,8 @@
         "precss": "^1.4.0",
         "prettier": "^1.5.2",
         "raw-loader": "^0.5.1",
+        "react-test-renderer": "^15.6.1",
+        "redux-mock-store": "^1.2.3",
         "s3": "^4.4.0",
         "sass-loader": "^6.0.6",
         "serverless": "^1.16.1",
@@ -78,33 +88,71 @@
         "truffle-expect": "0.0.3",
         "ts-node": "^3.1.0",
         "typescript": "^2.4.1",
-        "web3": "^0.18.4",
+        "web3": "^0.20.1",
         "webpack": "^2.6.1",
         "webpack-dev-server": "^2.4.5"
     },
     "dependencies": {
         "axios": "^0.16.2",
+        "babel-runtime": "^6.23.0",
         "bignumber.js": "^4.0.2",
+        "bootstrap": "^4.0.0-alpha.6",
+        "has-flag": "^2.0.0",
         "history": "^4.6.2",
         "immutable": "^3.8.1",
         "is-ci": "^1.0.10",
+        "lodash.shuffle": "^4.2.0",
         "lodash.throttle": "^4.1.1",
+        "notie": "^4.3.1",
         "pixi.js": "^4.5.3",
         "process-nextick-args": "^1.0.7",
+        "raven-js": "^3.16.1",
         "react": "^15.6.1",
+        "react-addons-css-transition-group": "^15.6.0",
+        "react-addons-transition-group": "^15.6.0",
         "react-dom": "^15.6.1",
         "react-ga": "^2.2.0",
+        "react-rangeslider": "^2.1.0",
         "react-redux": "^5.0.5",
         "react-router": "^4.1.1",
         "react-router-dom": "^4.1.1",
         "react-router-redux": "^5.0.0-alpha.6",
+        "react-scroll": "^1.5.4",
+        "react-slick": "^0.14.11",
         "react-svg-inline": "^2.0.0",
+        "react-table": "^6.5.1",
+        "reactstrap": "^4.8.0",
         "redux": "^3.7.0",
         "redux-logger": "^3.0.6",
         "redux-thunk": "^2.2.0",
         "svg-inline-react": "^1.0.2",
         "truffle-contract": "^1.1.11",
-        "web3": "^0.19.0",
-        "zeppelin-solidity": "^1.0.7"
+        "zeppelin-solidity": "^1.2.0"
+    },
+    "jest": {
+        "automock": true,
+        "transform": {
+            "^.+\\.jsx$": "babel-jest",
+            "^.+\\.scss$": "<rootDir>/app/javascripts/__tests__/preprocessor.js",
+            "^.+\\.svg$": "<rootDir>/app/javascripts/__tests__/preprocessor.js"
+        },
+        "verbose": true,
+        "rootDir": "",
+        "moduleFileExtensions": [
+            "js",
+            "jsx"
+        ],
+        "moduleDirectories": [
+            "node_modules"
+        ],
+        "testRegex": "__tests__/.*_spec.jsx$",
+        "unmockedModulePathPatterns": [
+            "<rootDir>/node_modules",
+            "<rootDir>/app/javascripts/__tests__",
+            "/.*\\.scss$"
+        ],
+        "setupFiles": [
+            "<rootDir>/app/javascripts/__tests__/preload.jsx"
+        ]
     }
 }

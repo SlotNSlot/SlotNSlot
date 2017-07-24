@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './sliderContainer.scss';
 import Icon from '../../../icons';
+import styles from './sliderContainer.scss';
 
 const sliderContainer = () =>
   <div className={styles.sliderContainer}>
@@ -9,13 +9,11 @@ const sliderContainer = () =>
         <div className={styles.logoTitle}>
           <Icon icon="SLOT_N_SLOT_LOGO_NON_SHADOW" />
         </div>
-        <div className={styles.subTitle}>Android Mobile App</div>
-
-        <div className={styles.guide}>Install Now!</div>
+        <div className={styles.subTitle}>It's also on Mobile</div>
         <a
           className={styles.googlePlayLink}
           onClick={() => {
-            window.open('https://google.com', '', '');
+            alert('SlotNSlot application will be available soon!');
           }}
         >
           <img src="https://d1qh7kd1bid312.cloudfront.net/about/google-play-download.png" alt="google-play-download" />
@@ -24,8 +22,8 @@ const sliderContainer = () =>
       <div className={styles.rightBlock}>
         <div className={styles.title}>Play from everywhere</div>
         <div className={styles.context}>
-          By offering mobile apps, users can enjoy games more easily. <br />
-          Create and play slots in the mobile app!
+          With mobile support, you can enjoy SlotNSlot anywhere. <br />
+          Make&Play both works perfectly same as Web.
         </div>
       </div>
     </div>

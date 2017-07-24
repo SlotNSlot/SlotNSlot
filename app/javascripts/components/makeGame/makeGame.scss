@@ -1,48 +1,47 @@
-.makeGameContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+@import "../slot/layouts/header";
+
+.makeGameContent {
+  position: absolute;
+  z-index: 10;
+  height: 700px;
+  padding-top: 30px;
 }
 
-.makeGameForm {
-  width: 600px;
-  margin-top: 100px;
+.makeGameContainer {
+  position: relative;
+  height: calc(100vh - 75px);
+  min-height: 730px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  background-color: #22212f;
 
-  h1 {
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
+  &:after {
+    content: '';
+    position: absolute;
+    background-image: url("https://d1qh7kd1bid312.cloudfront.net/makeSlotBackground.png");
+    background-size: auto 336px;
+    background-position: center top;
+    background-repeat: no-repeat;
+    top: 50%;
+    transform: translate(0, -50%);
+    left: 0;
+    right: 0;
+    height: 750px;
+    max-height: 100%;
   }
 }
 
-.makeGameFormInput {
-  height: 40px;
-  line-height: 40px;
-  width: 100%;
-}
+.makeSlotIcon {
+  display: inline-block;
+  vertical-align: top;
+  width: 317px;
+  height: 67.5px;
 
-.inputRow {
-  margin: 40px 0;
-}
-
-.inputLabel {
-  margin-bottom: 5px;
-  font-size: 18px;
-  color: #333;
-}
-
-.submitBtn {
-  display: block;
-  width: 100px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 50px;
-  margin: 0 auto;
-  border: 1px solid #333;
-  cursor: pointer;
-}
-
-.warningMessage {
-  color: #e02121;
-  font-weight: bold;
+  svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 317px;
+    height: 67.5px;
+  }
 }

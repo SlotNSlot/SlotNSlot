@@ -1,3 +1,5 @@
+import Raven from 'raven-js';
+import EnvChecker from '../helpers/envChecker';
 import Web3Service from '../helpers/web3Service';
 
 export const ACTION_TYPES = {
@@ -18,22 +20,21 @@ export function setCoinBalance(balance) {
 
 export function refreshBalance(account) {
   return dispatch => {
-    Web3Service.getMetaCoinContract()
-      .deployed()
-      .then(instance => {
-        return instance.getBalance.call(account, { from: account });
-      })
-      .then(value => {
-        dispatch(setCoinBalance(value.valueOf()));
-      })
-      .catch(e => {
-        console.error(e);
-      });
+    Web3Service.getWeb3().eth.getBalance(account, (err, balance) => {
+      if (err) {
+        console.error(err);
+      } else {
+        dispatch(setCoinBalance(Web3Service.makeEthFromWei(parseFloat(balance, 10))));
+      }
+    });
   };
 }
 
 export function setAccount() {
   return dispatch => {
+    if (!Web3Service.getWeb3()) {
+      return;
+    }
     dispatch({ type: ACTION_TYPES.START_TO_GET_ACCOUNT });
 
     Web3Service.getWeb3().eth.getAccounts((err, accs) => {
@@ -53,6 +54,16 @@ export function setAccount() {
             account: accs[0],
           },
         });
+
+        if (!EnvChecker.isDev()) {
+          Raven.setUserContext({
+            accounts: accs,
+            account: accs[0],
+            provider: Web3Service.getWeb3().currentProvider,
+            web3Version: Web3Service.getWeb3().version.api,
+          });
+        }
+
         dispatch(refreshBalance(accs[0]));
       }
     });

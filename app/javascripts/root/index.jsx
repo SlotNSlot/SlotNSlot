@@ -9,6 +9,7 @@ import Slot from '../components/slot';
 import { setAccount } from './actions';
 // styles
 import './root.scss';
+import 'slick-carousel/slick/slick.css';
 
 function mapStateToProps(appState) {
   return {

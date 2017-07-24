@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 
-import '../zeppelin/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract SlotMachine is Ownable {
     bool public mAvailable;
@@ -320,6 +320,7 @@ contract SlotMachine is Ownable {
             factor += payTable[prize][prob][i+1].prob;
           }
         }
+
 
         reward = reward * game.bet;
 

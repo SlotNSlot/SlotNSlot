@@ -1,87 +1,115 @@
+import Web3Service from '../../helpers/web3Service';
+import Toast from '../../helpers/notieHelper';
+import { refreshBalance } from '../../root/actions';
+import { getMySlotMachines } from '../slotList/actions';
+
 export const ACTION_TYPES = {
-  START_TO_POST_FORM: 'make_game.START_TO_POST_FORM',
-  HANDLE_INPUT_CHANGE: 'make_game.HANDLE_INPUT_CHANGE',
-  SUCCEEDED_TO_POST_FORM: 'make_game.SUCCEEDED_TO_POST_FORM',
-  ERROR_OCCURRED: 'make_game.ERROR_OCCURRED',
+  SELECT_HIT_RATIO: 'make_game.SELECT_HIT_RATIO',
+  SET_MAX_PRIZE: 'make_game.SET_MAX_PRIZE',
+  CHANGE_TOTAL_STAKE: 'make_game.CHANGE_TOTAL_STAKE',
+  SET_BET_MIN_VALUE: 'make_game.SET_BET_MIN_VALUE',
+  SET_BET_MAX_VALUE: 'make_game.SET_BET_MAX_VALUE',
+  SET_SLOT_NAME: 'make_game.SET_SLOT_NAME',
+
+  START_TO_MAKE_GAME: 'make_game.START_TO_MAKE_GAME',
+  SUCCEED_TO_MAKE_GAME: 'make_game.SUCCEED_TO_MAKE_GAME',
+  FAILED_TO_MAKE_GAME: 'make_game.FAILED_TO_MAKE_GAME',
 };
 
-export function handleSubmit(params) {
-  const { slotName, minimumValue, playerChance, maximumValue, deposit } = params;
-  return dispatch => {
-    // START validation part
-    let valid = true;
-    const submitParams = {
-      type: ACTION_TYPES.ERROR_OCCURRED,
-      payload: {
-        slotNameError: '',
-        playerChanceError: '',
-        minimumValueError: '',
-        maximumValueError: '',
-        depositError: '',
-      },
-    };
-
-    // XSS filtering
-    slotName.replace(/</g, '&lt;').replace(/>/g, 'gt;');
-    if (slotName === null || slotName.length <= 2) {
-      valid = false;
-      submitParams.payload.slotNameError = 'slotName length has to be larger than 2';
-    }
-
-    const compareValidate = (paramKey, compareValue, comparison) => {
-      const param = params[paramKey];
-      if (comparison === 'larger') {
-        if (param === null || param <= compareValue) {
-          valid = false;
-          submitParams.payload[`${paramKey}Error`] = `${paramKey} has to be larger than ${compareValue}`;
-        }
-      } else if (comparison === 'ste') {
-        // ste means smaller than or equal to
-        if (param === null || param > compareValue) {
-          valid = false;
-          submitParams.payload[`${paramKey}Error`] = `${paramKey} has to be smaller than or equal to ${compareValue}`;
-        }
-      }
-    };
-    compareValidate('playerChance', 0, 'larger');
-    compareValidate('minimumValue', 0, 'larger');
-    compareValidate('maximumValue', 0, 'larger');
-    compareValidate('deposit', 0, 'larger');
-
-    compareValidate('playerChance', 100, 'ste');
-    compareValidate('minimumValue', maximumValue, 'ste');
-    compareValidate('maximumValue', deposit, 'ste');
-
-    // send ERROR_OCCURRED Action.
-    dispatch(submitParams);
-    if (!valid) {
-      return;
-    }
-    // END Validation part
-
-    dispatch({
-      type: ACTION_TYPES.START_TO_POST_FORM,
+export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, totalStake }) {
+  return async dispatch => {
+    Toast.notie.alert({
+      text: 'Start to making a slot machine',
     });
-
     dispatch({
-      type: ACTION_TYPES.SUCCEEDED_TO_POST_FORM,
-      payload: {
-        slotName,
-        minimumValue,
-        playerChance,
-        maximumValue,
-        deposit,
-      },
+      type: ACTION_TYPES.START_TO_MAKE_GAME,
     });
+    try {
+      const transaction = await Web3Service.createSlotMachine({
+        account,
+        decider,
+        minBet,
+        maxBet,
+        maxPrize,
+      });
+      const slotAddr = transaction.args._slotaddr;
+      await Web3Service.sendEtherToAccount({
+        from: account,
+        to: slotAddr,
+        etherValue: totalStake,
+      });
+      Toast.notie.alert({
+        text: 'Finished to making a slot machine',
+      });
+      dispatch({
+        type: ACTION_TYPES.SUCCEED_TO_MAKE_GAME,
+        payload: transaction,
+      });
+      dispatch(refreshBalance(account));
+      dispatch(getMySlotMachines(account));
+    } catch (err) {
+      console.error(err);
+      Toast.notie.alert({
+        type: 'error',
+        text: 'There was an error for making a slot machine',
+      });
+      dispatch({
+        type: ACTION_TYPES.FAILED_TO_MAKE_GAME,
+      });
+    }
   };
 }
 
-export function handleInputChange(type, value) {
+export function selectHitRation(hitRatio) {
   return {
-    type: ACTION_TYPES.HANDLE_INPUT_CHANGE,
+    type: ACTION_TYPES.SELECT_HIT_RATIO,
     payload: {
-      type,
+      hitRatio,
+    },
+  };
+}
+
+export function handleTotalStakeChange(totalStake) {
+  return {
+    type: ACTION_TYPES.CHANGE_TOTAL_STAKE,
+    payload: {
+      totalStake,
+    },
+  };
+}
+
+export function setMaxPrize(maxPrize) {
+  return {
+    type: ACTION_TYPES.SET_MAX_PRIZE,
+    payload: {
+      maxPrize,
+    },
+  };
+}
+
+export function setBetMinValue(value) {
+  return {
+    type: ACTION_TYPES.SET_BET_MIN_VALUE,
+    payload: {
       value,
+    },
+  };
+}
+
+export function setBetMaxValue(value) {
+  return {
+    type: ACTION_TYPES.SET_BET_MAX_VALUE,
+    payload: {
+      value,
+    },
+  };
+}
+
+export function setSlotName(slotname) {
+  return {
+    type: ACTION_TYPES.SET_SLOT_NAME,
+    payload: {
+      slotname,
     },
   };
 }

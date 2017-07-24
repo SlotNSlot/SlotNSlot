@@ -1,31 +1,61 @@
 .footer {
-  background: #2d2c44;
-  color: #f2f2f2;
-  font-family: sans-serif;
-  height: 200px;
-  padding-top: 20px;
-  padding-left: 100px;
+  display: flex;
+  background: #f8f8f8;
+  height: 120px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.title {
-  font-size: 40px;
+.innerContainer {
+  width: 960px;
+  position: relative;
 }
 
-.item {
+.footerContent {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.45;
+  letter-spacing: 0.6px;
+  color: #959595;
+  display: inline-block;
+}
+
+.btnContainer {
+  display: inline-block;
+  cursor: pointer;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.rightBtns {
+  position: absolute;
+  right: 0;
+  display: inline-block;
   text-align: right;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  color: #f2f2f2;
-  font-size: 18px;
+
+  a {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+
+    @media (max-width: 800px) {
+      margin-right: 5px;
+    }
+  }
 }
 
-.item:hover {
-  background: #f2f2f2;
-  color: #6c808c;
-}
+.snsBtn {
+  svg {
+    width: 51px;
+    height: 51.5px;
+    display: inline-block;
+    object-fit: contain;
 
-.item:active,
-.item.active {
-  background: #f2f2f2;
-  color: #5c7cfa;
+    @media (max-width: 800px) {
+      width: 40px;
+      height: 40px;
+    }
+  }
 }

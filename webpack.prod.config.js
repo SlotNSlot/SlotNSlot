@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: ['./app/javascripts/app.jsx'],
+  entry: ['babel-polyfill', './app/javascripts/app.jsx'],
   output: {
     path: path.resolve(__dirname, 'dst'),
     filename: 'bundle.js',
@@ -19,7 +19,6 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: ['style-loader', 'css-loader'],
       },
       {
@@ -32,7 +31,6 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        exclude: /node_modules/,
         use: [
           { loader: 'style-loader' },
           {
@@ -62,23 +60,21 @@ module.exports = {
         test: [/\.js?$/, /\.jsx?$/],
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          presets: ['es2015', 'react', 'stage-0', 'stage-2'],
-        },
       },
     ],
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+      },
     }),
+    new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       template: './app/index.ejs',
       inject: false,
-      NODE_ENV: 'PRODUCTION',
     }),
   ],
 };

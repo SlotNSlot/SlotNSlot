@@ -341,6 +341,7 @@ class Web3Service {
       const slotGenesisInfo = {
         index: 10000,
         val: sha,
+        isOccuWatching: false,
         isInitWatching: false,
       };
       Store.set(slotAddress, slotGenesisInfo);
@@ -490,22 +491,28 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          console.log('gameOccupied over!', result);
-          let sha;
-          Store.update(slotMachineContract.address, slotGenesisInfo => {
-            sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-            slotGenesisInfo.index -= 1;
-          });
-          console.log('Store is ', Store.get(slotMachineContract.address));
-          console.log('sha is ', sha);
-          slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
-            if (err) {
-              reject(err);
-            } else {
-              console.log('initProviderSeed!', result2);
-              resolve(result);
-            }
-          });
+          const isOccuWatching = Store.get(slotMachineContractAddress).isOccuWatching;
+          if (isOccuWatching === false) {
+            console.log('gameOccupied over!', result);
+            let sha;
+            Store.update(slotMachineContract.address, slotGenesisInfo => {
+              sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+              slotGenesisInfo.index -= 1;
+            });
+            console.log('Store is ', Store.get(slotMachineContract.address));
+            console.log('sha is ', sha);
+            slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
+              if (err) {
+                reject(err);
+              } else {
+                console.log('initProviderSeed!', result2);
+                resolve(result);
+              }
+            });
+            Store.update(slotMachineContractAddress, slotGenesisInfo => {
+              slotGenesisInfo.isOccuWatching = true;
+            });
+          }
         }
       });
     });

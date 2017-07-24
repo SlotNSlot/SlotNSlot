@@ -114,8 +114,8 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
       return state.withMutations(currentState => {
         return currentState
           .set('isPlaying', false)
-          .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.weiReward, 10)))
-          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.weiReward, 10)))
+          .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
+          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)))
           .update('betsData', list => list.concat(action.payload.transaction.betData));
       });
     }

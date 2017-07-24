@@ -16,7 +16,6 @@ module.exports = {
       '.lvh.me',
       'localhost',
     ],
-    compress: true,
     watchOptions: {
       ignored: /node_modules/,
     },
@@ -70,17 +69,14 @@ module.exports = {
         test: [/\.js?$/, /\.jsx?$/],
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-        }
       },
     ],
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('development')
-      }
+        NODE_ENV: JSON.stringify('development'),
+      },
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),

@@ -349,6 +349,7 @@ class Web3Service {
       });
     });
   }
+
   createGenesisRandomNumber(slotAddress) {
     if (Store.get(slotAddress) !== undefined) {
       console.log('already slotGenesisRandomNumber exist ', Store.get(slotAddress));
@@ -364,6 +365,7 @@ class Web3Service {
       console.log('first slotGenesisRandomNumber ', Store.get(slotAddress));
     }
   }
+
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
       let sha;
@@ -377,14 +379,40 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          const event = slotMachineContract.providerSeedInitialized();
-          event.watch((error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
-            }
+          this.getContractPendingTransaction(slotMachineContract).then(() => {
+            resolve();
           });
+          // const event = slotMachineContract.providerSeedInitialized();
+          // event.watch((error, result) => {
+          //   if (error) {
+          //     reject(error);
+          //   } else {
+          //     resolve(result);
+          //   }
+          // });
+        }
+      });
+    });
+  }
+
+  async getContractPendingTransaction(slotMachineContract) {
+    return await new Promise((resolve, reject) => {
+      console.log('getContractPendingTransaction address', slotMachineContract.address);
+
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'latest',
+        toBlock: 'pending',
+        address: slotMachineContract.address,
+      });
+
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          console.log(result, 'pending event result');
+          contractFilter.stopWatching();
+          resolve(result);
         }
       });
     });
@@ -409,38 +437,65 @@ class Web3Service {
             console.log('initGameforPlayer Over.', result);
             const event = slotMachineContract.providerSeedSet();
             console.log('providerSeedSet watching start', event);
-            event.watch((error, result2) => {
-              if (error) {
-                event.stopWatching();
-                reject(error);
-              } else {
-                console.log('providerSeedSet over!', event);
-                let sha;
-                Store.update(slotMachineContract.address, slotGenesisInfo => {
-                  sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-                  slotGenesisInfo.index -= 1;
-                });
-                console.log('Store is ', Store.get(slotMachineContract.address));
-                console.log('sha is ', sha);
-                console.log('event is ', event);
-                event.stopWatching();
-                slotMachineContract.setPlayerSeed(
-                  sha,
-                  {
-                    from: playInfo.playerAddress,
-                    gas: 1000000,
-                  },
-                  async (err2, result3) => {
-                    console.log('playerSeed!', result3);
-                    if (err2) {
-                      reject(err2);
-                    } else {
-                      resolve(result2);
-                    }
-                  },
-                );
-              }
+            this.getContractPendingTransaction(slotMachineContract).then(() => {
+              console.log('providerSeedSet over!', event);
+              let sha;
+              Store.update(slotMachineContract.address, slotGenesisInfo => {
+                sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+                slotGenesisInfo.index -= 1;
+              });
+              console.log('Store is ', Store.get(slotMachineContract.address));
+              console.log('sha is ', sha);
+              console.log('event is ', event);
+              event.stopWatching();
+              slotMachineContract.setPlayerSeed(
+                sha,
+                {
+                  from: playInfo.playerAddress,
+                  gas: 1000000,
+                },
+                async (err2, result3) => {
+                  console.log('playerSeed!', result3);
+                  if (err2) {
+                    reject(err2);
+                  } else {
+                    resolve(result3);
+                  }
+                },
+              );
             });
+            // event.watch((error, result2) => {
+            //   if (error) {
+            //     event.stopWatching();
+            //     reject(error);
+            //   } else {
+            //     console.log('providerSeedSet over!', event);
+            //     let sha;
+            //     Store.update(slotMachineContract.address, slotGenesisInfo => {
+            //       sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+            //       slotGenesisInfo.index -= 1;
+            //     });
+            //     console.log('Store is ', Store.get(slotMachineContract.address));
+            //     console.log('sha is ', sha);
+            //     console.log('event is ', event);
+            //     event.stopWatching();
+            //     slotMachineContract.setPlayerSeed(
+            //       sha,
+            //       {
+            //         from: playInfo.playerAddress,
+            //         gas: 1000000,
+            //       },
+            //       async (err2, result3) => {
+            //         console.log('playerSeed!', result3);
+            //         if (err2) {
+            //           reject(err2);
+            //         } else {
+            //           resolve(result2);
+            //         }
+            //       },
+            //     );
+            //   }
+            // });
           }
         },
       );

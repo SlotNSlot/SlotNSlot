@@ -15,4 +15,8 @@ contract DispatcherStorage {
   function replace(address newLib) /* onlyDAO */ {
     lib = newLib;
   }
+
+  function getLib() constant returns (address) {
+    return lib;
+  }
 }

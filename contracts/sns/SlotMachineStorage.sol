@@ -5,50 +5,75 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
-    address[] private slotMachines;
 
-    event SlotMachineCreated(uint _idx);
+    address[] public provideraddress;
+    mapping (address => address[]) public slotMachines;
+
+    uint public totalNumofSlotMachine;
+
+    uint test;
 
     function SlotMachineStorage (){
-
+        totalNumofSlotMachine = 0;
+        test = 100;
     }
 
-    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet) onlyOwner {
-        address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet));
-        slotMachines.push(newslot);
-        SlotMachineCreated(slotMachines.length-1);
+
+    function addProvider(address _provider, uint _slotnum) private {
+        if (!isValidProvider(_provider)){
+          provideraddress.push(_provider);
+        }
     }
 
-    function getSlotMachine(uint _idx) constant returns (address) {
-        if (_idx >= slotMachines.length)
+    function isValidProvider(address _provider) constant returns (bool){
+        return (slotMachines[_provider].length != 0);
+    }
+
+    function getNumofProvider() constant returns (uint) {
+        return provideraddress.length;
+    }
+
+    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
+        returns (address)
+    {
+        address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
+        addProvider(_provider, 1);
+        slotMachines[_provider].push(newslot);
+        totalNumofSlotMachine++;
+        return newslot;
+    }
+
+    function removeSlotMachine(address _provider, uint _idx)
+        onlyOwner
+    {
+        SlotMachine(slotMachines[_provider][_idx]).shutDown();
+        delete slotMachines[_provider][_idx];
+        slotMachines[_provider].length--;
+        totalNumofSlotMachine--;
+    }
+
+    function setSlotMachine(address _provider, uint _idx, address _newslotMachine)
+        onlyOwner
+    {
+        slotMachines[_provider][_idx] = _newslotMachine;
+    }
+
+    function getNumofSlotMachine(address _provider)
+        constant returns (uint)
+    {
+        return slotMachines[_provider].length;
+    }
+
+    function getSlotMachine(address _provider, uint _idx)
+        constant returns(address)
+    {
+        if (_idx < slotMachines[_provider].length) {
+          return slotMachines[_provider][_idx];
+        }
+        else {
           return 0x0;
-        else
-          return slotMachines[_idx];
+        }
     }
 
-    function addSlotMachine(address _newslotMachine) onlyOwner {
-        slotMachines.push(_newslotMachine);
-    }
-
-    function setSlotMachine(uint _idx, address _newslotMachine) onlyOwner {
-        slotMachines[_idx] = _newslotMachine;
-    }
-
-    function getNumofSlotMachine() constant returns (uint) {
-        return slotMachines.length;
-    }
-
-    function deleteSlotMachine(uint _idx) onlyOwner {
-        delete slotMachines[_idx];
-        slotMachines.length--;
-    }
-
-    function getSlotMachineDecider(uint _idx) constant returns (uint){
-        return (SlotMachine(slotMachines[_idx]).mDecider());
-    }
-
-    function getSlotMachineInfo(uint _idx) constant returns (uint, uint, uint){
-      return (SlotMachine(slotMachines[_idx]).getInfo());
-    }
 
 }

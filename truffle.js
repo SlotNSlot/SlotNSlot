@@ -16,7 +16,8 @@ module.exports = {
     rinkeby: {
       network_id: 4,
       host: 'localhost',
-      port: 8545
+      port: 8545,
+      gas: 3000000
     }
   },
   rpc: {

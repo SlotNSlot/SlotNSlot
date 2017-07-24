@@ -76,11 +76,14 @@ export function getMySlotMachines(account) {
             });
           });
         }
-        await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
-          Toast.notie.alert({
-            text: 'Your Slotmachine is Initialized.',
+        while (1) {
+          await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
+            Toast.notie.alert({
+              text: 'Your Slotmachine is Initialized.',
+            });
           });
-        });
+          const reward = await Web3Service.getSlotResult(slotMachineContract.get('contract'));
+        }
       });
     } catch (err) {
       console.error(err);

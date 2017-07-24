@@ -18,7 +18,6 @@ class Web3Service {
     this.slotStorageContract = null;
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
-    this.testBool = false;
     if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
@@ -342,7 +341,7 @@ class Web3Service {
       const slotGenesisInfo = {
         index: 10000,
         val: sha,
-        isInit: false,
+        isInitWatching: false,
       };
       Store.set(slotAddress, slotGenesisInfo);
       console.log('first slotGenesisRandomNumber ', Store.get(slotAddress));
@@ -521,11 +520,13 @@ class Web3Service {
           reject(error);
         } else {
           event.stopWatching();
-          if (this.testBool === false) {
+          const isInitWatching = Store.get(slotMachineContract.address).isInitWatching;
+          if (isInitWatching === false) {
             let sha;
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
               slotGenesisInfo.index -= 1;
+              slotGenesisInfo.isInitWatching = true;
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);
@@ -538,7 +539,6 @@ class Web3Service {
                 resolve(result2);
               }
             });
-            this.testBool = true;
           }
         }
       });

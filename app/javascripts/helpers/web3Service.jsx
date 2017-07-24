@@ -341,8 +341,8 @@ class Web3Service {
       const slotGenesisInfo = {
         index: 10000,
         val: sha,
-        isOccuWatching: false,
-        isInitWatching: false,
+        isOccuWatched: false,
+        isInitWatched: false,
       };
       Store.set(slotAddress, slotGenesisInfo);
       console.log('first slotGenesisRandomNumber ', Store.get(slotAddress));
@@ -419,11 +419,6 @@ class Web3Service {
                     if (err2) {
                       reject(err2);
                     } else {
-                      // console.log('Done set player seed', result2);
-                      // const mCurrentGameId = await this.getSlotMachineCurrentGameId(slotMachineContract);
-                      // console.log(mCurrentGameId, ' === mCurerntGameId');
-                      // const mGame = await this.getSlotMachineGame(slotMachineContract, mCurrentGameId);
-                      // console.log(mGame);
                       resolve(result2);
                     }
                   },
@@ -441,8 +436,8 @@ class Web3Service {
       const event = slotMachineContract.gameConfirmed();
       console.log('start to get slot result', event);
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        slotGenesisInfo.isOccuWatching = false;
-        slotGenesisInfo.isInitWatching = false;
+        slotGenesisInfo.isOccuWatched = false;
+        slotGenesisInfo.isInitWatched = false;
       });
       event.watch((error, result) => {
         if (error) {
@@ -495,14 +490,14 @@ class Web3Service {
         if (error) {
           reject(error);
         } else {
-          const isOccuWatching = Store.get(slotMachineContractAddress).isOccuWatching;
-          if (isOccuWatching === false) {
+          const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
+          if (isOccuWatched === false) {
             console.log('gameOccupied over!', result);
             let sha;
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
               slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isOccuWatching = true;
+              slotGenesisInfo.isOccuWatched = true;
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);
@@ -529,13 +524,13 @@ class Web3Service {
           reject(error);
         } else {
           event.stopWatching();
-          const isInitWatching = Store.get(slotMachineContract.address).isInitWatching;
-          if (isInitWatching === false) {
+          const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;
+          if (isInitWatched === false) {
             let sha;
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
               slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isInitWatching = true;
+              slotGenesisInfo.isInitWatched = true;
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);

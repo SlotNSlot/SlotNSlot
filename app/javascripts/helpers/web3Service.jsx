@@ -440,6 +440,10 @@ class Web3Service {
     return await new Promise((resolve, reject) => {
       const event = slotMachineContract.gameConfirmed();
       console.log('start to get slot result', event);
+      Store.update(slotMachineContract.address, slotGenesisInfo => {
+        slotGenesisInfo.isOccuWatching = false;
+        slotGenesisInfo.isInitWatching = false;
+      });
       event.watch((error, result) => {
         if (error) {
           reject(error);
@@ -498,6 +502,7 @@ class Web3Service {
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
               slotGenesisInfo.index -= 1;
+              slotGenesisInfo.isOccuWatching = true;
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);
@@ -508,9 +513,6 @@ class Web3Service {
                 console.log('initProviderSeed!', result2);
                 resolve(result);
               }
-            });
-            Store.update(slotMachineContractAddress, slotGenesisInfo => {
-              slotGenesisInfo.isOccuWatching = true;
             });
           }
         }

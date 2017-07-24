@@ -50,11 +50,17 @@
 .itemTitle {
   font-size: 22px;
   text-align: center;
-  max-width: 200px;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
   color: #222135;
   margin: 0 auto 27.5px auto;
+
+  span {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 auto;
+    vertical-align: middle;
+  }
 }
 
 .infoWrapper {
@@ -87,6 +93,7 @@
   bottom: 0;
   left: 0;
   right: 0;
+  margin: 0 5px;
   height: 40px;
   line-height: 40px;
   border-top: solid 1px #dcdbea;
@@ -96,12 +103,12 @@
 
 .footerLeft {
   position: absolute;
-  left: 17px;
+  left: 12px;
 }
 
 .footerRight {
   position: absolute;
-  right: 17px;
+  right: 12px;
 }
 
 .plusButtonWrapper {

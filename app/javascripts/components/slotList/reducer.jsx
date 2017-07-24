@@ -8,7 +8,7 @@ export const SORT_OPTIONS = {
   lowBetSize: 'Low Bet Size',
   highBetSize: 'High Bet Size',
   highHitRatio: 'High Hit Ratio',
-  popular: 'popular',
+  popular: 'Popular',
 };
 
 export const SLOT_LIST_INITIAL_STATE = fromJS({

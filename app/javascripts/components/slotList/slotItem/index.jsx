@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import formatNumberAsK from '../../../helpers/kFormatter';
+import weiToEther from '../../../helpers/weiToEther';
 import styles from './slotItem.scss';
 
 const SlotListItem = ({ slotContract }) => {
@@ -13,13 +13,13 @@ const SlotListItem = ({ slotContract }) => {
     >
       <li className={`${styles.slotListItem} ${mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied}`}>
         <h2 className={styles.itemTitle}>
-          {slotContract.get('contract').address}
+          ✨<span>{slotContract.get('contract').address}</span>✨
         </h2>
         <div className={styles.infoWrapper}>
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Total Stake</div>
             <div className={styles.infoValue}>
-              {`${formatNumberAsK(slotContract.get('meta').get('bankRoll'))} ETH`}
+              {`${weiToEther(slotContract.get('meta').get('bankRoll'))} ETH`}
             </div>
           </span>
           <span className={styles.itemInfo}>
@@ -36,7 +36,7 @@ const SlotListItem = ({ slotContract }) => {
         <div className={styles.footer}>
           <span className={styles.footerLeft}>Played 28 times</span>
           <span className={styles.footerRight}>
-            {`BET Range${slotContract.get('meta').get('minBet')} - ${slotContract.get('meta').get('maxBet')} ETH`}
+            {`BET Range ${slotContract.get('meta').get('minBet')} - ${slotContract.get('meta').get('maxBet')} ETH`}
           </span>
         </div>
       </li>

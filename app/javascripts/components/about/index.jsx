@@ -26,11 +26,11 @@ const About = props => {
     <div className={styles.aboutComponent}>
       <Header />
       <EmailContainer />
+      <CrowdSaleContainer />
       <MakeAndPlayContainer />
       <FeatureContainer />
       <RoadmapContainer />
       <SliderContainer />
-      <CrowdSaleContainer />
       <MailingContainer />
       <Footer />
     </div>

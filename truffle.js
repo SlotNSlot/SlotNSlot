@@ -17,7 +17,7 @@ module.exports = {
       network_id: 4,
       host: 'localhost',
       port: 8545,
-      gas: 3000000
+      gas: 4000000
     }
   },
   rpc: {

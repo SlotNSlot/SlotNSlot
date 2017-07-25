@@ -11,11 +11,11 @@ contract SlotMachineManager {
     address private admin;
 
     modifier onlyAdmin() {
-        if (msg.sender != admin) throw;
+        require(msg.sender == admin);
         _;
     }
 
-    event slotMachineCreated(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _maxPrize, uint _totalnum, address _slotaddr);
+    event slotMachineCreated(address _provider, uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize, uint _totalnum, address _slotaddr);
     event slotMachineRemoved(address _provider, address _slotaddr, uint _totalnum);
 
     function SlotMachineManager (address _storageaddr) {
@@ -32,8 +32,8 @@ contract SlotMachineManager {
     }
 
 
-    function createSlotMachine(uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
-        payable returns (address)
+    function createSlotMachine(uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize)
+        returns (address)
     {
         address newslot;
         newslot = slotmachineStorage.createSlotMachine(msg.sender, _decider, _minBet, _maxBet, _maxPrize);

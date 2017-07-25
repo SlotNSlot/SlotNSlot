@@ -1,15 +1,19 @@
 pragma solidity ^0.4.0;
 
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import './PaytableStorage.sol';
+
 
 contract SlotMachine is Ownable {
     bool public mAvailable;
     bool public mBankrupt;
     address public mPlayer;
-    uint public mDecider;
+    uint16 public mDecider;
     uint public mMinBet;
     uint public mMaxBet;
-    uint public mMaxPrize;
+    uint16 public mMaxPrize;
+
+    address public payStorage;
 
     bool public mIsGamePlaying;
     bytes32 public mCurrentGameId;
@@ -26,7 +30,23 @@ contract SlotMachine is Ownable {
 
     mapping (address => uint) public mNumGamePlayedByUser;
     mapping (bytes32 => bool) public mUsedPlayerSeeds;
-    mapping (uint => mapping (uint => Payline[])) private payTable;
+
+    Payline[] public pt;
+
+    struct Payline {
+        uint16 prize;
+        uint prob;
+    }
+
+    /*function getPT() {
+      uint16 prize=0;
+      uint prob=0;
+      for(uint i=0; i<PaytableStorage(payStorage).getNumofPayline(mMaxPrize, mDecider); i++){
+        (prize, prob) = PaytableStorage(payStorage).getPayline(mMaxPrize, mDecider, i);
+        pt.push(Payline(prize,prob));
+
+      }
+    }*/
 
 
     enum GameState {
@@ -37,23 +57,25 @@ contract SlotMachine is Ownable {
         END
     }
 
-    struct Payline {
-        uint prize;
-        uint prob;
-    }
     struct Game {
         GameState gameState;
         address player;
         uint bet;
         bytes32 providerSeed;
-        uint providerNumber;
         bytes32 playerSeed;
-        uint playerNumber;
         uint randomNumber;
         bool providerSeedReady;
         bool playerSeedReady;
         uint numofLines;
         uint reward;
+    }
+
+    function hi() constant returns (uint) {
+        return PaytableStorage(payStorage).getNumofPayline(mMaxPrize,mDecider);
+    }
+
+    function hello(uint idx) constant returns (uint16, uint) {
+      return PaytableStorage(payStorage).getPayline(mMaxPrize,mDecider,idx);
     }
 
     mapping (bytes32 => Game) public mGames;
@@ -112,7 +134,7 @@ contract SlotMachine is Ownable {
       }
     }
 
-    function SlotMachine(address _provider, uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
+    function SlotMachine(address _provider, uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize, address _payStorage)
         payable
     {
         transferOwnership(_provider);
@@ -127,6 +149,8 @@ contract SlotMachine is Ownable {
         mIsGamePlaying = false;
         mCurrentGameId = 0x0;
 
+        payStorage = _payStorage;
+
         providerBalance = msg.value;
         playerBalance = 0;
 
@@ -136,19 +160,13 @@ contract SlotMachine is Ownable {
         initialProviderSeedReady = false;
         initialPlayerSeedReady = false;
 
-        payTable[1000][150].push(Payline(0,0));
-        payTable[1000][150].push(Payline(5,12118000000));
-        payTable[1000][150].push(Payline(10,2468400000));
-        payTable[1000][150].push(Payline(25,301250000));
-        payTable[1000][150].push(Payline(50,61363000));
-        payTable[1000][150].push(Payline(75,24193000));
-        payTable[1000][150].push(Payline(100,12499000));
-        payTable[1000][150].push(Payline(125,7489000));
-        payTable[1000][150].push(Payline(150,4927900));
-        payTable[1000][150].push(Payline(250,1525500));
-        payTable[1000][150].push(Payline(500,310730));
-        payTable[1000][150].push(Payline(1000,63293));
-        payTable[1000][150].push(Payline(1500,24954));
+        uint16 prize=0;
+        uint prob=0;
+        for(uint i=0; i<PaytableStorage(payStorage).getNumofPayline(mMaxPrize, mDecider); i++){
+          (prize, prob) = PaytableStorage(payStorage).getPayline(mMaxPrize, mDecider, i);
+          pt.push(Payline(prize,prob));
+
+        }
 
     }
 
@@ -188,7 +206,16 @@ contract SlotMachine is Ownable {
         msg.sender.transfer(playerBalance);
         playerLeft(mPlayer, playerBalance);
         playerBalance = 0;
+        mAvailable = true;
+        mBankrupt = false;
         mPlayer = 0x0;
+        mIsGamePlaying = false;
+        mCurrentGameId = 0x0;
+        previousProviderSeed = 0x0;
+        previousPlayerSeed = 0x0;
+        initialProviderSeedReady = false;
+        initialPlayerSeedReady = false;
+
     }
 
     function shutDown()
@@ -222,9 +249,7 @@ contract SlotMachine is Ownable {
            player: mPlayer,
            bet: _bet,
            providerSeed: 0x0,
-           providerNumber: 0,
            playerSeed: 0x0,
-           playerNumber: 0,
            randomNumber: 0,
            playerSeedReady : false,
            providerSeedReady : false,
@@ -305,19 +330,33 @@ contract SlotMachine is Ownable {
 
         bytes32 rnseed = sha3(game.providerSeed ^ game.playerSeed);
         uint randomNumber = uint(rnseed) % divider;
-        uint prize = mMaxPrize;
-        uint prob = mDecider;
+        uint16 prize = 0;
+        uint prob = 0;
 
-        for(uint j=0; j<game.numofLines; j++){
+        /*for(uint j=0; j<game.numofLines; j++){
           factor = 0;
           rnseed = rnseed<<1;
           randomNumber = uint(rnseed) % divider;
-          for(uint i=0; i<payTable[prize][prob].length-1; i++){
-            if(factor <= randomNumber && randomNumber < factor + payTable[prize][prob][i+1].prob){
-              reward += payTable[prize][prob][i+1].prize;
+          for(uint i=0; i<PaytableStorage(payStorage).getNumofPayline(mMaxPrize, mDecider)-1; i++){
+            (prize, prob) = PaytableStorage(payStorage).getPayline(mMaxPrize, mDecider, i);
+            if(factor <= randomNumber && randomNumber < factor + prob){
+              reward += prize;
               break;
             }
-            factor += payTable[prize][prob][i+1].prob;
+            factor += prob;
+          }
+        }*/
+
+      for(uint j=0; j<game.numofLines; j++){
+          factor = 0;
+          rnseed = rnseed<<1;
+          randomNumber = uint(rnseed) % divider;
+          for(uint i=0; i<pt.length-1; i++){
+            if(factor <= randomNumber && randomNumber < factor + pt[i+1].prob){
+              reward += pt[i+1].prize;
+              break;
+            }
+            factor += pt[i+1].prob;
           }
         }
 

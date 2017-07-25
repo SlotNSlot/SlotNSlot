@@ -1,13 +1,22 @@
 #SlotMachine API
 
+---
+General
+  - reduced gas usage on playing game, createing slotmachine
+  - applied paytablestorage, all combinations of (maxprize, decider) are available  
+
 
 SlotMachineManager
   - event slotMachineCreated :  parameter maxPrize added
-  - removeSlotMachine : refunding to owner added
+  - removeSlotMachine : refunding to owner added  
 
 SlotMachine
   - Game struct changed
-  - function *checksha, checkseed* added;
+  - function *checksha, checkseed* deleted
+  - event gameConfirmed changed,  
+    gameConfirmed(bytes32 gameid, uint reward) => gameConfirmed(uint reward)
+  - initGameforPlayer, setProviderSeed, setPlayerSeed does *not* have to be sent to contract in proper order
+
 ---
 ## SlotMachineManager
 
@@ -277,9 +286,10 @@ SlotMachine
     - providerSeed : current game seed for provider
 
 
-  - gameConfirmed(bytes32 gameId, uint reward)
-    - gameId : currentGameId
-    - reward : final reward for player
+  - gameConfirmed(uint reward)
+    - reward : final reward for player  
+
+
 
 ### playing example
 

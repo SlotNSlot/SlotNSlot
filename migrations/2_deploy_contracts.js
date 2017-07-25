@@ -1,22 +1,17 @@
-
  // var MetaCoin = artifacts.require("./MetaCoin.sol");
-
-
-
 var SlotMachineStorage = artifacts.require("./sns/SlotMachineStorage.sol");
 var SlotMachineManager = artifacts.require("./sns/SlotMachineManager.sol");
 var SlotLib = artifacts.require("./sns/SlotLib.sol");
 var SlotLib2 = artifacts.require("./sns/SlotLib2.sol");
 var Dispatcher = artifacts.require("./Dispatcher.sol");
 var DispatcherStorage = artifacts.require("./DispatcherStorage.sol");
-var SlotMachine = artifacts.require("./sns/SlotMachine.sol");
+// var SlotMachine = artifacts.require("./sns/SlotMachine.sol");
 var PaytableStorage = artifacts.require("./sns/PaytableStorage.sol");
 
 module.exports = function(deployer) {
 
   //deployer.deploy(MetaCoin);
-    var slotmanager;
-    //
+
     deployer.deploy(SlotLib).then(function() {
       console.log('SlotLib address : ', SlotLib.address);
       return deployer.deploy(DispatcherStorage, SlotLib.address);

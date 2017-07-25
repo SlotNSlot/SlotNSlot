@@ -18,8 +18,8 @@ library SlotLib2 {
     function removeSlotMachine (address _slotmachineStorage, address _provider, uint _idx) {
         uint totalnum = SlotMachineStorage(_slotmachineStorage).getNumofSlotMachine(_provider);
         address slottoremove = SlotMachineStorage(_slotmachineStorage).getSlotMachine(_provider, _idx);
-        if (_idx >= totalnum)
-            throw;
+        require(_idx < totalnum);
+
         for (uint i = _idx; i < totalnum-1 ; i++){
             SlotMachineStorage(_slotmachineStorage).setSlotMachine(_provider, i, SlotMachineStorage(_slotmachineStorage).getSlotMachine(_provider, i + 1));
         }

@@ -18,6 +18,7 @@ class Web3Service {
     this.slotStorageContract = null;
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
+
     if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
@@ -189,7 +190,6 @@ class Web3Service {
 
   async leaveSlotMachine(slotMachineContract, playerAddress) {
     return new Promise((resolve, reject) => {
-      console.log(playerAddress);
       slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
         if (err) {
           reject(err);
@@ -200,10 +200,11 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineInfo(slotMachineContract, userType) {
+  async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     // 0 [player], 1 [maker]
     const promiseArr = [
       this.getSlotMachinePlayer(slotMachineContract, userType),
+      this.getSlotMachineOwner(slotMachineContract, userType, myAddress),
       this.getSlotMachineAvailable(slotMachineContract, userType),
       this.getSlotMachineBankrupt(slotMachineContract, userType),
       this.getSlotMachineMaxBet(slotMachineContract),
@@ -219,6 +220,21 @@ class Web3Service {
       });
     });
     return payload;
+  }
+
+  getSlotMachineOwner(slotMachineContract, userType, myAddress) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.owner((err, ownerAddress) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (userType === USER_TYPES.PLAYER && ownerAddress === myAddress) {
+            reject();
+          }
+          resolve({ infoKey: 'owner', infoVal: ownerAddress });
+        }
+      });
+    });
   }
 
   getPlayerBalance(slotMachineContract) {
@@ -254,8 +270,8 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not avaliable!');
-          resolve({ infoKey: 'avaliable', infoVal: mAvailable });
+          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not available!');
+          resolve({ infoKey: 'available', infoVal: mAvailable });
         }
       });
     });

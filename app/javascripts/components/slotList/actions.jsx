@@ -22,7 +22,7 @@ export const ACTION_TYPES = {
   CHANGE_SORTING_OPTION: 'slot_list.CHANGE_SORTING_OPTION',
 };
 
-async function getSlotMachines(account, userType) {
+async function getSlotMachines(account, userType, myAccount = null) {
   const bigNumberOfTotalNumOfSlotMachine = await Web3Service.getNumOfSlotMachine(account);
   const totalNumOfSlotMachine = parseInt(bigNumberOfTotalNumOfSlotMachine.valueOf(), 10);
 
@@ -32,23 +32,23 @@ async function getSlotMachines(account, userType) {
 
   const slotAddresses = [];
   const slotMachineContracts = [];
+
   for (let i = totalNumOfSlotMachine - 1; i >= 0; i -= 1) {
     const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
     slotAddresses.push(slotAddress);
   }
+
   for (let i = 0; i < slotAddresses.length; i += 1) {
     const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
-    const providerAddress = userType === USER_TYPES.MAKER ? account : null;
-    await Web3Service.getSlotMachineInfo(contract, userType)
-      .then(slotInfo => {
-        slotMachineContracts.push({
-          contract,
-          meta: slotInfo,
-        });
-      }) // Do nothing in this catch. Not available room is not necessary for slot list.
-      .catch(err => {
-        console.log(err);
+    try {
+      const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
+      slotMachineContracts.push({
+        contract,
+        meta: slotInfo,
       });
+    } catch (err) {
+      console.log(err);
+    }
   }
   return fromJS(slotMachineContracts);
 }
@@ -94,7 +94,7 @@ export function getMySlotMachines(account) {
   };
 }
 
-export function getAllSlotMachines() {
+export function getAllSlotMachines(myAccount) {
   return async dispatch => {
     dispatch({
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
@@ -111,12 +111,16 @@ export function getAllSlotMachines() {
 
     const promiseArr = [];
     providerAddresses.forEach(providerAddress => {
-      promiseArr.push(getSlotMachines(providerAddress, USER_TYPES.PLAYER));
+      promiseArr.push(getSlotMachines(providerAddress, USER_TYPES.PLAYER, myAccount));
     });
 
     await Promise.all(promiseArr)
       .then(resultArr => {
-        const slotContracts = List(resultArr).flatten(true);
+        const filteredArray = resultArr.filter(contractList => {
+          return contractList.size > 0;
+        });
+
+        const slotContracts = List(filteredArray).flatten(true);
 
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,

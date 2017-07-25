@@ -33,11 +33,11 @@ class MySlotListContainer extends React.PureComponent {
     }
   }
 
-  async getSlotMachines() {
+  getSlotMachines() {
     const { dispatch, rootState } = this.props;
 
     if (rootState.get('account')) {
-      await dispatch(getMySlotMachines(rootState.get('account')));
+      dispatch(getMySlotMachines(rootState.get('account')));
     }
   }
 

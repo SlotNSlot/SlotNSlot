@@ -13,8 +13,9 @@ const SlotList = ({ slotContracts, isMaking = false, showMakeItem = false }) => 
     newSlotNode = <NewSlotListItem isMaking={isMaking} />;
   }
 
-  const slotItemsNode = slotContracts.map(slotContract => {
-    if (slotContract.get('meta').get('avaliable') && !slotContract.get('meta').get('bankrupt')) {
+  const slotItemsNode = slotContracts.map((slotContract, index) => {
+    if (slotContract.get('meta').get('available') && !slotContract.get('meta').get('bankrupt')) {
+      console.log(slotContract.get('contract'));
       return <SlotListItem slotContract={slotContract} key={slotContract.get('contract').address} />;
     }
   });

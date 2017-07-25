@@ -8,7 +8,7 @@ const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
-const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
+const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
 Store.addPlugin(updatePlugin);
 
 class Web3Service {

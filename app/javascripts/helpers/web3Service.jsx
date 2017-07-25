@@ -10,11 +10,12 @@ const slotMachineABI = require('./slotMachineABI.json').default;
 
 const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
 const SLOT_TOPICS_ENCODED = {
-  gameOccupied: 0xbf4d30fa6db28c4ac6ec74dd721d0897f3b8b14f59aba61f641a567303022ee6,
-  providerSeedInitialized: 0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54,
-  gameInitialized: 0x2ab5c532af365b7ec654d7d930c5f4b7ea47adb517e0de2e7d138d0ba13fb979,
-  providerSeedSet: 0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b,
-  playerSeedSet: 0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb,
+  gameOccupied: '0x2bb6b8edcc88247ca1459c8b1bff47e433cf92fddeb1f8154967636dc86ed8c3',
+  providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
+  gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
+  providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
+  playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
+  gameConfirmed: '0x851ad683200217a4a3ca52666c4bc83b09bd8c7765fad13554cf19d6fa634caa',
 };
 Store.addPlugin(updatePlugin);
 
@@ -25,6 +26,7 @@ class Web3Service {
     this.slotStorageContract = null;
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
+    this.myInitializedGameInitWatchers = {};
     if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
@@ -397,12 +399,13 @@ class Web3Service {
           reject(err);
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
+          console.log('encodedSha is ', encodedSha);
           if (result.topics[0] === encodedSha) {
             contractFilter.stopWatching();
             console.log('wow!', result.topics[0]);
             resolve(result);
           } else {
-            console.log('no, topic is ', result.topcis[0]);
+            console.log('no, topic is ', result.topics[0]);
           }
         }
       });
@@ -544,6 +547,13 @@ class Web3Service {
 
   async watchGameInitialized(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
+      const slotMachineContractAddress = slotMachineContract.address;
+      if (this.myInitializedGameInitWatchers[slotMachineContractAddress]) {
+        return;
+      }
+
+      // To check the game watcher already exist or not
+      this.myInitializedGameInitWatchers[slotMachineContractAddress] = true;
       this.getContractPendingTransaction(slotMachineContract, 'gameInitialized')
         .then(result => {
           const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;

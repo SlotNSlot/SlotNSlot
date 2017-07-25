@@ -18,6 +18,7 @@ class Web3Service {
     this.slotStorageContract = null;
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
+    this.myInitializedGameInitWatchers = {};
 
     if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
@@ -406,12 +407,13 @@ class Web3Service {
           reject(err);
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
+          console.log('encodedSha is ', encodedSha);
           if (result.topics[0] === encodedSha) {
             contractFilter.stopWatching();
             console.log('wow!', result.topics[0]);
             resolve(result);
           } else {
-            console.log('no, topic is ', result.topcis[0]);
+            console.log('no, topic is ', result.topics[0]);
           }
         }
       });
@@ -553,6 +555,13 @@ class Web3Service {
 
   async watchGameInitialized(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
+      const slotMachineContractAddress = slotMachineContract.address;
+      if (this.myInitializedGameInitWatchers[slotMachineContractAddress]) {
+        return;
+      }
+
+      // To check the game watcher already exist or not
+      this.myInitializedGameInitWatchers[slotMachineContractAddress] = true;
       this.getContractPendingTransaction(slotMachineContract, 'gameInitialized')
         .then(result => {
           const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;

@@ -19,7 +19,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
 
-    if (typeof web3 === 'undefined') {
+    if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);

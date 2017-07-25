@@ -2,150 +2,60 @@ pragma solidity ^0.4.0;
 
 contract PaytableStorage {
 
-    struct Payline {
-        uint16 prize;
-        uint prob;
+
+    mapping (uint16 => mapping (uint16 => uint[2])) private payTable;
+
+    function addPayline(uint16 maxPrize, uint16 targetProb, uint a, uint b) {
+        payTable[maxPrize][targetProb][0] = a;
+        payTable[maxPrize][targetProb][1] = b;
+
     }
 
-    mapping (uint16 => mapping (uint16 => Payline[])) private payTable;
-
-    function addPayline(uint16 maxPrize, uint16 targetProb, uint16 prize, uint prob) {
-        payTable[maxPrize][targetProb].push(Payline(prize, prob));
+    function getPaylineValue(uint16 maxPrize, uint16 prob, uint8 i,uint8 y) constant returns (uint) {
+      uint paypay;
+      if (i <= 6){
+        paypay = payTable[maxPrize][prob][0];
+        return (paypay<<(256-i*42+(-y+2)*31))>>(256-i*42+(-y+2)*31+(i-1)*42 + (y-1)*11);
+      }
+      else {
+        paypay = payTable[maxPrize][prob][1];
+        return (paypay<<(256-(i-6)*42+(-y+2)*31))>>(256-(i-6)*42+(-y+2)*31+((i-6)-1)*42 + (y-1)*11);
+      }
     }
 
     function PaytableStorage() {
-        addPayline(1000,100,0,0);
-        addPayline(1000,100,5,7223700000);
-        addPayline(1000,100,10,2102600000);
-        addPayline(1000,100,25,411320000);
-        addPayline(1000,100,50,119720000);
-        addPayline(1000,100,75,58160000);
-        addPayline(1000,100,100,34846000);
-        addPayline(1000,100,125,23421000);
-        addPayline(1000,100,150,16928000);
-        addPayline(1000,100,250,6816900);
-        addPayline(1000,100,500,1984200);
-        addPayline(1000,100,1000,577520);
+      payTable[1000][100][0] = 11743190143879054126547823499936786940072445367923631671448093764668266501;
+      payTable[1000][100][1] = 44252715382497132370288884051270814479562518570755240081533;
 
-        addPayline(1000,125,0,0);
-        addPayline(1000,125,5,9461100000);
-        addPayline(1000,125,10,2426600000);
-        addPayline(1000,125,25,401620000);
-        addPayline(1000,125,50,103010000);
-        addPayline(1000,125,75,46471000);
-        addPayline(1000,125,100,26419000);
-        addPayline(1000,125,125,17048000);
-        addPayline(1000,125,150,11919000);
-        addPayline(1000,125,250,4372500);
-        addPayline(1000,125,500,1121500);
-        addPayline(1000,125,1000,287640);
+      payTable[1000][125][0] = 8903259691900510656302119308400620768793243373989916287583706809375604741;
+      payTable[1000][125][1] = 22039958765401475958999147469978612950824169269116836483197;
 
-        addPayline(1000,150,0,0);
-        addPayline(1000,150,5,12186000000);
-        addPayline(1000,150,10,2423700000);
-        addPayline(1000,150,25,286600000);
-        addPayline(1000,150,50,57000000);
-        addPayline(1000,150,75,22161000);
-        addPayline(1000,150,100,11336000);
-        addPayline(1000,150,125,6740200);
-        addPayline(1000,150,150,4407400);
-        addPayline(1000,150,250,1340500);
-        addPayline(1000,150,500,266610);
-        addPayline(1000,150,1000,53024);
-/*
-        addPayline(1500,100,0,0);
-        addPayline(1500,100,5,7017600000);
-        addPayline(1500,100,10,2183900000);
-        addPayline(1500,100,25,466740000);
-        addPayline(1500,100,50,145250000);
-        addPayline(1500,100,75,73378000);
-        addPayline(1500,100,100,45202000);
-        addPayline(1500,100,125,31043000);
-        addPayline(1500,100,150,22836000);
-        addPayline(1500,100,250,9660600);
-        addPayline(1500,100,500,3006400);
-        addPayline(1500,100,1000,935600);
-        addPayline(1500,100,1500,472650);
+      payTable[1000][150][0] = 3820366147007401989076031873970996915563961542871327431242615026121963525;
+      payTable[1000][150][1] = 4063019823259272944276220744112807321799394022974216945789;
 
-        addPayline(1500,125,0,0);
-        addPayline(1500,125,5,9424000000);
-        addPayline(1500,125,10,2445400000);
-        addPayline(1500,125,25,411020000);
-        addPayline(1500,125,50,106660000);
-        addPayline(1500,125,75,48447000);
-        addPayline(1500,125,100,27676000);
-        addPayline(1500,125,125,17926000);
-        addPayline(1500,125,150,12571000);
-        addPayline(1500,125,250,4651700);
-        addPayline(1500,125,500,1207100);
-        addPayline(1500,125,1000,313220);
-        addPayline(1500,125,1500,142280);
+      payTable[1500][100][0] = 15233192309869537904227841107001424002526376182964758649110572528070756357;
+      payTable[1500][100][1] = 159285203159767046061476468781194662416449022956895501019925943076012157;
 
-        addPayline(1500,150,0,0);
-        addPayline(1500,150,5,12118000000);
-        addPayline(1500,150,10,2468400000);
-        addPayline(1500,150,25,301250000);
-        addPayline(1500,150,50,61363000);
-        addPayline(1500,150,75,24193000);
-        addPayline(1500,150,100,12499000);
-        addPayline(1500,150,125,7489000);
-        addPayline(1500,150,150,4927900);
-        addPayline(1500,150,250,1525500);
-        addPayline(1500,150,500,310730);
-        addPayline(1500,150,1000,63293);
-        addPayline(1500,150,1500,24954);*/
+      payTable[1500][125][0] = 9326807194028265377344556889544885323101588869969225014514597978716786693;
+      payTable[1500][125][1] = 47947363411054001640714126281442200102183076867898173324606296386959485;
 
-/*
-        addPayline(2000,100,0,0);
-        addPayline(2000,100,5,6986400000);
-        addPayline(2000,100,10,2195400000);
-        addPayline(2000,100,25,475230000);
-        addPayline(2000,100,50,149330000);
-        addPayline(2000,100,75,75869000);
-        addPayline(2000,100,100,46925000);
-        addPayline(2000,100,125,32326000);
-        addPayline(2000,100,150,23841000);
-        addPayline(2000,100,250,10158000);
-        addPayline(2000,100,500,3192000);
-        addPayline(2000,100,1000,1003000);
-        addPayline(2000,100,1500,315180);*/
-/*
-        addPayline(2000,125,0,0);
-        addPayline(2000,125,5,9379700000);
-        addPayline(2000,125,10,2467600000);
-        addPayline(2000,125,25,422350000);
-        addPayline(2000,125,50,111110000);
-        addPayline(2000,125,75,50878000);
-        addPayline(2000,125,100,29231000);
-        addPayline(2000,125,125,19018000);
-        addPayline(2000,125,150,13385000);
-        addPayline(2000,125,250,5003200);
-        addPayline(2000,125,500,1316200);
-        addPayline(2000,125,1000,346270);
-        addPayline(2000,125,1500,91098);*/
+      payTable[1500][150][0] = 4212212121847925260161128535628306086060757571309217716449264831547138053;
+      payTable[1500][150][1] = 8410601623658437551308502459589937636625612626163782225500754055725181;
 
-        /*addPayline(2000,150,0,0);
-        addPayline(2000,150,5,11692000000);
-        addPayline(2000,150,10,2728200000);
-        addPayline(2000,150,25,398470000);
-        addPayline(2000,150,50,92977000);
-        addPayline(2000,150,75,39689000);
-        addPayline(2000,150,100,21695000);
-        addPayline(2000,150,125,13580000);
-        addPayline(2000,150,150,9260800);
-        addPayline(2000,150,250,3168700);
-        addPayline(2000,150,500,739360);
-        addPayline(2000,150,1000,172520);
-        addPayline(2000,150,1500,40255);*/
+      payTable[2000][100][0] = 15813754541386817444610755275958480238808508769605627447822302937463140357;
+      payTable[2000][100][1] = 106215370897764837504916018778121825848894883875941643379113721396449405;
+
+      payTable[2000][125][0] = 9850925407204527097248136177797756083432293842482521092409497255529322501;
+      payTable[2000][125][1] = 30700560283025572883978263647286533686020552266393462805707137908887677;
+
+      payTable[2000][150][0] = 7311150151451410097167685413260997758163989975915054330329746103368779781;
+      payTable[2000][150][1] = 13567514176038027739456093099535693154951799632463334568380412593490045;
 
     }
 
-    function getPayline(uint16 prize, uint16 prob, uint idx) constant returns (uint16, uint) {
-        return (payTable[prize][prob][idx].prize, payTable[prize][prob][idx].prob);
+    function getPayline(uint16 prize, uint16 prob) constant returns (uint[2]) {
+        return payTable[prize][prob];
     }
 
-    function getNumofPayline(uint16 prize, uint16 prob) constant returns (uint) {
-        return payTable[prize][prob].length;
-    }
 
 }

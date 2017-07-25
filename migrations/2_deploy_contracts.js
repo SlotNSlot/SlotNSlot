@@ -1,7 +1,6 @@
- //
- // var ConvertLib = artifacts.require("./ConvertLib.sol");
+
  // var MetaCoin = artifacts.require("./MetaCoin.sol");
- // var MetaCoinLib = artifacts.require("./sns/MetaCoinLib.sol");
+
 
 
 var SlotMachineStorage = artifacts.require("./sns/SlotMachineStorage.sol");
@@ -14,9 +13,8 @@ var SlotMachine = artifacts.require("./sns/SlotMachine.sol");
 var PaytableStorage = artifacts.require("./sns/PaytableStorage.sol");
 
 module.exports = function(deployer) {
-  // deployer.deploy(ConvertLib);
-  // deployer.link(ConvertLib,MetaCoin);
-  // deployer.deploy(MetaCoin);
+
+  //deployer.deploy(MetaCoin);
     var slotmanager;
     //
     deployer.deploy(SlotLib).then(function() {

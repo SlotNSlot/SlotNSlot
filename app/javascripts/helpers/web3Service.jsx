@@ -4,9 +4,9 @@ import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json');
-const storageABI = require('./storageABI.json');
-const slotMachineABI = require('./slotMachineABI.json');
+const managerABI = require('./managerABI.json').default;
+const storageABI = require('./storageABI.json').default;
+const slotMachineABI = require('./slotMachineABI.json').default;
 
 const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
 Store.addPlugin(updatePlugin);
@@ -19,7 +19,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myOccupiedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
@@ -379,40 +379,40 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          this.getContractPendingTransaction(slotMachineContract).then(() => {
-            resolve();
-          });
-          // const event = slotMachineContract.providerSeedInitialized();
-          // event.watch((error, result) => {
-          //   if (error) {
-          //     reject(error);
-          //   } else {
-          //     resolve(result);
-          //   }
-          // });
+          this.getContractPendingTransaction(slotMachineContract, 'providerSeedInitialized')
+            .then(result => {
+              resolve(result);
+            })
+            .catch(error => {
+              reject(error);
+            });
         }
       });
     });
   }
 
-  async getContractPendingTransaction(slotMachineContract) {
+  async getContractPendingTransaction(slotMachineContract, eventName) {
     return await new Promise((resolve, reject) => {
+      console.log('eventName is ', eventName);
       console.log('getContractPendingTransaction address', slotMachineContract.address);
-
       const contractFilter = this.web3.eth.filter({
         fromBlock: 'latest',
         toBlock: 'pending',
         address: slotMachineContract.address,
       });
-
       contractFilter.watch((err, result) => {
         if (err) {
           console.error(err);
           reject(err);
         } else {
-          console.log(result, 'pending event result');
-          contractFilter.stopWatching();
-          resolve(result);
+          const encodedSha = SLOT_TOPICS_ENCODED[eventName];
+          if (result.topics[0] === encodedSha) {
+            contractFilter.stopWatching();
+            console.log('wow!', result.topics[0]);
+            resolve(result);
+          } else {
+            console.log('no, topic is ', result.topcis[0]);
+          }
         }
       });
     });
@@ -435,67 +435,35 @@ class Web3Service {
             reject(err);
           } else {
             console.log('initGameforPlayer Over.', result);
-            const event = slotMachineContract.providerSeedSet();
-            console.log('providerSeedSet watching start', event);
-            this.getContractPendingTransaction(slotMachineContract).then(() => {
-              console.log('providerSeedSet over!', event);
-              let sha;
-              Store.update(slotMachineContract.address, slotGenesisInfo => {
-                sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-                slotGenesisInfo.index -= 1;
+            this.getContractPendingTransaction(slotMachineContract, 'providerSeedSet')
+              .then(result => {
+                let sha;
+                Store.update(slotMachineContract.address, slotGenesisInfo => {
+                  sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+                  slotGenesisInfo.index -= 1;
+                });
+                console.log('Store is ', Store.get(slotMachineContract.address));
+                console.log('sha is ', sha);
+                slotMachineContract.setPlayerSeed(
+                  sha,
+                  {
+                    from: playInfo.playerAddress,
+                    gas: 1000000,
+                  },
+                  async (err2, result3) => {
+                    console.log('playerSeed!', result3);
+                    if (err2) {
+                      reject(err2);
+                    } else {
+                      resolve(result3);
+                    }
+                  },
+                );
+              })
+              .catch(err => {
+                console.log(err);
+                reject(err);
               });
-              console.log('Store is ', Store.get(slotMachineContract.address));
-              console.log('sha is ', sha);
-              console.log('event is ', event);
-              event.stopWatching();
-              slotMachineContract.setPlayerSeed(
-                sha,
-                {
-                  from: playInfo.playerAddress,
-                  gas: 1000000,
-                },
-                async (err2, result3) => {
-                  console.log('playerSeed!', result3);
-                  if (err2) {
-                    reject(err2);
-                  } else {
-                    resolve(result3);
-                  }
-                },
-              );
-            });
-            // event.watch((error, result2) => {
-            //   if (error) {
-            //     event.stopWatching();
-            //     reject(error);
-            //   } else {
-            //     console.log('providerSeedSet over!', event);
-            //     let sha;
-            //     Store.update(slotMachineContract.address, slotGenesisInfo => {
-            //       sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-            //       slotGenesisInfo.index -= 1;
-            //     });
-            //     console.log('Store is ', Store.get(slotMachineContract.address));
-            //     console.log('sha is ', sha);
-            //     console.log('event is ', event);
-            //     event.stopWatching();
-            //     slotMachineContract.setPlayerSeed(
-            //       sha,
-            //       {
-            //         from: playInfo.playerAddress,
-            //         gas: 1000000,
-            //       },
-            //       async (err2, result3) => {
-            //         console.log('playerSeed!', result3);
-            //         if (err2) {
-            //           reject(err2);
-            //         } else {
-            //           resolve(result2);
-            //         }
-            //       },
-            //     );
-            //   }
-            // });
           }
         },
       );
@@ -504,20 +472,19 @@ class Web3Service {
 
   async getSlotResult(slotMachineContract) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameConfirmed();
-      console.log('start to get slot result', event);
       Store.update(slotMachineContract.address, slotGenesisInfo => {
         slotGenesisInfo.isOccuWatched = false;
         slotGenesisInfo.isInitWatched = false;
       });
-      event.watch((error, result) => {
-        if (error) {
-          reject(error);
-        } else {
+      this.getContractPendingTransaction(slotMachineContract, 'gameConfirmed')
+        .then(result => {
           console.log(result);
           resolve(result);
-        }
-      });
+        })
+        .catch(error => {
+          console.log('getSlotResult error is ', error);
+          reject(error);
+        });
     });
   }
 
@@ -552,15 +519,10 @@ class Web3Service {
         return;
       }
 
-      const event = slotMachineContract.gameOccupied();
-      console.log('gameOccupied watching!', event);
       // To check the game watcher already exist or not
       this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
-
-      event.watch((error, result) => {
-        if (error) {
-          reject(error);
-        } else {
+      this.getContractPendingTransaction(slotMachineContract, 'gameOccupied')
+        .then(result => {
           const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
           if (isOccuWatched === false) {
             console.log('gameOccupied over!', result);
@@ -581,20 +543,18 @@ class Web3Service {
               }
             });
           }
-        }
-      });
+        })
+        .catch(error => {
+          console.log('watchGameOccupied error', error);
+          reject(error);
+        });
     });
   }
 
   async watchGameInitialized(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameInitialized();
-      console.log('watching GameInitialized', event);
-      event.watch((error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          event.stopWatching();
+      this.getContractPendingTransaction(slotMachineContract, 'gameInitialized')
+        .then(result => {
           const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;
           if (isInitWatched === false) {
             let sha;
@@ -615,8 +575,11 @@ class Web3Service {
               }
             });
           }
-        }
-      });
+        })
+        .catch(error => {
+          console.log('watchGameInitialized Error', error);
+          reject(error);
+        });
     });
   }
 }

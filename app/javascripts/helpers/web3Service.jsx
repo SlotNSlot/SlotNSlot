@@ -15,7 +15,7 @@ const SLOT_TOPICS_ENCODED = {
   gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
   providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
   playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
-  gameConfirmed: '0x851ad683200217a4a3ca52666c4bc83b09bd8c7765fad13554cf19d6fa634caa',
+  gameConfirmed: '0x78901e20cd0c413ed6ad69b75f4c2cc560d6e52a2f1f6ffec320f9b9b686b932',
 };
 
 Store.addPlugin(updatePlugin);
@@ -26,7 +26,6 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
-    this.myOccupiedGameInitWatchers = {};
     this.myInitializedGameInitWatchers = {};
 
     if (typeof web3 === 'undefined') {
@@ -46,10 +45,10 @@ class Web3Service {
     }
   }
 
-  makeS3Sha(recursiveLength, genesisRandomNumber) {
-    const originalString = genesisRandomNumber ? genesisRandomNumber : Math.random().toString();
-    let shaValue;
+  makeS3Sha(recursiveLength, genesisRandomNumber = Math.random().toString()) {
+    const originalString = genesisRandomNumber;
 
+    let shaValue;
     for (let i = 0; i < recursiveLength; i++) {
       if (shaValue) {
         shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
@@ -378,21 +377,27 @@ class Web3Service {
 
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
+      console.log('Start to Occupy slot machine');
+
+      console.log('Try to update sha store - current step - occupy slot machine');
       let sha;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
         sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
         slotGenesisInfo.index -= 1;
       });
 
-      console.log('Store is ', Store.get(slotMachineContract.address));
+      console.log('Success to update sha store - current step - occupy slot machine');
       console.log('sha is ', sha);
 
+      console.log('Try to send occupy');
       slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
         } else {
+          console.log('inside of the send occupy callback function');
           this.getContractPendingTransaction(slotMachineContract, 'providerSeedInitialized')
             .then(result => {
+              console.log('Success to all of the occupy slot machine step. providerSeedInitialized');
               resolve(result);
             })
             .catch(error => {
@@ -411,7 +416,6 @@ class Web3Service {
       const contractFilter = this.web3.eth.filter({
         fromBlock: 'pending',
         toBlock: 'pending',
-        // address: slotMachineContract.address,
       });
 
       contractFilter.watch((err, result) => {
@@ -420,15 +424,11 @@ class Web3Service {
           reject(err);
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
-          console.log('encodedSha is ', encodedSha);
           if (result.address === slotMachineContract.address) {
             if (result.topics[0] === encodedSha) {
               contractFilter.stopWatching();
-              console.log('wow!', result.topics[0]);
               resolve(result);
             }
-          } else {
-            console.log('no, topic is ', result.topics[0]);
           }
         }
       });
@@ -532,17 +532,13 @@ class Web3Service {
   async watchGameOccupied(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
       const slotMachineContractAddress = slotMachineContract.address;
-      if (this.myOccupiedGameInitWatchers[slotMachineContractAddress]) {
-        return;
-      }
 
-      // To check the game watcher already exist or not
-      this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
       this.getContractPendingTransaction(slotMachineContract, 'gameOccupied')
         .then(result => {
           const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
           if (isOccuWatched === false) {
-            console.log('gameOccupied over!', result);
+            console.log('Trying to set unoccupied game watcher');
+
             let sha;
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
@@ -551,11 +547,13 @@ class Web3Service {
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);
+
+            console.log('Trying to initProviderSeed');
             slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
               if (err) {
                 reject(err);
               } else {
-                console.log('initProviderSeed!', result2);
+                console.log('success to sent initProviderSeed!', result2);
                 resolve(result);
               }
             });

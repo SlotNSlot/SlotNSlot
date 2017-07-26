@@ -1,14 +1,14 @@
 pragma solidity ^0.4.0;
 
 
-import './SLTToken.sol';
+import './SLOTToken.sol';
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 /**
- * @title SLTCrowdsale
+ * @title SLOTCrowdsale
  * The contract which is used in SlotNSlot ICO
  */
-contract SLTCrowdsale {
+contract SLOTCrowdsale {
 
     /**
      *  The funding goal is 50000 eth originally, 
@@ -18,14 +18,14 @@ contract SLTCrowdsale {
 
     /**
      *  If a investor funds until (mStartTime + EARLY_BIRD_DURATION),
-     *  he/she will get 12000 SLT / 1 eth.
+     *  he/she will get 12000 SLOT / 1 eth.
      */
     uint public constant EARLY_BIRD_DURATION = 1 days;
 
     uint public constant PRICE_EARLY_BIRD = 12000;
 
     /**
-     *  1 eth = 10000 SLT
+     *  1 eth = 10000 SLOT
      */
     uint public constant PRICE_NORMAL = 10000;
 
@@ -40,9 +40,9 @@ contract SLTCrowdsale {
     address public mOwnerAddr;
 
     /**
-     *  Address of SLT token contract
+     *  Address of SLOT token contract
      */
-    SLTToken public mSLTToken;
+    SLOTToken public mSLOTToken;
 
     /**
      *  Start and end time of this crowdsale
@@ -51,10 +51,10 @@ contract SLTCrowdsale {
     uint public mEndTime;
 
     /**
-     *  The amount of ether raised and SLT sold
+     *  The amount of ether raised and SLOT sold
      */
     uint public mEtherRaised;
-    uint public mSltSold;
+    uint public mSLOTSold;
 
     bool public mPaused;
 
@@ -81,17 +81,17 @@ contract SLTCrowdsale {
     event Fund(address indexed _recipient, uint _amount);
     event CrowdsaleEnd();
 
-    function SLTCrowdsale(address _multisigAddr, address _SLTToken, uint _startTime, uint _endTime) {
+    function SLOTCrowdsale(address _multisigAddr, address _SLOTToken, uint _startTime, uint _endTime) {
         mMultisigAddr = _multisigAddr;
         mOwnerAddr = msg.sender;
 
         mStartTime = _startTime;
         mEndTime = _endTime;
 
-        mSLTToken = SLTToken(_SLTToken);
+        mSLOTToken = SLOTToken(_SLOTToken);
 
         mEtherRaised = 0;
-        mSltSold = 0;
+        mSLOTSold = 0;
         mPaused = false;
     }
 
@@ -99,7 +99,7 @@ contract SLTCrowdsale {
     onlyOwner
     {
         mPaused = _paused;
-        mSLTToken.transferOwnership(msg.sender);
+        mSLOTToken.transferOwnership(msg.sender);
     }
 
 
@@ -127,9 +127,9 @@ contract SLTCrowdsale {
         o_amount = SafeMath.mul(msg.value, _rate);
 
         mMultisigAddr.transfer(msg.value);
-        assert(mSLTToken.mint(msg.sender, o_amount));
+        assert(mSLOTToken.mint(msg.sender, o_amount));
 
-        mSltSold += o_amount;
+        mSLOTSold += o_amount;
         mEtherRaised += msg.value;
     }
 
@@ -148,10 +148,10 @@ contract SLTCrowdsale {
     onlyOwner
     afterCroudfundPeriod
     {
-        uint tokenRemainedAmount = SafeMath.div(mSltSold, 4);
-        assert(mSLTToken.mint(mMultisigAddr, tokenRemainedAmount));
-        assert(mSLTToken.finishMinting());
-        mSLTToken.transferOwnership(msg.sender);
+        uint tokenRemainedAmount = SafeMath.div(mSLOTSold, 4);
+        assert(mSLOTToken.mint(mMultisigAddr, tokenRemainedAmount));
+        assert(mSLOTToken.finishMinting());
+        mSLOTToken.transferOwnership(msg.sender);
         mOwnerAddr.transfer(this.balance);
         
         CrowdsaleEnd();

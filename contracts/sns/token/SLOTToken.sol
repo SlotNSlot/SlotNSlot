@@ -6,20 +6,20 @@ import 'zeppelin-solidity/contracts/token/ERC20.sol';
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 /**
- * @title SLTToken
+ * @title SLOTToken
  */
-contract SLTToken is ERC20, Ownable {
+contract SLOTToken is ERC20, Ownable {
     using SafeMath for uint256;
 
     string public constant name = 'SlotNSlot';
 
-    string public constant symbol = 'SLT';
+    string public constant symbol = 'SLOT';
 
     uint public constant decimals = 18;
 
     /**
-     * SLT transfer will be locked until the crowd sale ends.
-     * After crowd sale ends, SLT exceeding LOCKUP_LIMIT_AMOUNT will be locked for 100 days.
+     * SLOT transfer will be locked until the crowd sale ends.
+     * After crowd sale ends, SLOT exceeding LOCKUP_LIMIT_AMOUNT will be locked for 100 days.
      */
     uint256 public constant LOCKUP_LIMIT_AMOUNT = 10000000000000000000000000;
 
@@ -55,9 +55,9 @@ contract SLTToken is ERC20, Ownable {
     }
 
     /*
-     * @dev constructor of SLT Token
+     * @dev constructor of SLOT Token
      */
-    function SLTToken(address _minter, uint256 _crowdsaleEndTime) {
+    function SLOTToken(address _minter, uint256 _crowdsaleEndTime) {
         owner = _minter;
         mCrowdsaleEndTime = _crowdsaleEndTime;
         mLockEndTime = mCrowdsaleEndTime + LOCKUP_PERIOD;

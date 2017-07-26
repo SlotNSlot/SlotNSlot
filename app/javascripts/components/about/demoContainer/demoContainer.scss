@@ -10,10 +10,11 @@
     margin: 0 auto;
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     .leftInfo {
       .title {
-        padding: 30px 0 30px 0;
+        padding: 30px 10px 30px 0;
         position: relative;
         font-size: 30px;
         line-height: 1.33;
@@ -44,11 +45,19 @@
         text-align: left;
         color: #727272;
       }
+
+      @media (max-width: 800px) {
+        .title {
+          font-size: 25px;
+        }
+        .text {
+          font-size: 18px;
+        }
+      }
     }
 
     .videoBox {
       position: relative;
-
       svg {
         position: absolute;
         width: 65px;
@@ -56,6 +65,10 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+      }
+
+      img {
+        width: 100%;
       }
     }
   }

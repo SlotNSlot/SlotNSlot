@@ -6,7 +6,9 @@
   width: 100%;
   height: 300px;
 
-  // @media (max-width: 800px) {  }
+  @media (max-width: 800px) {
+    height: 270px;
+  }
 }
 
 .ticketContainer {

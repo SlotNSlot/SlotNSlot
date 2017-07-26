@@ -79,7 +79,7 @@ contract SlotMachine is Ownable {
     event playerLeft(address player, uint playerBalance);
     event providerLeft(address provider);
 
-    event gameOccupied(address player, uint playerSeed);
+    event gameOccupied(address player, bytes32 playerSeed);
     event providerSeedInitialized(bytes32 providerSeed);
 
     event gameInitialized(address player, uint bet, uint lines);

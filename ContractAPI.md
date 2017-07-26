@@ -1,8 +1,14 @@
 #SlotMachine API
 
 ---
+SlotMachine
+  - event gameOccupied changed  
+    gameOccupied(address player, uint playerBalance) => (address player, uint playerSeed)
+
+
+---
 General
-  - reduced gas usage on playing game, createing slotmachine
+  - reduced gas usage on playing game, creating slotmachine
   - applied paytablestorage, all combinations of (maxprize, decider) are available  
 
 
@@ -227,11 +233,15 @@ SlotMachine
     start slot game with parameters  
     event : gameInitialized
 
+    if game is set properly, trigger event : gameConfirmed
+
   - setProviderSeed(bytes32 _providerSeed)
 
     onlyProvider  
     set current game seed for provider  
     event : providerSeedSet
+
+    if game is set properly, trigger event : gameConfirmed
 
   - setPlayerSeed(bytes32 _playerSeed)
 
@@ -239,7 +249,8 @@ SlotMachine
     set current game seed for player  
     play confirm, caculate the game  
     event : playerSeedSet
-    event : gameConfirmed
+
+    if game is set properly, trigger event : gameConfirmed
 
   - leave()  
 
@@ -249,14 +260,6 @@ SlotMachine
     give back the balance to player  
     event : playerLeft
 
-(for developer)
-  - checksha(bytes32 data) constant returns (bytes32)
-
-    return value of sha3 in solidity
-
-  - checkseed() constant returns (bytes32, bytes32)
-
-    return (sha3(mGames[mCurrentGameId].providerSeed), sha3(mGames[mCurrentGameId].playerSeed))
 
 ### events
   - playerLeft(address player, uint playerBalance)  
@@ -268,12 +271,13 @@ SlotMachine
     - provider : address of provider
 
 
-  - gameOccupied(address player, uint playerBalance)
+  - gameOccupied(address player, bytes32 playerSeed)
     - player : address of player
+    - playerSeed : initial playerSeed
 
 
-  - providerSeedInitialized(bytes32 _providerSeed)
-    - _providerSeed : initial seed for provider
+  - providerSeedInitialized(bytes32 providerSeed)
+    - providerSeed : initial seed for provider
 
 
   - gameInitialized(address player, uint bet, uint lines)

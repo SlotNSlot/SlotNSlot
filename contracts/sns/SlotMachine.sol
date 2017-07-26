@@ -93,9 +93,8 @@ contract SlotMachine is Ownable {
         providerBalance += msg.value;
       } else if(msg.sender == mPlayer) {
         playerBalance += msg.value;
-      } else {
-
       }
+      
     }
 
     function SlotMachine(address _provider, uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize, address _payStorage)

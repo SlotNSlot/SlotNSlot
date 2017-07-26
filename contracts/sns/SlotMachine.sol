@@ -79,8 +79,8 @@ contract SlotMachine is Ownable {
     event playerLeft(address player, uint playerBalance);
     event providerLeft(address provider);
 
-    event gameOccupied(address player, uint playerBalance);
-    event providerSeedInitialized(bytes32 _providerSeed);
+    event gameOccupied(address player, uint playerSeed);
+    event providerSeedInitialized(bytes32 providerSeed);
 
     event gameInitialized(address player, uint bet, uint lines);
     event providerSeedSet(bytes32 providerSeed);
@@ -88,16 +88,13 @@ contract SlotMachine is Ownable {
 
     event gameConfirmed(uint reward);
 
-    event invalidEtherSent(address from, uint value);
-    event invalidSeed();
-
     function () payable {
       if (msg.sender == owner || tx.origin == owner) {
         providerBalance += msg.value;
       } else if(msg.sender == mPlayer) {
         playerBalance += msg.value;
       } else {
-        invalidEtherSent(msg.sender, msg.value);
+
       }
     }
 
@@ -158,7 +155,7 @@ contract SlotMachine is Ownable {
         previousPlayerSeed = _playerSeed;
 
         initialPlayerSeedReady = true;
-        gameOccupied(mPlayer, playerBalance);
+        gameOccupied(mPlayer, _playerSeed);
     }
 
     function initProviderSeed(bytes32 _providerSeed)
@@ -279,7 +276,6 @@ contract SlotMachine is Ownable {
     function confirmGame()
     {
         if(previousProviderSeed != sha3(mGame.providerSeed) || previousPlayerSeed != sha3(mGame.playerSeed)) {
-            invalidSeed();
             return;
         }
         uint reward = 0;

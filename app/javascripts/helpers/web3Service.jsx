@@ -4,11 +4,20 @@ import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json');
-const storageABI = require('./storageABI.json');
-const slotMachineABI = require('./slotMachineABI.json');
+const managerABI = require('./managerABI.json').default;
+const storageABI = require('./storageABI.json').default;
+const slotMachineABI = require('./slotMachineABI.json').default;
 
 const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
+const SLOT_TOPICS_ENCODED = {
+  gameOccupied: '0x2bb6b8edcc88247ca1459c8b1bff47e433cf92fddeb1f8154967636dc86ed8c3',
+  providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
+  gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
+  providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
+  playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
+  gameConfirmed: '0x851ad683200217a4a3ca52666c4bc83b09bd8c7765fad13554cf19d6fa634caa',
+};
+
 Store.addPlugin(updatePlugin);
 
 class Web3Service {
@@ -20,7 +29,7 @@ class Web3Service {
     this.myOccupiedGameInitWatchers = {};
     this.myInitializedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);

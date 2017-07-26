@@ -1,49 +1,41 @@
 .crowdSaleContainer {
-  height: 560px;
-  padding-top: 100px;
-  background-color: #e9e7f2;
-  overflow: hidden;
+  z-index: 8;
+  position: absolute;
+  right: 0;
+  bottom: -36px;
+  width: 100%;
+  height: 300px;
 
   @media (max-width: 800px) {
-    padding-top: 60px;
-    height: 360px;
+    height: 270px;
   }
 }
 
 .ticketContainer {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4.5px 14.5px 0 rgba(131, 131, 155, 0.5);
   position: relative;
   max-width: 860px;
   margin: 0 auto;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 
   .ticketBackground {
     display: block;
     height: 100%;
   }
 
-  &:before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 940px;
-    height: 210px;
-    background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/scattered-shapes.png');
-    background-size: cover;
-  }
-
   .ticketTitle {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 15%;
     text-align: center;
-    line-height: 1.25;
-    font-size: 30px;
-    letter-spacing: 0.9px;
+    line-height: 2.04;
+    font-size: 22.5px;
+    letter-spacing: 0.7px;
     color: #1a0c3d;
+    margin-bottom: 15px;
 
     strong {
       font-weight: 500;
@@ -59,15 +51,11 @@
   }
 
   .timeCounter {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 33%;
     text-align: center;
 
     .timeColon {
       display: inline-block;
-      font-size: 70px;
+      font-size: 52px;
       letter-spacing: 2px;
       color: #d2c9ea;
     }
@@ -75,23 +63,23 @@
     .counterCell {
       position: relative;
       display: inline-block;
-      width: 150px;
+      width: 90px;
 
       .counterNumber {
-        font-size: 70px;
+        font-size: 56px;
         line-height: 0.6;
-        letter-spacing: 2px;
+        letter-spacing: 1.6px;
         text-align: center;
         color: #1a0c3d;
       }
 
       .counterTag {
         position: absolute;
-        bottom: -50px;
+        bottom: -35px;
         left: 0;
         right: 0;
-        font-size: 22px;
-        letter-spacing: 0.6px;
+        font-size: 17px;
+        letter-spacing: 0.5px;
         color: #1a0c3d;
       }
     }
@@ -111,5 +99,15 @@
         }
       }
     }
+  }
+
+  .moreInfomation {
+    display: block;
+    margin-top: 30px;
+    font-size: 19px;
+    line-height: 2.42;
+    letter-spacing: 0.4px;
+    color: #7a49ca;
+    text-decoration: underline;
   }
 }

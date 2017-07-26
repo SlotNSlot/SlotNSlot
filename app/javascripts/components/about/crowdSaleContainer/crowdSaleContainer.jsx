@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import styles from './crowdSaleContainer.scss';
-import Icon from '../../../icons';
 import { updateCountdown } from './actions';
 
 function mapStateToProps(appState) {
@@ -30,13 +29,9 @@ class CrowdSaleContainer extends React.PureComponent {
     return (
       <div className={styles.crowdSaleContainer} id="crowdSaleContainer">
         <div className={styles.ticketContainer}>
-          <Icon className={styles.ticketBackground} icon="CROWDSALE_TICKET" />
           <div className={styles.ticketTitle}>
-            <span>
-              <strong>CROWDSALE</strong> Starts on
-            </span>
-            <br />
-            <strong>August 20th 08:00 UTC+0</strong>, 2017
+            <strong>CROWDSALE</strong> Starts on
+            <strong> August 20th</strong>, 2017, 08:00 UTC+0
           </div>
           <div className={styles.timeCounter}>
             <div className={styles.counterCell}>
@@ -67,6 +62,13 @@ class CrowdSaleContainer extends React.PureComponent {
               <div className={styles.counterTag}>Seconds</div>
             </div>
           </div>
+          <a
+            className={styles.moreInfomation}
+            href="https://medium.com/@kkenji1024/better-ico-investors-must-be-protected-84b760fda5f0"
+            target="_blank"
+          >
+            More Information &gt;
+          </a>
         </div>
       </div>
     );

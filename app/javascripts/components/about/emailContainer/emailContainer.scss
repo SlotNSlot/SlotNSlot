@@ -1,8 +1,10 @@
 .emailComponent {
-  height: 720px;
+  height: 768px;
   background-image: url("https://d1qh7kd1bid312.cloudfront.net/casinoBackground.png");
   background-size: cover;
   background-position: center bottom;
+  position: relative;
+  padding-bottom: 132px;
 }
 
 .emailContainer {
@@ -55,42 +57,31 @@
   }
 }
 
-.emailInput {
-  font-size: 18px;
-  width: 408.5px;
-  height: 50.5px;
-  border-radius: 100.2px;
-  background-color: #fff;
-  padding-left: 23px;
-  border: none;
-}
-
-.emailInputWrapper {
-  position: relative;
-  width: 408.5px;
-  height: 50.5px;
-  border-radius: 100.2px;
-}
-
-.emailForm {
-  display: flex;
-  justify-content: center;
-}
-
-.subscribeBtn {
+.watchDemoBtn {
+  display: block;
+  margin: 0 auto;
   font-weight: 300;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 143.2px;
+  width: 187.7px;
   font-size: 18px;
   text-align: center;
-  color: #fff;
+  vertical-align: middle;
+  color: #fff !important;
   height: 50.5px;
+  line-height: 50.5px;
   border-radius: 100.2px;
   background-image: linear-gradient(125deg, #7a48ca, #60aedc);
   box-shadow: 2px 3px 24px 0 #2b1c45;
-  cursor: pointer;
+
+  svg {
+    width: 7.6px;
+    height: 10.5px;
+    margin-right: 6.9px;
+  }
+
+  &:hover {
+    color: inherit;
+    text-decoration: inherit;
+  }
 }
 
 .linkBlock {

@@ -1,0 +1,75 @@
+.demoContainer {
+  height: 540px;
+  background-color: #f7f6fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .innerContainer {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .leftInfo {
+      .title {
+        padding: 30px 10px 30px 0;
+        position: relative;
+        font-size: 30px;
+        line-height: 1.33;
+        letter-spacing: 0.9px;
+        text-align: left;
+        color: #6257da;
+
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: -20px;
+          left: -30px;
+          width: 100%;
+          height: 100px;
+          background-image: url('https://d1qh7kd1bid312.cloudfront.net/about/title-deco.png');
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+      }
+
+      .text {
+        max-width: 310px;
+        font-size: 21px;
+        font-weight: 100;
+        line-height: 1.52;
+        letter-spacing: 0.6px;
+        text-align: left;
+        color: #727272;
+      }
+
+      @media (max-width: 800px) {
+        .title {
+          font-size: 25px;
+        }
+        .text {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .videoBox {
+      position: relative;
+      svg {
+        position: absolute;
+        width: 65px;
+        height: 65px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+}

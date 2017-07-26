@@ -2,26 +2,32 @@ pragma solidity ^0.4.0;
 
 contract PaytableStorage {
 
-
     mapping (uint16 => mapping (uint16 => uint[2])) private payTable;
 
-    function addPayline(uint16 maxPrize, uint16 targetProb, uint a, uint b) {
-        payTable[maxPrize][targetProb][0] = a;
-        payTable[maxPrize][targetProb][1] = b;
+    /*
 
-    }
+    payTable[prize][prob][0] (256 bits)
 
-    function getPaylineValue(uint16 maxPrize, uint16 prob, uint8 i,uint8 y) constant returns (uint) {
-      uint paypay;
-      if (i <= 6){
-        paypay = payTable[maxPrize][prob][0];
-        return (paypay<<(256-i*42+(-y+2)*31))>>(256-i*42+(-y+2)*31+(i-1)*42 + (y-1)*11);
-      }
-      else {
-        paypay = payTable[maxPrize][prob][1];
-        return (paypay<<(256-(i-6)*42+(-y+2)*31))>>(256-(i-6)*42+(-y+2)*31+((i-6)-1)*42 + (y-1)*11);
-      }
-    }
+    ----------------------------------------- 256 ----------------------------------
+    | remained bits | paylinevalue[6] | paylinevalue[5] | ******** | paylinevalue[1] |
+    ---- 4 -----	  ----- 42 -----    ----- 42 -----    - 42*3 -     ----- 42 -----
+
+
+    payTable[prize][prob][1] (256 bits)
+
+    ----------------------------------------- 256 -----------------------------------
+    | remained bits | paylinevalue[12] | paylinevalue[11] | ******** | paylinevalue[7] |
+    ---- 4 -----	  ----- 42 -----    ----- 42 -----      - 42*3 -    ----- 42 -----
+
+
+    each paylinevalue (42 bits)
+
+    | occupation |  prize  |
+    ---- 31 ----   -- 11 --
+
+    occupation = probability * 10^10
+
+    */
 
     function PaytableStorage() {
       payTable[1000][100][0] = 11743190143879054126547823499936786940072445367923631671448093764668266501;
@@ -58,4 +64,9 @@ contract PaytableStorage {
     }
 
 
+    function addPayline(uint16 maxPrize, uint16 targetProb, uint a, uint b) {
+        payTable[maxPrize][targetProb][0] = a;
+        payTable[maxPrize][targetProb][1] = b;
+
+    }
 }

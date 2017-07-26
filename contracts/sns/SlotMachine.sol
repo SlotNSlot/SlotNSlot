@@ -205,7 +205,6 @@ contract SlotMachine is Ownable {
         onlyAvailable
         onlyPlayer
         notBankrupt
-      //  notPlaying
     {
         require(_bet >= mMinBet && _bet <= mMaxBet);
         require(_bet * _lines <= playerBalance);
@@ -254,7 +253,6 @@ contract SlotMachine is Ownable {
         onlyPlayer
         onlyAvailable
     {
-
         mGame.playerSeed = _playerSeed;
         mGame.playerSeedReady = true;
         playerSeedReady = true;
@@ -284,8 +282,6 @@ contract SlotMachine is Ownable {
             invalidSeed();
             return;
         }
-
-
         uint reward = 0;
         uint factor = 0;
         uint divider = 10000000000;

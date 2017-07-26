@@ -286,6 +286,10 @@ SlotMachine
     - providerSeed : current game seed for provider
 
 
+  - playerSeedSet(bytes32 playerSeed)
+    - playerSeed : current game seed for provider
+
+
   - gameConfirmed(uint reward)
     - reward : final reward for player  
 

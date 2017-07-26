@@ -14,7 +14,6 @@
         "deploy:stage": "npm run clean && npm run build:stage && npm run build-sls && NODE_ENV=stage npm run deploy && npm run pack && serverless deploy -s stage && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
         "deploy:prod": "npm run clean && npm run build && npm run build-sls && NODE_ENV=production npm run deploy && npm run pack && serverless deploy -s prod && NODE_ENV=production ts-node ./sls/deploy/helpers/expireCloudFrontCache",
         "precommit": "lint-staged",
-        "prepush": "truffle compile",
         "test": "jest --no-cache",
         "test:watch": "jest --watch --no-cache"
     },

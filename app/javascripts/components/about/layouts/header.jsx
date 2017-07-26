@@ -72,11 +72,11 @@ class Header extends React.PureComponent {
                 Blog
               </a>
             </li>
-            <li className={styles.rightNavItem}>
+            {/* <li className={styles.rightNavItem}>
               <ScrollLink className={styles.crowdsaleBtn} to="crowdSaleContainer" duration={500} smooth={true}>
                 Crowdsale
               </ScrollLink>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
@@ -88,7 +88,7 @@ class Header extends React.PureComponent {
 
     const top = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
 
-    if (parseInt(top, 10) < 720) {
+    if (parseInt(top, 10) < 768) {
       dispatch(reactScrollTop());
     } else {
       dispatch(leaveScrollTop());

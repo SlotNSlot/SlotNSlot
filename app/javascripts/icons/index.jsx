@@ -25,6 +25,7 @@ const ICONS = {
   SLOT_N_SLOT_LOGO: require('./slot-n-slot-logo.svg'),
   SUBSCRIBE_BUTTON: require('./subscribe-button.svg'),
   TRIANGLE_DOWN: require('./triangle-down.svg'),
+  TRIANGLE_RIGHT: require('./triangle-right.svg'),
   MAKE_SLOT: require('./make-slot.svg'),
   CROWDSALE_TICKET: require('./crowdsale-ticket.svg'),
   MEDIUM: require('./medium.svg'),

@@ -6,6 +6,7 @@ import MakeAndPlayContainer from './makeAndPlayContainer/makeAndPlayContainer';
 import RoadmapContainer from './roadmapContainer/roadmapContainer';
 import SliderContainer from './sliderContainer/sliderContainer';
 import MailingContainer from './mailingContainer/mailingContainer';
+import DemoContainer from './demoContainer/demoContainer';
 import { Header, Footer } from './layouts';
 import Status404 from '../404';
 
@@ -29,6 +30,7 @@ const About = props => {
       <FeatureContainer />
       <RoadmapContainer />
       <SliderContainer />
+      <DemoContainer />
       <MailingContainer />
       <Footer />
     </div>

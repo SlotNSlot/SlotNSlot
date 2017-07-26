@@ -374,8 +374,10 @@ class Web3Service {
         sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
         slotGenesisInfo.index -= 1;
       });
+
       console.log('Store is ', Store.get(slotMachineContract.address));
       console.log('sha is ', sha);
+
       slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
@@ -396,11 +398,13 @@ class Web3Service {
     return await new Promise((resolve, reject) => {
       console.log('eventName is ', eventName);
       console.log('getContractPendingTransaction address', slotMachineContract.address);
+
       const contractFilter = this.web3.eth.filter({
-        fromBlock: 'latest',
+        fromBlock: 'pending',
         toBlock: 'pending',
-        address: slotMachineContract.address,
+        // address: slotMachineContract.address,
       });
+
       contractFilter.watch((err, result) => {
         if (err) {
           console.error(err);
@@ -408,10 +412,12 @@ class Web3Service {
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
           console.log('encodedSha is ', encodedSha);
-          if (result.topics[0] === encodedSha) {
-            contractFilter.stopWatching();
-            console.log('wow!', result.topics[0]);
-            resolve(result);
+          if (result.address === slotMachineContract.address) {
+            if (result.topics[0] === encodedSha) {
+              contractFilter.stopWatching();
+              console.log('wow!', result.topics[0]);
+              resolve(result);
+            }
           } else {
             console.log('no, topic is ', result.topics[0]);
           }

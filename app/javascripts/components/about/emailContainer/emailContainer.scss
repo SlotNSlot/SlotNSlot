@@ -65,12 +65,12 @@
   font-size: 18px;
   text-align: center;
   vertical-align: middle;
-  color: #fff;
+  color: #fff !important;
   height: 50.5px;
+  line-height: 50.5px;
   border-radius: 100.2px;
   background-image: linear-gradient(125deg, #7a48ca, #60aedc);
   box-shadow: 2px 3px 24px 0 #2b1c45;
-  cursor: pointer;
 
   svg {
     width: 7.6px;
@@ -78,8 +78,9 @@
     margin-right: 6.9px;
   }
 
-  &:focus {
-    outline: none;
+  &:hover {
+    color: inherit;
+    text-decoration: inherit;
   }
 }
 

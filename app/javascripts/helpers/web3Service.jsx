@@ -4,9 +4,9 @@ import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json').default;
-const storageABI = require('./storageABI.json').default;
-const slotMachineABI = require('./slotMachineABI.json').default;
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
 const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
 Store.addPlugin(updatePlugin);
@@ -20,7 +20,7 @@ class Web3Service {
     this.myOccupiedGameInitWatchers = {};
     this.myInitializedGameInitWatchers = {};
 
-    if (typeof web3 === 'undefined') {
+    if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);

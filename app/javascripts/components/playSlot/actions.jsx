@@ -163,11 +163,12 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
       type: ACTION_TYPES.START_TO_PLAY_GAME,
     });
     try {
+      const reward = Web3Service.getSlotResult(playInfo.slotMachineContract);
       const transaction = await Web3Service.playSlotMachine(playInfo);
-      const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
+
       const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
-      const ethReward = Web3Service.makeEthFromWei(reward.args.reward);
-      const diffMoney = reward.args.reward - betMoney;
+      const ethReward = Web3Service.makeEthFromWei(reward);
+      const diffMoney = reward - betMoney;
       stopSpinFunc(ethReward);
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
@@ -177,6 +178,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
         },
       });
     } catch (err) {
+      console.log('err is ', err);
       Toast.notie.alert({
         type: 'error',
         text: 'There was an error for playing a slot machine',

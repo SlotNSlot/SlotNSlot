@@ -77,12 +77,12 @@ export function getMySlotMachines(account) {
           });
         }
         while (1) {
+          const reward = Web3Service.getSlotResult(slotMachineContract.get('contract'));
           await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
             Toast.notie.alert({
               text: 'Your Slotmachine is Initialized.',
             });
           });
-          const reward = await Web3Service.getSlotResult(slotMachineContract.get('contract'));
         }
       });
     } catch (err) {

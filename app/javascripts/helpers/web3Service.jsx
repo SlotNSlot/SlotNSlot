@@ -3,6 +3,7 @@ import Store from 'store';
 import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
+import Toast from '../../helpers/notieHelper';
 
 const managerABI = require('./managerABI.json').default;
 const storageABI = require('./storageABI.json').default;
@@ -534,80 +535,92 @@ class Web3Service {
     });
   }
 
-  async watchGameOccupied(slotMachineContract, providerAddress) {
-    return await new Promise((resolve, reject) => {
-      const slotMachineContractAddress = slotMachineContract.address;
+  makerPendingWatcher(slotMachineContracts, providerAddress) {
+    const contractFilter = this.web3.eth.filter({
+      fromBlock: 'pending',
+      toBlock: 'pending',
+    });
 
-      this.getContractPendingTransaction(slotMachineContract, 'gameOccupied')
-        .then(result => {
-          const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
-          if (isOccuWatched === false) {
-            console.log('Trying to set unoccupied game watcher');
+    const addressList = slotMachineContracts.map(slotMachineContract => {
+      return slotMachineContract.address;
+    });
 
-            let sha;
-            Store.update(slotMachineContract.address, slotGenesisInfo => {
-              sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-              slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isOccuWatched = true;
+    contractFilter.watch((err, result) => {
+      if (err) {
+        console.error(err);
+      } else if (addressList.includes(result.address)) {
+        const occupiedTopic = SLOT_TOPICS_ENCODED.gameOccupied;
+        const initializedTopic = SLOT_TOPICS_ENCODED.gameInitialized;
+
+        if (result.topics) {
+          result.topics.forEach(topic => {
+            const slotMachineContract = slotMachineContracts.find(slotMachine => {
+              return slotMachine.address === result.address;
             });
-            console.log('Store is ', Store.get(slotMachineContract.address));
-            console.log('sha is ', sha);
 
-            console.log('Trying to initProviderSeed');
-            slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
-              if (err) {
-                reject(err);
-              } else {
-                console.log('success to sent initProviderSeed!', result2);
-                resolve(result);
-              }
-            });
-          }
-        })
-        .catch(error => {
-          console.log('watchGameOccupied error', error);
-          reject(error);
-        });
+            switch (topic) {
+              case occupiedTopic:
+                this.watchGameOccupied(slotMachineContract, providerAddress);
+                break;
+              case initializedTopic:
+                this.watchGameInitialized(slotMachineContract, providerAddress);
+                break;
+              default:
+                break;
+            }
+          });
+        }
+      }
     });
   }
 
-  async watchGameInitialized(slotMachineContract, providerAddress) {
-    return await new Promise((resolve, reject) => {
-      const slotMachineContractAddress = slotMachineContract.address;
-      if (this.myInitializedGameInitWatchers[slotMachineContractAddress]) {
-        return;
-      }
+  async watchGameOccupied(slotMachineContract, providerAddress) {
+    const slotMachineContractAddress = slotMachineContract.address;
+    const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
+    if (!isOccuWatched) {
+      let sha;
+      Store.update(slotMachineContract.address, slotGenesisInfo => {
+        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+        slotGenesisInfo.index -= 1;
+        slotGenesisInfo.isOccuWatched = true;
+      });
+      console.log('Store is ', Store.get(slotMachineContract.address));
+      console.log('sha is ', sha);
+      console.log('Trying to initProviderSeed');
+      slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
+        if (err) {
+          console.error(err);
+        } else {
+          Toast.notie.alert({
+            text: `Your Slotmachine ${slotMachineContractAddress} is occupied.`,
+          });
+        }
+      });
+    }
+  }
 
-      // To check the game watcher already exist or not
-      this.myInitializedGameInitWatchers[slotMachineContractAddress] = true;
-      this.getContractPendingTransaction(slotMachineContract, 'gameInitialized')
-        .then(result => {
-          const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;
-          if (isInitWatched === false) {
-            let sha;
-            Store.update(slotMachineContract.address, slotGenesisInfo => {
-              sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-              slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isInitWatched = true;
-            });
-            console.log('Store is ', Store.get(slotMachineContract.address));
-            console.log('sha is ', sha);
-            console.log('watch over! GameInitialized', result);
-            slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
-              if (err) {
-                reject(err);
-              } else {
-                console.log('setProviderSeed!', result2);
-                resolve(result2);
-              }
-            });
-          }
-        })
-        .catch(error => {
-          console.log('watchGameInitialized Error', error);
-          reject(error);
-        });
-    });
+  async watchGameInitialized(slotMachineContract, providerAddress) {
+    const slotMachineContractAddress = slotMachineContract.address;
+    const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
+    if (!isInitWatched) {
+      let sha;
+      Store.update(slotMachineContractAddress, slotGenesisInfo => {
+        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+        slotGenesisInfo.index -= 1;
+        slotGenesisInfo.isInitWatched = true;
+      });
+      console.log('Store is ', Store.get(slotMachineContractAddress));
+      console.log('sha is ', sha);
+      slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result) => {
+        if (err) {
+          console.error(err);
+        } else {
+          Toast.notie.alert({
+            text: `Your Slotmachine ${slotMachineContractAddress} is initialized.`,
+          });
+        }
+      });
+    }
   }
 }
 

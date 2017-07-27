@@ -163,6 +163,17 @@ export default class SlotGame {
     this.winMoneyTextAcc = 0.003;
     this.drawingLines = [];
     this.drawWinMoneyPercentage = 0;
+
+    console.log('test!!@@#@@#@');
+    let testNum = 0;
+    for (let i = 0; i < 10 ** 12; i += 1) {
+      const slotResult = this.makeRandomPrize(20);
+
+      const lineNum = this.calculateSlot(slotResult);
+      if (lineNum >= 4) testNum += 1;
+    }
+    console.log('lineNum >= 4 case is ', testNum);
+
     // Set Entire Canvas Properties
     this.renderer = new PIXI.autoDetectRenderer(940, 660, {
       view: this.canvas,
@@ -574,7 +585,7 @@ export default class SlotGame {
 
     for (let i = 0; i < PROBABILITY_VALUE_TABLE.length - 1; i += 1) {
       // Prize has to be selected by reverse order.
-      const prize = this.betSize * PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
+      const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
 
       if (sumPrize >= prize) {
         const prizeNum = Math.floor(sumPrize / prize);
@@ -585,7 +596,7 @@ export default class SlotGame {
         }
       }
     }
-
+    return lineInfos.length;
     const needLineNum = lineInfos.length;
     if (lineNum < needLineNum) return 'BIG_WIN';
     if (needLineNum === 1) {

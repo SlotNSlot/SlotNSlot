@@ -3,11 +3,11 @@ import Store from 'store';
 import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
-import Toast from '../../helpers/notieHelper';
+import Toast from './notieHelper';
 
-const managerABI = require('./managerABI.json').default;
-const storageABI = require('./storageABI.json').default;
-const slotMachineABI = require('./slotMachineABI.json').default;
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
 const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
 const SLOT_TOPICS_ENCODED = {

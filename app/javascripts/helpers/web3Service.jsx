@@ -500,9 +500,7 @@ class Web3Service {
       });
       this.getContractPendingTransaction(slotMachineContract, 'gameConfirmed')
         .then(result => {
-          console.log('getSlotResult is ', result);
           const weiResult = this.web3.toDecimal(`${result.data}`);
-          console.log('wei result is ', weiResult);
           resolve(weiResult);
         })
         .catch(error => {

@@ -4,19 +4,20 @@ import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 
-const managerABI = require('./managerABI.json').default;
-const storageABI = require('./storageABI.json').default;
-const slotMachineABI = require('./slotMachineABI.json').default;
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
-const SLOT_MANAGER_ADDRESS = '0x0ce952a02226a5602aa5d6ca84c21441d66517ae';
+const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0x2bb6b8edcc88247ca1459c8b1bff47e433cf92fddeb1f8154967636dc86ed8c3',
   providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
   gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
   providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
   playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
-  gameConfirmed: '0x851ad683200217a4a3ca52666c4bc83b09bd8c7765fad13554cf19d6fa634caa',
+  gameConfirmed: '0x78901e20cd0c413ed6ad69b75f4c2cc560d6e52a2f1f6ffec320f9b9b686b932',
 };
+
 Store.addPlugin(updatePlugin);
 
 class Web3Service {
@@ -25,8 +26,8 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
-    this.myOccupiedGameInitWatchers = {};
     this.myInitializedGameInitWatchers = {};
+
     if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
@@ -44,10 +45,10 @@ class Web3Service {
     }
   }
 
-  makeS3Sha(recursiveLength, genesisRandomNumber) {
-    const originalString = genesisRandomNumber ? genesisRandomNumber : Math.random().toString();
-    let shaValue;
+  makeS3Sha(recursiveLength, genesisRandomNumber = Math.random().toString()) {
+    const originalString = genesisRandomNumber;
 
+    let shaValue;
     for (let i = 0; i < recursiveLength; i++) {
       if (shaValue) {
         shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
@@ -198,7 +199,6 @@ class Web3Service {
 
   async leaveSlotMachine(slotMachineContract, playerAddress) {
     return new Promise((resolve, reject) => {
-      console.log(playerAddress);
       slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
         if (err) {
           reject(err);
@@ -209,10 +209,11 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineInfo(slotMachineContract, userType) {
+  async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     // 0 [player], 1 [maker]
     const promiseArr = [
       this.getSlotMachinePlayer(slotMachineContract, userType),
+      this.getSlotMachineOwner(slotMachineContract, userType, myAddress),
       this.getSlotMachineAvailable(slotMachineContract, userType),
       this.getSlotMachineBankrupt(slotMachineContract, userType),
       this.getSlotMachineMaxBet(slotMachineContract),
@@ -228,6 +229,21 @@ class Web3Service {
       });
     });
     return payload;
+  }
+
+  getSlotMachineOwner(slotMachineContract, userType, myAddress) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.owner((err, ownerAddress) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (userType === USER_TYPES.PLAYER && ownerAddress === myAddress) {
+            reject();
+          }
+          resolve({ infoKey: 'owner', infoVal: ownerAddress });
+        }
+      });
+    });
   }
 
   getPlayerBalance(slotMachineContract) {
@@ -263,8 +279,8 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not avaliable!');
-          resolve({ infoKey: 'avaliable', infoVal: mAvailable });
+          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not available!');
+          resolve({ infoKey: 'available', infoVal: mAvailable });
         }
       });
     });
@@ -361,19 +377,27 @@ class Web3Service {
 
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
+      console.log('Start to Occupy slot machine');
+
+      console.log('Try to update sha store - current step - occupy slot machine');
       let sha;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
         sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
         slotGenesisInfo.index -= 1;
       });
-      console.log('Store is ', Store.get(slotMachineContract.address));
+
+      console.log('Success to update sha store - current step - occupy slot machine');
       console.log('sha is ', sha);
+
+      console.log('Try to send occupy');
       slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
         } else {
+          console.log('inside of the send occupy callback function');
           this.getContractPendingTransaction(slotMachineContract, 'providerSeedInitialized')
             .then(result => {
+              console.log('Success to all of the occupy slot machine step. providerSeedInitialized');
               resolve(result);
             })
             .catch(error => {
@@ -388,24 +412,23 @@ class Web3Service {
     return await new Promise((resolve, reject) => {
       console.log('eventName is ', eventName);
       console.log('getContractPendingTransaction address', slotMachineContract.address);
+
       const contractFilter = this.web3.eth.filter({
-        fromBlock: 'latest',
+        fromBlock: 'pending',
         toBlock: 'pending',
-        address: slotMachineContract.address,
       });
+
       contractFilter.watch((err, result) => {
         if (err) {
           console.error(err);
           reject(err);
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
-          console.log('encodedSha is ', encodedSha);
-          if (result.topics[0] === encodedSha) {
-            contractFilter.stopWatching();
-            console.log('wow!', result.topics[0]);
-            resolve(result);
-          } else {
-            console.log('no, topic is ', result.topics[0]);
+          if (result.address === slotMachineContract.address) {
+            if (result.topics[0] === encodedSha) {
+              contractFilter.stopWatching();
+              resolve(result);
+            }
           }
         }
       });
@@ -509,17 +532,13 @@ class Web3Service {
   async watchGameOccupied(slotMachineContract, providerAddress) {
     return await new Promise((resolve, reject) => {
       const slotMachineContractAddress = slotMachineContract.address;
-      if (this.myOccupiedGameInitWatchers[slotMachineContractAddress]) {
-        return;
-      }
 
-      // To check the game watcher already exist or not
-      this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
       this.getContractPendingTransaction(slotMachineContract, 'gameOccupied')
         .then(result => {
           const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
           if (isOccuWatched === false) {
-            console.log('gameOccupied over!', result);
+            console.log('Trying to set unoccupied game watcher');
+
             let sha;
             Store.update(slotMachineContract.address, slotGenesisInfo => {
               sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
@@ -528,11 +547,13 @@ class Web3Service {
             });
             console.log('Store is ', Store.get(slotMachineContract.address));
             console.log('sha is ', sha);
+
+            console.log('Trying to initProviderSeed');
             slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
               if (err) {
                 reject(err);
               } else {
-                console.log('initProviderSeed!', result2);
+                console.log('success to sent initProviderSeed!', result2);
                 resolve(result);
               }
             });

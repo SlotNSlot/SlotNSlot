@@ -27,9 +27,17 @@ class SlotListContainer extends React.PureComponent {
     this.getSlotMachines();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.rootState.get('account') !== this.props.rootState.get('account')) {
+      this.getSlotMachines();
+    }
+  }
+
   getSlotMachines() {
-    const { dispatch } = this.props;
-    dispatch(getAllSlotMachines());
+    const { dispatch, rootState } = this.props;
+    if (rootState.get('account')) {
+      dispatch(getAllSlotMachines(rootState.get('account')));
+    }
   }
 
   handleToggleDropdown() {

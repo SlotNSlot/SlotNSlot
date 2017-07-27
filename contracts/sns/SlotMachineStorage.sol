@@ -5,7 +5,7 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./SlotMachine.sol";
 
 contract SlotMachineStorage is Ownable {
-
+    address public payStorage;
     address[] public provideraddress;
     mapping (address => address[]) public slotMachines;
 
@@ -14,10 +14,13 @@ contract SlotMachineStorage is Ownable {
     uint test;
 
     function SlotMachineStorage (){
+
         totalNumofSlotMachine = 0;
-        test = 100;
     }
 
+    function setPaytableStorage(address _payStorage) {
+        payStorage = _payStorage;
+    }
 
     function addProvider(address _provider, uint _slotnum) private {
         if (!isValidProvider(_provider)){
@@ -33,10 +36,10 @@ contract SlotMachineStorage is Ownable {
         return provideraddress.length;
     }
 
-    function createSlotMachine (address _provider,  uint _decider, uint _minBet, uint _maxBet, uint _maxPrize)
+    function createSlotMachine (address _provider,  uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize)
         returns (address)
     {
-        address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize));
+        address newslot = address(new SlotMachine(_provider, _decider, _minBet, _maxBet, _maxPrize, payStorage));
         addProvider(_provider, 1);
         slotMachines[_provider].push(newslot);
         totalNumofSlotMachine++;
@@ -44,7 +47,7 @@ contract SlotMachineStorage is Ownable {
     }
 
     function removeSlotMachine(address _provider, uint _idx)
-        onlyOwner
+      //  onlyOwner
     {
         SlotMachine(slotMachines[_provider][_idx]).shutDown();
         delete slotMachines[_provider][_idx];

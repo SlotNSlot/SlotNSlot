@@ -44,7 +44,6 @@ module.exports = function(deployer) {
           console.log('SlotMachineManager address : ', SlotMachineManager.address);
           return;
         })
-
       });
     });
     // deployer.deploy(PaytableStorage);

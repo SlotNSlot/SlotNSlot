@@ -9,7 +9,7 @@ const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
-const SLOT_MANAGER_ADDRESS = '0x06d19f3e324a35815be62492c6cd459d495f96fe';
+const SLOT_MANAGER_ADDRESS = '0xf97653893b74650fa8cbf6274f678fc3eb345759';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0x2bb6b8edcc88247ca1459c8b1bff47e433cf92fddeb1f8154967636dc86ed8c3',
   providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
@@ -572,7 +572,7 @@ class Web3Service {
     });
   }
 
-  async watchGameOccupied(slotMachineContract, providerAddress,txHash) {
+  async watchGameOccupied(slotMachineContract, providerAddress, txHash) {
     const slotMachineContractAddress = slotMachineContract.address;
     const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
 

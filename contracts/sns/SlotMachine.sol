@@ -31,8 +31,8 @@ contract SlotMachine is Ownable {
     bool public initialPlayerSeedReady;
     bool public initialProviderSeedReady;
 
-    uint[2] public pt;
-    uint8 public numPayline;
+    uint[2] public payTable;
+    uint8 public numOfPayLine;
 
     struct Game {
         uint bet;
@@ -94,7 +94,7 @@ contract SlotMachine is Ownable {
       } else if(msg.sender == mPlayer) {
         playerBalance += msg.value;
       }
-      
+
     }
 
     function SlotMachine(address _provider, uint16 _decider, uint _minBet, uint _maxBet, uint16 _maxPrize, address _payStorage)
@@ -135,8 +135,8 @@ contract SlotMachine is Ownable {
         initialProviderSeedReady = false;
         initialPlayerSeedReady = false;
 
-        pt = PaytableStorage(payStorage).getPayline(mMaxPrize,mDecider);
-        numPayline = 11;
+        payTable = PaytableStorage(payStorage).getPayline(mMaxPrize,mDecider);
+        numOfPayLine = PaytableStorage(payStorage).getNumofPayline(mMaxPrize,mDecider);
 
     }
 
@@ -150,6 +150,7 @@ contract SlotMachine is Ownable {
 
         mPlayer = msg.sender;
         playerBalance += msg.value;
+        mAvailable = false;
 
         previousPlayerSeed = _playerSeed;
 
@@ -172,7 +173,6 @@ contract SlotMachine is Ownable {
         onlyPlayer
     {
 
-        //TODO : initialProviderSeedReady =false;
         msg.sender.transfer(playerBalance);
         playerLeft(mPlayer, playerBalance);
         playerBalance = 0;
@@ -188,8 +188,6 @@ contract SlotMachine is Ownable {
     }
 
     function shutDown()
-
-    //    onlyOwner
         notOccupied
         onlyAvailable
         notPlaying
@@ -209,8 +207,6 @@ contract SlotMachine is Ownable {
             mBankrupt = true;
             throw;
         }
-        //TODO : num of line filter
-
 
         mGame.numofLines = _lines;
         mGame.bet = _bet;
@@ -219,7 +215,6 @@ contract SlotMachine is Ownable {
         providerBalance += _bet * _lines;
 
         betReady = true;
-
         gameInitialized(mPlayer, _bet, _lines);
 
         if (betReady && providerSeedReady && playerSeedReady){
@@ -252,7 +247,6 @@ contract SlotMachine is Ownable {
         mGame.playerSeed = _playerSeed;
         mGame.playerSeedReady = true;
         playerSeedReady = true;
-
         playerSeedSet(_playerSeed);
 
         if (betReady && providerSeedReady && playerSeedReady){
@@ -260,16 +254,18 @@ contract SlotMachine is Ownable {
         }
     }
 
-    function getPayline(uint8 i,uint8 y) constant returns (uint) {
-  		uint paypay;
-  		if (i <= 6){
-  			paypay = pt[0];
-  			return (paypay<<(256-i*42+(-y+2)*31))>>(256-i*42+(-y+2)*31+(i-1)*42 + (y-1)*11);
-  		}
-  		else {
-  			paypay = pt[1];
-  			return (paypay<<(256-(i-6)*42+(-y+2)*31))>>(256-(i-6)*42+(-y+2)*31+((i-6)-1)*42 + (y-1)*11);
-  		}
+
+    function getPayline(uint8 _idx, uint8 _indicator) constant returns (uint) {
+        uint targetPayline;
+        uint8 ptr = (_idx <= 6) ? 0 : 1;
+        targetPayline = payTable[ptr];
+
+        uint8 leftwalker = (_idx <= 6) ? (_idx * 42) : ((_idx - 6) * 42);
+        uint8 rightwalker = (-_indicator + 2) * 31;
+        uint8 additionalwalker = ((_idx - 6 * ptr) - 1) * 42 + (_indicator - 1) * 11;
+
+        return (targetPayline << (256 - leftwalker + rightwalker)) >> (256 - leftwalker + rightwalker + additionalwalker);
+
   	}
 
     function confirmGame()
@@ -280,17 +276,14 @@ contract SlotMachine is Ownable {
         uint reward = 0;
         uint factor = 0;
         uint divider = 10000000000;
-
         bytes32 rnseed = sha3(mGame.providerSeed ^ mGame.playerSeed);
         uint randomNumber = uint(rnseed) % divider;
-        uint16 prize = 0;
-        uint prob = 0;
 
         for(uint j=0; j<mGame.numofLines; j++){
           factor = 0;
           rnseed = rnseed<<1;
           randomNumber = uint(rnseed) % divider;
-          for(uint8 i=1; i<numPayline; i++){
+          for(uint8 i=1; i<numOfPayLine; i++){
             if(factor <= randomNumber && randomNumber < factor + getPayline(i,2)){
               reward += getPayline(i,1);
               break;

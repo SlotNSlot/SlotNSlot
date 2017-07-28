@@ -388,13 +388,15 @@ class Web3Service {
       let sha1;
       let sha2;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        const shaCount = Math.ceil(slotGenesisInfo.index / 3);
+        const shaCount = Math.ceil(slotGenesisInfo.round / 3);
         sha0 = this.makeS3Sha(shaCount, slotGenesisInfo.val0);
         sha1 = this.makeS3Sha(shaCount, slotGenesisInfo.val1);
         sha2 = this.makeS3Sha(shaCount, slotGenesisInfo.val2);
-        slotGenesisInfo.index -= 1;
+        console.log('shaCount is ', shaCount);
+        slotGenesisInfo.round -= 1;
       });
-
+      console.log('Store is ', Store.get(slotMachineContract.address));
+      console.log('sha0,1,2 is ', [sha0, sha1, sha2]);
       console.log('Success to update sha store - current step - occupy slot machine');
 
       console.log('Try to send occupy');
@@ -473,7 +475,7 @@ class Web3Service {
                     const shaCount = Math.ceil(slotGenesisInfo.round / 3);
                     sha = this.makeS3Sha(shaCount, shaVal);
                     if (chainIndex === 2) {
-                      slotGenesisInfo.index -= 1;
+                      slotGenesisInfo.round -= 1;
                     }
                     slotGenesisInfo.isInitWatched.push(result2.transactionHash);
                   });
@@ -593,14 +595,15 @@ class Web3Service {
       let sha1;
       let sha2;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        const shaCount = Math.ceil(slotGenesisInfo.index / 3) + 1;
+        const shaCount = Math.ceil(slotGenesisInfo.round / 3) + 1;
         sha0 = this.makeS3Sha(shaCount, slotGenesisInfo.val0);
         sha1 = this.makeS3Sha(shaCount, slotGenesisInfo.val1);
         sha2 = this.makeS3Sha(shaCount, slotGenesisInfo.val2);
-        slotGenesisInfo.index -= 1;
+        slotGenesisInfo.round -= 1;
         slotGenesisInfo.isOccuWatched = true;
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
+      console.log('sha0,1,2 is ', [sha0, sha1, sha2]);
 
       slotMachineContract.initProviderSeed(
         [sha0, sha1, sha2],
@@ -631,7 +634,7 @@ class Web3Service {
         const shaCount = Math.ceil(slotGenesisInfo.round / 3);
         sha = this.makeS3Sha(shaCount, shaVal);
         if (chainIndex === 2) {
-          slotGenesisInfo.index -= 1;
+          slotGenesisInfo.round -= 1;
         }
         slotGenesisInfo.isInitWatched.push(txHash);
       });

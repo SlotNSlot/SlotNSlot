@@ -366,9 +366,11 @@ class Web3Service {
     } else {
       const sha = this.makeS3Sha(10000);
       const slotGenesisInfo = {
-        index: 10000,
-        val: sha,
-        isOccuWatched: [],
+        round: 10000,
+        val0: Math.random().toString(),
+        val1: Math.random().toString(),
+        val2: Math.random().toString(),
+        isOccuWatched: false,
         isInitWatched: [],
         isSetPlayerSeed: [],
       };
@@ -382,17 +384,21 @@ class Web3Service {
       console.log('Start to Occupy slot machine');
 
       console.log('Try to update sha store - current step - occupy slot machine');
-      let sha;
+      let sha0;
+      let sha1;
+      let sha2;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+        const shaCount = Math.ceil(slotGenesisInfo.index / 3);
+        sha0 = this.makeS3Sha(shaCount, slotGenesisInfo.val0);
+        sha1 = this.makeS3Sha(shaCount, slotGenesisInfo.val1);
+        sha2 = this.makeS3Sha(shaCount, slotGenesisInfo.val2);
         slotGenesisInfo.index -= 1;
       });
 
       console.log('Success to update sha store - current step - occupy slot machine');
-      console.log('sha is ', sha);
 
       console.log('Try to send occupy');
-      slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
+      slotMachineContract.occupy([sha0, sha1, sha2], { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
         } else {
@@ -455,15 +461,21 @@ class Web3Service {
           } else {
             console.log('initGameforPlayer Over.', result);
             this.getContractPendingTransaction(slotMachineContract, 'providerSeedSet')
-              .then(result => {
+              .then(result2 => {
                 console.log('providerSeedSet event txhash is ', result.transactionHash);
                 const isSetPlayerSeed = Store.get(slotMachineContractAddress).isSetPlayerSeed;
                 if (!isSetPlayerSeed.includes(result.transactionHash)) {
                   let sha;
-                  Store.update(slotMachineContract.address, slotGenesisInfo => {
-                    sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-                    slotGenesisInfo.index -= 1;
-                    slotGenesisInfo.isSetPlayerSeed.push(result.transactionHash);
+                  let chainIndex;
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    chainIndex = slotGenesisInfo.round % 3;
+                    const shaVal = slotGenesisInfo[`val${chainIndex}`];
+                    const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+                    sha = this.makeS3Sha(shaCount, shaVal);
+                    if (chainIndex === 2) {
+                      slotGenesisInfo.index -= 1;
+                    }
+                    slotGenesisInfo.isInitWatched.push(result2.transactionHash);
                   });
                   console.log('Store is ', Store.get(slotMachineContract.address));
                   console.log('sha is ', sha);
@@ -576,25 +588,33 @@ class Web3Service {
     const slotMachineContractAddress = slotMachineContract.address;
     const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
 
-    if (!isOccuWatched.includes(txHash)) {
-      let sha;
+    if (!isOccuWatched) {
+      let sha0;
+      let sha1;
+      let sha2;
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
+        const shaCount = Math.ceil(slotGenesisInfo.index / 3) + 1;
+        sha0 = this.makeS3Sha(shaCount, slotGenesisInfo.val0);
+        sha1 = this.makeS3Sha(shaCount, slotGenesisInfo.val1);
+        sha2 = this.makeS3Sha(shaCount, slotGenesisInfo.val2);
         slotGenesisInfo.index -= 1;
-        slotGenesisInfo.isOccuWatched.push(txHash);
+        slotGenesisInfo.isOccuWatched = true;
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
-      console.log('sha is ', sha);
 
-      slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result) => {
-        if (err) {
-          console.error(err);
-        } else {
-          Toast.notie.alert({
-            text: `Your Slotmachine ${slotMachineContractAddress} is occupied.`,
-          });
-        }
-      });
+      slotMachineContract.initProviderSeed(
+        [sha0, sha1, sha2],
+        { from: providerAddress, gas: 2200000 },
+        (err, result) => {
+          if (err) {
+            console.error(err);
+          } else {
+            Toast.notie.alert({
+              text: `Your Slotmachine ${slotMachineContractAddress} is occupied.`,
+            });
+          }
+        },
+      );
     }
   }
 
@@ -604,16 +624,22 @@ class Web3Service {
 
     if (!isInitWatched.includes(txHash)) {
       let sha;
+      let chainIndex;
       Store.update(slotMachineContractAddress, slotGenesisInfo => {
-        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-        slotGenesisInfo.index -= 1;
+        chainIndex = slotGenesisInfo.round % 3;
+        const shaVal = slotGenesisInfo[`val${chainIndex}`];
+        const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+        sha = this.makeS3Sha(shaCount, shaVal);
+        if (chainIndex === 2) {
+          slotGenesisInfo.index -= 1;
+        }
         slotGenesisInfo.isInitWatched.push(txHash);
       });
 
       console.log('Store is ', Store.get(slotMachineContractAddress));
       console.log('sha is ', sha);
 
-      slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result) => {
+      slotMachineContract.setProviderSeed(sha, chainIndex, { from: providerAddress, gas: 2200000 }, (err, result) => {
         if (err) {
           console.error(err);
         } else {

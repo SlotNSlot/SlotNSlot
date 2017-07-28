@@ -11,7 +11,7 @@ const slotMachineABI = require('./slotMachineABI.json');
 
 const SLOT_MANAGER_ADDRESS = '0xf97653893b74650fa8cbf6274f678fc3eb345759';
 const SLOT_TOPICS_ENCODED = {
-  gameOccupied: '0x2bb6b8edcc88247ca1459c8b1bff47e433cf92fddeb1f8154967636dc86ed8c3',
+  gameOccupied: '0x9b8d9840f8068a384e7d28d651270fd757cfc66aa38a41d9b9d3711f2c9d7cad',
   providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
   gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
   providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',

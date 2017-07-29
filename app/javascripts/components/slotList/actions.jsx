@@ -1,6 +1,5 @@
 import { List, fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
-import Toast from '../../helpers/notieHelper';
 
 export const USER_TYPES = {
   PLAYER: 0,
@@ -67,24 +66,7 @@ export function getMySlotMachines(account) {
           slotContracts: slotMachineContracts,
         },
       });
-      slotMachineContracts.forEach(async slotMachineContract => {
-        Web3Service.createGenesisRandomNumber(slotMachineContract.get('contract').address);
-        if (slotMachineContract.get('meta').get('mPlayer') === '0x0000000000000000000000000000000000000000') {
-          await Web3Service.watchGameOccupied(slotMachineContract.get('contract'), account).then(() => {
-            Toast.notie.alert({
-              text: 'Your Slotmachine is occupied.',
-            });
-          });
-        }
-        while (1) {
-          await Web3Service.watchGameInitialized(slotMachineContract.get('contract'), account).then(() => {
-            Toast.notie.alert({
-              text: 'Your Slotmachine is Initialized.',
-            });
-          });
-          const reward = await Web3Service.getSlotResult(slotMachineContract.get('contract'));
-        }
-      });
+      Web3Service.makerPendingWatcher(slotMachineContracts, account);
     } catch (err) {
       console.error(err);
       dispatch({

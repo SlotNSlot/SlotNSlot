@@ -270,7 +270,7 @@ export default class SlotGame {
     this.winLines.clear();
     this.gameState = STATE_SPINNING;
     this.reelGroup.forEach(reel => {
-      reel.vy = 15;
+      reel.vy = 60;
       reel.filters = [this.blurFilter];
     });
     this.spinStatus.fill(true);
@@ -543,7 +543,7 @@ export default class SlotGame {
           this.reelGroup = this.newReelGroup;
         }
         resolve(reelNum);
-      }, 500);
+      }, 1000);
     });
   }
 

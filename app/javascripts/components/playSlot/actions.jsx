@@ -162,30 +162,35 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     dispatch({
       type: ACTION_TYPES.START_TO_PLAY_GAME,
     });
-    try {
-      const transaction = await Web3Service.playSlotMachine(playInfo);
-      const reward = await Web3Service.getSlotResult(playInfo.slotMachineContract);
-      const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
-      const ethReward = Web3Service.makeEthFromWei(reward.args.reward);
-      const diffMoney = reward.args.reward - betMoney;
-      stopSpinFunc(ethReward);
-      dispatch({
-        type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
-        payload: {
-          transaction,
-          diffMoney,
-        },
+    const rewardPromise = Web3Service.getSlotResult(playInfo.slotMachineContract);
+    const playPromise = Web3Service.playSlotMachine(playInfo);
+    await Promise.all([rewardPromise, playPromise])
+      .then(result => {
+        const reward = result[0];
+        const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
+        const ethReward = Web3Service.makeEthFromWei(reward);
+        const diffMoney = reward - betMoney;
+        const transaction = {};
+        stopSpinFunc(ethReward);
+        dispatch({
+          type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
+          payload: {
+            transaction,
+            diffMoney,
+          },
+        });
+      })
+      .catch(err => {
+        console.log('err is ', err);
+        Toast.notie.alert({
+          type: 'error',
+          text: 'There was an error for playing a slot machine',
+          stay: true,
+        });
+        dispatch({
+          type: ACTION_TYPES.FAILED_TO_PLAY_GAME,
+        });
       });
-    } catch (err) {
-      Toast.notie.alert({
-        type: 'error',
-        text: 'There was an error for playing a slot machine',
-        stay: true,
-      });
-      dispatch({
-        type: ACTION_TYPES.FAILED_TO_PLAY_GAME,
-      });
-    }
   };
 }
 

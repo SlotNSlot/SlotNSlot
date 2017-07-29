@@ -3,12 +3,26 @@ import Store from 'store';
 import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
+import Toast from './notieHelper';
 
 const managerABI = require('./managerABI.json');
 const storageABI = require('./storageABI.json');
 const slotMachineABI = require('./slotMachineABI.json');
 
+const SHA_CHAIN_NUM = 3;
+const ROUND_PER_CHAIN = 3333;
+const TOTAL_ROUND = ROUND_PER_CHAIN * SHA_CHAIN_NUM + 1;
+
 const SLOT_MANAGER_ADDRESS = '0x60f1d14d9edbf20833c9143f7edaf1850257dfd7';
+const SLOT_TOPICS_ENCODED = {
+  gameOccupied: '0x9b8d9840f8068a384e7d28d651270fd757cfc66aa38a41d9b9d3711f2c9d7cad',
+  providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
+  gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
+  providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
+  playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
+  gameConfirmed: '0xb654f511efe7e8c482d791daeb53cbf4e4a036fcdd584b1c73fcde55b41962ad',
+};
+
 Store.addPlugin(updatePlugin);
 
 class Web3Service {
@@ -17,7 +31,7 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
-    this.myOccupiedGameInitWatchers = {};
+    this.myInitializedGameInitWatchers = {};
 
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
@@ -36,10 +50,10 @@ class Web3Service {
     }
   }
 
-  makeS3Sha(recursiveLength, genesisRandomNumber) {
-    const originalString = genesisRandomNumber ? genesisRandomNumber : Math.random().toString();
-    let shaValue;
+  makeS3Sha(recursiveLength, genesisRandomNumber = Math.random().toString()) {
+    const originalString = genesisRandomNumber;
 
+    let shaValue;
     for (let i = 0; i < recursiveLength; i++) {
       if (shaValue) {
         shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
@@ -349,42 +363,78 @@ class Web3Service {
       });
     });
   }
+
   createGenesisRandomNumber(slotAddress) {
     if (Store.get(slotAddress) !== undefined) {
       console.log('already slotGenesisRandomNumber exist ', Store.get(slotAddress));
     } else {
       const sha = this.makeS3Sha(10000);
       const slotGenesisInfo = {
-        index: 10000,
-        val: sha,
+        round: TOTAL_ROUND,
+        val: [],
         isOccuWatched: false,
-        isInitWatched: false,
+        isInitWatched: [],
+        isSetPlayerSeed: [],
       };
+      for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
+        slotGenesisInfo.val.push(Math.random().toString());
+      }
       Store.set(slotAddress, slotGenesisInfo);
       console.log('first slotGenesisRandomNumber ', Store.get(slotAddress));
     }
   }
+
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
-      let sha;
+      console.log('Start to Occupy slot machine');
+      const shaArr = [];
       Store.update(slotMachineContract.address, slotGenesisInfo => {
-        sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-        slotGenesisInfo.index -= 1;
+        const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+        for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
+          shaArr.push(this.makeS3Sha(shaCount, slotGenesisInfo.val[i]));
+        }
+        console.log('shaCount is ', shaCount);
+        console.log('start sha is ', shaArr);
+        slotGenesisInfo.round -= 1;
       });
-      console.log('Store is ', Store.get(slotMachineContract.address));
-      console.log('sha is ', sha);
-      slotMachineContract.occupy(sha, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
+      slotMachineContract.occupy(shaArr, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
         } else {
-          const event = slotMachineContract.providerSeedInitialized();
-          event.watch((error, result) => {
-            if (error) {
-              reject(error);
-            } else {
+          this.getContractPendingTransaction(slotMachineContract, 'providerSeedInitialized')
+            .then(result => {
+              console.log('Success to all of the occupy slot machine step. providerSeedInitialized');
               resolve(result);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        }
+      });
+    });
+  }
+
+  async getContractPendingTransaction(slotMachineContract, eventName) {
+    return await new Promise((resolve, reject) => {
+      console.log('eventName is ', eventName);
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'pending',
+        toBlock: 'pending',
+      });
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const encodedSha = SLOT_TOPICS_ENCODED[eventName];
+          if (result.address === slotMachineContract.address) {
+            for (let i = 0; i < result.topics.length; i += 1) {
+              if (result.topics[i] === encodedSha) {
+                contractFilter.stopWatching();
+                resolve(result);
+              }
             }
-          });
+          }
         }
       });
     });
@@ -393,11 +443,15 @@ class Web3Service {
   playSlotMachine(playInfo) {
     return new Promise((resolve, reject) => {
       const slotMachineContract = playInfo.slotMachineContract;
-      console.log('play!', playInfo);
-      console.log('betSize info is ', this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)));
+      const slotMachineContractAddress = slotMachineContract.address;
+      const round = Store.get(slotMachineContractAddress).round;
+      const chainIndex = round % 3;
+      console.log('game Start! round is ', round);
+      console.log('chainIndex is ', chainIndex);
       slotMachineContract.initGameforPlayer(
         this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
         playInfo.lineNum,
+        chainIndex,
         {
           from: playInfo.playerAddress,
           gas: 1592450,
@@ -407,40 +461,41 @@ class Web3Service {
             reject(err);
           } else {
             console.log('initGameforPlayer Over.', result);
-            const event = slotMachineContract.providerSeedSet();
-            console.log('providerSeedSet watching start', event);
-            event.watch((error, result2) => {
-              if (error) {
-                event.stopWatching();
-                reject(error);
-              } else {
-                console.log('providerSeedSet over!', event);
-                let sha;
-                Store.update(slotMachineContract.address, slotGenesisInfo => {
-                  sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-                  slotGenesisInfo.index -= 1;
-                });
-                console.log('Store is ', Store.get(slotMachineContract.address));
-                console.log('sha is ', sha);
-                console.log('event is ', event);
-                event.stopWatching();
-                slotMachineContract.setPlayerSeed(
-                  sha,
-                  {
-                    from: playInfo.playerAddress,
-                    gas: 1000000,
-                  },
-                  async (err2, result3) => {
-                    console.log('playerSeed!', result3);
-                    if (err2) {
-                      reject(err2);
-                    } else {
-                      resolve(result2);
-                    }
-                  },
-                );
-              }
-            });
+            this.getContractPendingTransaction(slotMachineContract, 'providerSeedSet')
+              .then(result2 => {
+                console.log('providerSeedSet event txhash is ', result2.transactionHash);
+                const isSetPlayerSeed = Store.get(slotMachineContractAddress).isSetPlayerSeed;
+                if (!isSetPlayerSeed.includes(result.transactionHash)) {
+                  let sha;
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    const shaVal = slotGenesisInfo.val[chainIndex];
+                    const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+                    sha = this.makeS3Sha(shaCount, shaVal);
+                    console.log(`round is ${round}, chainIndex is ${chainIndex}, sha is ${sha}`);
+                    slotGenesisInfo.round -= 1;
+                    slotGenesisInfo.isInitWatched.push(result2.transactionHash);
+                  });
+                  slotMachineContract.setPlayerSeed(
+                    sha,
+                    chainIndex,
+                    {
+                      from: playInfo.playerAddress,
+                      gas: 1000000,
+                    },
+                    async (err2, result3) => {
+                      if (err2) {
+                        reject(err2);
+                      } else {
+                        resolve(result3);
+                      }
+                    },
+                  );
+                }
+              })
+              .catch(err2 => {
+                console.log(err2);
+                reject(err2);
+              });
           }
         },
       );
@@ -449,20 +504,15 @@ class Web3Service {
 
   async getSlotResult(slotMachineContract) {
     return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameConfirmed();
-      console.log('start to get slot result', event);
-      Store.update(slotMachineContract.address, slotGenesisInfo => {
-        slotGenesisInfo.isOccuWatched = false;
-        slotGenesisInfo.isInitWatched = false;
-      });
-      event.watch((error, result) => {
-        if (error) {
+      this.getContractPendingTransaction(slotMachineContract, 'gameConfirmed')
+        .then(result => {
+          const weiResult = this.web3.toDecimal(`${result.data}`);
+          resolve(weiResult);
+        })
+        .catch(error => {
+          console.log('getSlotResult error is ', error);
           reject(error);
-        } else {
-          console.log(result);
-          resolve(result);
-        }
-      });
+        });
     });
   }
 
@@ -490,79 +540,109 @@ class Web3Service {
     });
   }
 
-  async watchGameOccupied(slotMachineContract, providerAddress) {
-    return await new Promise((resolve, reject) => {
-      const slotMachineContractAddress = slotMachineContract.address;
-      if (this.myOccupiedGameInitWatchers[slotMachineContractAddress]) {
-        return;
-      }
+  makerPendingWatcher(slotMachineContracts, providerAddress) {
+    const contractFilter = this.web3.eth.filter({
+      fromBlock: 'pending',
+      toBlock: 'pending',
+    });
 
-      const event = slotMachineContract.gameOccupied();
-      console.log('gameOccupied watching!', event);
-      // To check the game watcher already exist or not
-      this.myOccupiedGameInitWatchers[slotMachineContractAddress] = true;
+    const addressList = slotMachineContracts.map(slotMachineContract => {
+      const slotMachineContractAddress = slotMachineContract.get('contract').address;
+      this.createGenesisRandomNumber(slotMachineContractAddress);
+      return slotMachineContractAddress;
+    });
 
-      event.watch((error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
-          if (isOccuWatched === false) {
-            console.log('gameOccupied over!', result);
-            let sha;
-            Store.update(slotMachineContract.address, slotGenesisInfo => {
-              sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-              slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isOccuWatched = true;
+    contractFilter.watch((err, result) => {
+      if (err) {
+        console.error(err);
+      } else if (addressList.includes(result.address)) {
+        const occupiedTopic = SLOT_TOPICS_ENCODED.gameOccupied;
+        const initializedTopic = SLOT_TOPICS_ENCODED.gameInitialized;
+
+        if (result.topics) {
+          result.topics.forEach(topic => {
+            const slotMachineContract = slotMachineContracts.find(slotMachine => {
+              return slotMachine.get('contract').address === result.address;
             });
-            console.log('Store is ', Store.get(slotMachineContract.address));
-            console.log('sha is ', sha);
-            slotMachineContract.initProviderSeed(sha, { from: providerAddress, gas: 2200000 }, (err, result2) => {
-              if (err) {
-                reject(err);
-              } else {
-                console.log('initProviderSeed!', result2);
-                resolve(result);
-              }
-            });
-          }
+
+            switch (topic) {
+              case occupiedTopic:
+                this.watchGameOccupied(slotMachineContract.get('contract'), providerAddress);
+                break;
+              case initializedTopic:
+                this.watchGameInitialized(slotMachineContract.get('contract'), providerAddress, result.transactionHash);
+                break;
+              default:
+                break;
+            }
+          });
         }
-      });
+      }
     });
   }
 
-  async watchGameInitialized(slotMachineContract, providerAddress) {
-    return await new Promise((resolve, reject) => {
-      const event = slotMachineContract.gameInitialized();
-      console.log('watching GameInitialized', event);
-      event.watch((error, result) => {
-        if (error) {
-          reject(error);
+  async watchGameOccupied(slotMachineContract, providerAddress) {
+    const slotMachineContractAddress = slotMachineContract.address;
+    const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
+
+    if (!isOccuWatched) {
+      const shaArr = [];
+      Store.update(slotMachineContract.address, slotGenesisInfo => {
+        const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+        for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
+          shaArr.push(this.makeS3Sha(shaCount, slotGenesisInfo.val[i]));
+        }
+        console.log('shaArr is ', shaArr);
+        console.log('shaCount is ', shaCount);
+        slotGenesisInfo.round -= 1;
+        slotGenesisInfo.isOccuWatched = true;
+      });
+      console.log('Store is ', Store.get(slotMachineContract.address));
+
+      slotMachineContract.initProviderSeed(shaArr, { from: providerAddress, gas: 2200000 }, (err, result) => {
+        if (err) {
+          console.error(err);
         } else {
-          event.stopWatching();
-          const isInitWatched = Store.get(slotMachineContract.address).isInitWatched;
-          if (isInitWatched === false) {
-            let sha;
-            Store.update(slotMachineContract.address, slotGenesisInfo => {
-              sha = this.makeS3Sha(slotGenesisInfo.index, slotGenesisInfo.val);
-              slotGenesisInfo.index -= 1;
-              slotGenesisInfo.isInitWatched = true;
-            });
-            console.log('Store is ', Store.get(slotMachineContract.address));
-            console.log('sha is ', sha);
-            console.log('watch over! GameInitialized', result);
-            slotMachineContract.setProviderSeed(sha, { from: providerAddress, gas: 1000000 }, (err, result2) => {
-              if (err) {
-                reject(err);
-              } else {
-                console.log('setProviderSeed!', result2);
-                resolve(result2);
-              }
-            });
-          }
+          Toast.notie.alert({
+            text: `Your Slotmachine ${slotMachineContractAddress} is occupied.`,
+          });
         }
       });
-    });
+    }
+  }
+
+  async watchGameInitialized(slotMachineContract, providerAddress, txHash) {
+    const slotMachineContractAddress = slotMachineContract.address;
+    const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
+
+    if (!isInitWatched.includes(txHash)) {
+      let sha;
+      let chainIndex;
+      Store.update(slotMachineContractAddress, slotGenesisInfo => {
+        chainIndex = slotGenesisInfo.round % 3;
+        const shaVal = slotGenesisInfo.val[chainIndex];
+        console.log('shaVal is ', shaVal);
+        const round = slotGenesisInfo.round;
+        const shaCount = Math.ceil(round / 3);
+        sha = this.makeS3Sha(shaCount, shaVal);
+        console.log(`Round is ${round} chainIndex is ${chainIndex}, shaCount is ${shaCount}, sha is ${sha}`);
+        slotGenesisInfo.round -= 1;
+        slotGenesisInfo.isInitWatched.push(txHash);
+      });
+      slotMachineContract.setProviderSeed(sha, chainIndex, { from: providerAddress, gas: 2200000 }, (err, result) => {
+        if (err) {
+          console.error(err);
+        } else {
+          Toast.notie.alert({
+            text: `Your Slotmachine ${slotMachineContractAddress} is initialized.`,
+          });
+
+          Store.update(slotMachineContractAddress, slotGenesisInfo => {
+            slotGenesisInfo.isInitWatched.push(txHash);
+          });
+        }
+      });
+    }
   }
 }
 

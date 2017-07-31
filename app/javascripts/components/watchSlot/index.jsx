@@ -48,7 +48,7 @@ class WatchSlot extends React.PureComponent {
       bankRoll: Web3Service.makeEthFromWei(watchSlotState.get('bankRoll')),
       yourStake: Web3Service.makeEthFromWei(watchSlotState.get('deposit')),
       playGame: this.playGame.bind(this),
-      isBanker: true,
+      isOwnerPage: true,
     });
   }
 

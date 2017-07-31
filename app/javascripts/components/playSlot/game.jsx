@@ -68,7 +68,7 @@ const LINE_CASES = [
 // Function of getting Combinations in Array for calculateSlot
 // source : https://gist.github.com/axelpale/3118596
 function kComb(set, k) {
-  var i, j, combs, head, tailcombs;
+  let i, j, combs, head, tailcombs;
   if (k > set.length || k <= 0) {
     return [];
   }
@@ -146,6 +146,8 @@ export default class SlotGame {
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
     this.lsdFilter = new PIXI.filters.ColorMatrixFilter();
     this.lsdFilter.lsd();
+    this.darkFilter = new PIXI.filters.ColorMatrixFilter();
+    this.darkFilter.brightness(0.5);
     this.winLines = new PIXI.Graphics();
     // Game Variable Initialization
     this.stage = null;
@@ -199,6 +201,8 @@ export default class SlotGame {
         'assets/images/slot/circle-big-win-15-x@2x.png',
         'assets/images/slot/oval-14@2x.png',
         'assets/images/slot/auto-stop@2x.png',
+        'assets/images/slot/combined-shape@2x.png',
+        'assets/images/slot/player-stake@2x.png',
       ])
       .on('progress', (loader, resource) => {
         console.log('LOADING...');
@@ -301,8 +305,9 @@ export default class SlotGame {
       if (this.lineNum !== undefined) this.lineNumText.text = `${this.lineNum}`;
       if (this.yourStake !== undefined) this.yourStakeText.text = `${this.yourStake} ETH`;
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
-      if (this.lineNum !== undefined && this.betSize !== undefined)
+      if (this.lineNum !== undefined && this.betSize !== undefined) {
         this.betAmountText.text = this.betSize * this.lineNum;
+      }
       if (this.bigWinContainer.visible) {
         this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
         this.bigWinContainer.scale.y += 0.005 * this.bigWinPopping;
@@ -674,116 +679,115 @@ export default class SlotGame {
       const result = drawable ? 'DRAW_LINE' : 'BIG_WIN';
       return result;
       // else, we have to draw duplicated symbol lines with minimum distance lines.
-    } else {
-      const distanceCompArr = new Array(ENTIRE_REEL_COUNT);
-      const sameSymbolArr = [];
-      let drawingLine;
-      // First draw sameSymbol Lines.
-      // i means same symbol Array.
-      for (let i = 0; i < Object.keys(sameSymbolObj).length; i += 1) {
-        const symbol = Object.keys(sameSymbolObj)[i];
-        sameSymbolArr.push(symbol);
-        const sameSymbolLinesNum = sameSymbolObj[symbol].length;
-        // LineIndexArr is set for getting random combination from usableLines
-        const lineIndexArr = [];
-        for (let p = 0; p < usableLines.length; p += 1) {
-          lineIndexArr.push(p);
-        }
-        const combArr = kComb(lineIndexArr, sameSymbolLinesNum);
-        // Finding combination that has minimum distance.
-        // j means symbol Arr combinations
-        let minDist = 15;
-        let minCombIndex; // undefined
-        for (let j = 0; j < combArr.length; j += 1) {
-          let overLapping = false;
-          // distanceCompArr Initialization
-          for (let q = 0; q < ENTIRE_REEL_COUNT; q += 1) {
-            distanceCompArr[q] = new Array(3).fill(undefined);
-          }
-          let distance = 0;
-          // Doing calculate Distance
-          // k means combination's element
-          for (let k = 0; k < combArr[j].length; k += 1) {
-            const lineIndex = combArr[j][k];
-            for (let l = 0; l < sameSymbolObj[symbol][k].length; l += 1) {
-              const slotY = usableLines[lineIndex][l];
-              if (slotLineInfo[l][slotY] !== undefined) {
-                // It means overLapping
-                overLapping = true;
-                break;
-              } else if (distanceCompArr[l][slotY] === 1) {
-                distanceCompArr[l][slotY] = 1;
-              } else {
-                distanceCompArr[l][slotY] = 1;
-                distance += 1;
-              }
-            }
-            if (overLapping) break;
-          }
-          if (!overLapping && distance < minDist) {
-            minDist = distance;
-            minCombIndex = j;
-          }
-        }
-        // minCombIndex is still undefined After loop, we can't draw it.
-        if (minCombIndex === undefined) return 'BIG_WIN';
-        // We have to insert that combination of lines to slotLineInfo.
-        for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
-          const lineIndex = combArr[minCombIndex][j];
-          for (let k = 0; k < sameSymbolObj[symbol][j].length; k += 1) {
-            const slotY = usableLines[lineIndex][k];
-            slotLineInfo[k][slotY] = symbol;
-          }
-          drawingLine = {
-            lineNum: usableLines[lineIndex][5], // Fifth index is original win lineNum.
-            symbol: parseInt(symbol, 10),
-            length: sameSymbolObj[symbol][j].length,
-          };
-          this.drawingLines.push(drawingLine);
-        }
-        // We have to delete lines where we find min distance for quality.
-        let lastIndex = 0;
-        const newUsableLines = [];
-        for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
-          newUsableLines.push(...usableLines.slice(lastIndex, combArr[minCombIndex][j]));
-          lastIndex = combArr[minCombIndex][j] + 1;
-        }
-        newUsableLines.push(...usableLines.slice(lastIndex, usableLines.length));
-        usableLines = newUsableLines;
+    }
+    const distanceCompArr = new Array(ENTIRE_REEL_COUNT);
+    const sameSymbolArr = [];
+    let drawingLine;
+    // First draw sameSymbol Lines.
+    // i means same symbol Array.
+    for (let i = 0; i < Object.keys(sameSymbolObj).length; i += 1) {
+      const symbol = Object.keys(sameSymbolObj)[i];
+      sameSymbolArr.push(symbol);
+      const sameSymbolLinesNum = sameSymbolObj[symbol].length;
+      // LineIndexArr is set for getting random combination from usableLines
+      const lineIndexArr = [];
+      for (let p = 0; p < usableLines.length; p += 1) {
+        lineIndexArr.push(p);
       }
-      // After draw same symbol lines, we have to draw single symbol lines.
-      for (let i = 0; i < singleSymbolArr.length; i += 1) {
-        let drawable = false;
-        for (let j = 0; j < usableLines.length; j += 1) {
-          // Check for overLapping Line.
-          let overLapping = false;
-          for (let k = 0; k < singleSymbolArr[i].length; k += 1) {
-            const slotY = usableLines[j][k];
-            if (slotLineInfo[k][slotY] !== undefined) {
+      const combArr = kComb(lineIndexArr, sameSymbolLinesNum);
+      // Finding combination that has minimum distance.
+      // j means symbol Arr combinations
+      let minDist = 15;
+      let minCombIndex; // undefined
+      for (let j = 0; j < combArr.length; j += 1) {
+        let overLapping = false;
+        // distanceCompArr Initialization
+        for (let q = 0; q < ENTIRE_REEL_COUNT; q += 1) {
+          distanceCompArr[q] = new Array(3).fill(undefined);
+        }
+        let distance = 0;
+        // Doing calculate Distance
+        // k means combination's element
+        for (let k = 0; k < combArr[j].length; k += 1) {
+          const lineIndex = combArr[j][k];
+          for (let l = 0; l < sameSymbolObj[symbol][k].length; l += 1) {
+            const slotY = usableLines[lineIndex][l];
+            if (slotLineInfo[l][slotY] !== undefined) {
+              // It means overLapping
               overLapping = true;
               break;
+            } else if (distanceCompArr[l][slotY] === 1) {
+              distanceCompArr[l][slotY] = 1;
+            } else {
+              distanceCompArr[l][slotY] = 1;
+              distance += 1;
             }
           }
-          // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines.
-          if (!overLapping) {
-            for (let k = 0; k < lineInfos[i].length; k += 1) {
-              const slotY = usableLines[j][k];
-              slotLineInfo[k][slotY] = singleSymbolArr[i].symbol;
-            }
-            drawingLine = {
-              lineNum: usableLines[j][5],
-              symbol: parseInt(singleSymbolArr[i].symbol, 10),
-              length: singleSymbolArr[i].length,
-            };
-            this.drawingLines.push(drawingLine);
-            drawable = true;
+          if (overLapping) break;
+        }
+        if (!overLapping && distance < minDist) {
+          minDist = distance;
+          minCombIndex = j;
+        }
+      }
+      // minCombIndex is still undefined After loop, we can't draw it.
+      if (minCombIndex === undefined) return 'BIG_WIN';
+      // We have to insert that combination of lines to slotLineInfo.
+      for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+        const lineIndex = combArr[minCombIndex][j];
+        for (let k = 0; k < sameSymbolObj[symbol][j].length; k += 1) {
+          const slotY = usableLines[lineIndex][k];
+          slotLineInfo[k][slotY] = symbol;
+        }
+        drawingLine = {
+          lineNum: usableLines[lineIndex][5], // Fifth index is original win lineNum.
+          symbol: parseInt(symbol, 10),
+          length: sameSymbolObj[symbol][j].length,
+        };
+        this.drawingLines.push(drawingLine);
+      }
+      // We have to delete lines where we find min distance for quality.
+      let lastIndex = 0;
+      const newUsableLines = [];
+      for (let j = 0; j < combArr[minCombIndex].length; j += 1) {
+        newUsableLines.push(...usableLines.slice(lastIndex, combArr[minCombIndex][j]));
+        lastIndex = combArr[minCombIndex][j] + 1;
+      }
+      newUsableLines.push(...usableLines.slice(lastIndex, usableLines.length));
+      usableLines = newUsableLines;
+    }
+    // After draw same symbol lines, we have to draw single symbol lines.
+    for (let i = 0; i < singleSymbolArr.length; i += 1) {
+      let drawable = false;
+      for (let j = 0; j < usableLines.length; j += 1) {
+        // Check for overLapping Line.
+        let overLapping = false;
+        for (let k = 0; k < singleSymbolArr[i].length; k += 1) {
+          const slotY = usableLines[j][k];
+          if (slotLineInfo[k][slotY] !== undefined) {
+            overLapping = true;
             break;
           }
         }
-        if (!drawable) return 'BIG_WIN';
+        // If not overLapping, 'i' drawingLine is drawn with 'j' usableLines.
+        if (!overLapping) {
+          for (let k = 0; k < lineInfos[i].length; k += 1) {
+            const slotY = usableLines[j][k];
+            slotLineInfo[k][slotY] = singleSymbolArr[i].symbol;
+          }
+          drawingLine = {
+            lineNum: usableLines[j][5],
+            symbol: parseInt(singleSymbolArr[i].symbol, 10),
+            length: singleSymbolArr[i].length,
+          };
+          this.drawingLines.push(drawingLine);
+          drawable = true;
+          break;
+        }
       }
-      return 'DRAW_LINE';
+      if (!drawable) return 'BIG_WIN';
     }
+    return 'DRAW_LINE';
   }
 
   changeSlot() {
@@ -906,7 +910,12 @@ export default class SlotGame {
     const Graphics = PIXI.Graphics;
     const Text = PIXI.Text;
 
-    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    let mergedBackground = null;
+    if (this.isOwnerPage) {
+      mergedBackground = new Sprite.fromImage('assets/images/slot/combined-shape@2x.png');
+    } else {
+      mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    }
     mergedBackground.position.set(0, 0);
     mergedBackground.width = 940;
     mergedBackground.height = 660;
@@ -930,7 +939,12 @@ export default class SlotGame {
     ribbonText.anchor.set(0.5, 0.5);
     ribbonText.position.set(470, 120);
 
-    const yourStake = new Sprite(TextureCache['your-stake.png']);
+    let yourStake = null;
+    if (this.isOwnerPage) {
+      yourStake = new Sprite.fromImage('assets/images/slot/player-stake@2x.png');
+    } else {
+      yourStake = new Sprite(TextureCache['your-stake.png']);
+    }
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
@@ -990,30 +1004,14 @@ export default class SlotGame {
     betMinusBtn.beginFill(0, 0);
     betMinusBtn.drawRect(194, 583, 38, 57);
     betMinusBtn.interactive = true;
-    betMinusBtn.buttonMode = true;
-    betMinusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.betSize - this.betUnit >= this.minBet) {
-        this.setBetSize(this.betSize - this.betUnit);
-      } else {
-        this.setBetSize(this.minBet);
-      }
-    });
+    betMinusBtn.buttonMode = !this.isOwnerPage;
     betMinusBtn.endFill();
 
     const betPlusBtn = new Graphics();
     betPlusBtn.beginFill(0, 0);
     betPlusBtn.drawRect(333, 583, 38, 57);
     betPlusBtn.interactive = true;
-    betPlusBtn.buttonMode = true;
-    betPlusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.betSize + this.betUnit <= this.maxBet) {
-        this.setBetSize(this.betSize + this.betUnit);
-      } else {
-        this.setBetSize(this.maxBet);
-      }
-    });
+    betPlusBtn.buttonMode = !this.isOwnerPage;
     betPlusBtn.endFill();
 
     const maxBet = new Sprite(TextureCache['max-bet.png']);
@@ -1021,12 +1019,7 @@ export default class SlotGame {
     maxBet.width = 63;
     maxBet.height = 65;
     maxBet.interactive = true;
-    maxBet.buttonMode = true;
-    maxBet.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      this.setBetSize(this.maxBet);
-      this.setLineNum(20);
-    });
+    maxBet.buttonMode = !this.isOwnerPage;
 
     const lineNum = new Sprite(TextureCache['line.png']);
     lineNum.position.set(436, 580);
@@ -1046,52 +1039,84 @@ export default class SlotGame {
     lineMinusBtn.beginFill(0, 0);
     lineMinusBtn.drawRect(440, 583, 38, 57);
     lineMinusBtn.interactive = true;
-    lineMinusBtn.buttonMode = true;
-    lineMinusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.lineNum > 1) {
-        this.setLineNum(this.lineNum - 1);
-      }
-    });
+    lineMinusBtn.buttonMode = !this.isOwnerPage;
     lineMinusBtn.endFill();
 
     const linePlusBtn = new Graphics();
     linePlusBtn.beginFill(0, 0);
     linePlusBtn.drawRect(580, 583, 38, 57);
     linePlusBtn.interactive = true;
-    linePlusBtn.buttonMode = true;
-    linePlusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.lineNum < 20) {
-        this.setLineNum(this.lineNum + 1);
-      }
-    });
+    linePlusBtn.buttonMode = !this.isOwnerPage;
     linePlusBtn.endFill();
 
     const spinBtn = new Sprite(TextureCache['spin.png']);
     spinBtn.interactive = true;
-    spinBtn.buttonMode = true;
-    spinBtn.on('pointerdown', this.startSpin);
+    spinBtn.buttonMode = !this.isOwnerPage;
     spinBtn.position.set(620, 580);
     spinBtn.width = 186;
     spinBtn.height = 65;
 
     this.autoBtn = new Sprite(TextureCache['auto.png']);
     this.autoBtn.interactive = true;
-    this.autoBtn.buttonMode = true;
-    this.autoBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoBtn.buttonMode = !this.isOwnerPage;
     this.autoBtn.position.set(804, 580);
     this.autoBtn.width = 93;
     this.autoBtn.height = 65;
 
     this.autoStopBtn = new Sprite.fromImage('assets/images/slot/auto-stop@2x.png');
     this.autoStopBtn.interactive = true;
-    this.autoStopBtn.buttonMode = true;
-    this.autoStopBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoStopBtn.buttonMode = !this.isOwnerPage;
     this.autoStopBtn.position.set(804, 580);
     this.autoStopBtn.width = 93;
     this.autoStopBtn.height = 65;
     this.autoStopBtn.visible = false;
+
+    // For Owner Page
+    if (this.isOwnerPage) {
+      betAmount.filters = [this.darkFilter];
+      betSize.filters = [this.darkFilter];
+      lineNum.filters = [this.darkFilter];
+      spinBtn.filters = [this.darkFilter];
+      maxBet.filters = [this.darkFilter];
+      this.autoBtn.filters = [this.darkFilter];
+    } else {
+      betMinusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.betSize - this.betUnit >= this.minBet) {
+          this.setBetSize(this.betSize - this.betUnit);
+        } else {
+          this.setBetSize(this.minBet);
+        }
+      });
+      betPlusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.betSize + this.betUnit <= this.maxBet) {
+          this.setBetSize(this.betSize + this.betUnit);
+        } else {
+          this.setBetSize(this.maxBet);
+        }
+      });
+      maxBet.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        this.setBetSize(this.maxBet);
+        this.setLineNum(20);
+      });
+      lineMinusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.lineNum > 1) {
+          this.setLineNum(this.lineNum - 1);
+        }
+      });
+      linePlusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.lineNum < 20) {
+          this.setLineNum(this.lineNum + 1);
+        }
+      });
+      spinBtn.on('pointerdown', this.startSpin);
+      this.autoBtn.on('pointerdown', this.autoSpinSwitch);
+      this.autoStopBtn.on('pointerdown', this.autoSpinSwitch);
+    }
 
     this.stage.addChild(slotBackground);
     this.UIContainer.addChild(mergedBackground);

@@ -1,7 +1,7 @@
 {
-    "name": "truffle-init-webpack",
+    "name": "slotnslot-frontent",
     "version": "0.0.1",
-    "description": "Frontend example using truffle v3",
+    "description": "Frontent application of SlotNSlot",
     "scripts": {
         "lint": "eslint ./",
         "clean": "rm -rf dst && rm -rf dst-sls && rm -rf temp && rm -f dst.zip && mkdir dst",
@@ -81,10 +81,6 @@
         "serverless": "^1.16.1",
         "style-loader": "^0.13.2",
         "svg-inline-loader": "^0.7.1",
-        "truffle": "^3.3.1",
-        "truffle-config": "^1.0.0",
-        "truffle-contract": "^1.1.11",
-        "truffle-expect": "0.0.3",
         "ts-node": "^3.1.0",
         "typescript": "^2.4.1",
         "web3": "^0.20.1",
@@ -125,9 +121,7 @@
         "redux-logger": "^3.0.6",
         "redux-thunk": "^2.2.0",
         "store": "^2.0.12",
-        "svg-inline-react": "^1.0.2",
-        "truffle-contract": "^1.1.11",
-        "zeppelin-solidity": "^1.2.0"
+        "svg-inline-react": "^1.0.2"
     },
     "jest": {
         "automock": true,

@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import weiToEther from '../../../helpers/weiToEther';
 import styles from './slotItem.scss';
 
-const SlotListItem = ({ slotContract }) => {
+const SlotListItem = ({ slotContract, isBanker }) => {
   const mPlayer = slotContract.get('meta').get('mPlayer');
   const nullPlayer = '0x0000000000000000000000000000000000000000';
   return (
     <Link
-      to={`/slot/play/${slotContract.get('contract').address}`}
+      to={`/slot/${isBanker ? 'make' : 'play'}/${slotContract.get('contract').address}`}
       className={`${slotContract.get('meta').get('mPlayer')}`}
     >
       <li className={`${styles.slotListItem} ${mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied}`}>

@@ -15,6 +15,7 @@ export const WATCH_SLOT_INITIAL_STATE = fromJS({
   minBet: 2,
   maxBet: 20,
   slotMachineContract: null,
+  recentTxHash: '',
 });
 
 export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
@@ -30,10 +31,6 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
       return state.withMutations(currentState => {
         return currentState.set('isLoading', false).set('hasError', true);
       });
-    }
-
-    case ACTION_TYPES.SET_DEPOSIT: {
-      return state.set('deposit', action.payload.weiValue);
     }
 
     case ACTION_TYPES.SET_OCCUPIED_STATE: {
@@ -85,7 +82,7 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.START_TO_WATCH_GAME: {
       return state.withMutations(currentState => {
-        return currentState.set('isPlaying', true).set('hasError', false);
+        return currentState.set('isPlaying', true).set('hasError', false).set('recentTxHash', action.payload.txHash);
       });
     }
 

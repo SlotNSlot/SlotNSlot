@@ -6,7 +6,6 @@ export const ACTION_TYPES = {
   SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
   SET_LINE_NUM: 'play_slot.SET_LINE_NUM',
   SET_BANK_ROLL: 'play_slot.SET_BANK_ROLL',
-  SET_DEPOSIT: 'play_slot.SET_DEPOSIT',
   SPIN_START: 'watch_slot.SPIN_START',
   SPIN_END: 'watch_slot.SPIN_END',
   SET_OCCUPIED_STATE: 'watch_slot.SET_OCCUPIED_STATE',
@@ -52,15 +51,6 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
         type: ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT,
       });
     }
-  };
-}
-
-export function setDeposit(weiValue) {
-  return {
-    type: ACTION_TYPES.SET_DEPOSIT,
-    payload: {
-      weiValue,
-    },
   };
 }
 
@@ -173,7 +163,7 @@ export function leaveSlotMachine(slotContract, playerAddress) {
   };
 }
 
-export function watchSlotInfo(slotContract, providerAddress) {
+export function watchSlotInfo(slotContract) {
   return async dispatch => {
     try {
       const result = await Web3Service.getContractPendingTransaction(slotContract, 'gameInitialized');
@@ -201,7 +191,7 @@ export function watchSlotInfo(slotContract, providerAddress) {
       dispatch({
         type: ACTION_TYPES.START_TO_WATCH_GAME,
         payload: {
-          txhash: result.transactionHash,
+          txHash: result.transactionHash,
         },
       });
     } catch (err) {
@@ -235,42 +225,5 @@ export function receiveSlotResult(playInfo, stopSpinFunc) {
         type: ACTION_TYPES.FAILED_TO_WATCH_GAME,
       });
     }
-  };
-}
-
-export function requestToPlayGame(playInfo, stopSpinFunc) {
-  return async dispatch => {
-    dispatch({
-      type: ACTION_TYPES.START_TO_PLAY_GAME,
-    });
-    const rewardPromise = Web3Service.getSlotResult(playInfo.slotMachineContract);
-    const playPromise = Web3Service.playSlotMachine(playInfo);
-    await Promise.all([rewardPromise, playPromise])
-      .then(result => {
-        const reward = result[0];
-        const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
-        const ethReward = Web3Service.makeEthFromWei(reward);
-        const diffMoney = reward - betMoney;
-        const transaction = {};
-        stopSpinFunc(ethReward);
-        dispatch({
-          type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
-          payload: {
-            transaction,
-            diffMoney,
-          },
-        });
-      })
-      .catch(err => {
-        console.log('err is ', err);
-        Toast.notie.alert({
-          type: 'error',
-          text: 'There was an error for playing a slot machine',
-          stay: true,
-        });
-        dispatch({
-          type: ACTION_TYPES.FAILED_TO_PLAY_GAME,
-        });
-      });
   };
 }

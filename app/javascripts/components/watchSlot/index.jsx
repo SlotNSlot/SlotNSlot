@@ -69,7 +69,12 @@ class WatchSlot extends React.PureComponent {
         this.watchGame(watchSlotState.get('slotMachineContract'));
       }
 
-      if (!this.props.watchSlotState.get('isPlaying') && watchSlotState.get('isPlaying')) {
+      console.log(`
+      prev: ${this.props.watchSlotState.get('recentTxHash')}
+      next: ${watchSlotState.get('recentTxHash')}
+      `);
+
+      if (this.props.watchSlotState.get('recentTxHash') !== watchSlotState.get('recentTxHash')) {
         this.slotGame.startSpin();
         this.watchGameResult(watchSlotState.get('slotMachineContract'));
       }
@@ -93,8 +98,6 @@ class WatchSlot extends React.PureComponent {
   }
 
   render() {
-    const { watchSlotState } = this.props;
-
     return (
       <div className={styles.watchSlotSection}>
         <div className={styles.watchSlotContainer}>
@@ -132,9 +135,9 @@ class WatchSlot extends React.PureComponent {
 
   watchGame(slotMachineContract) {
     console.log('watch game is called');
-    const { dispatch, root } = this.props;
+    const { dispatch } = this.props;
     console.log(slotMachineContract);
-    dispatch(Actions.watchSlotInfo(slotMachineContract, root.get('account')));
+    dispatch(Actions.watchSlotInfo(slotMachineContract));
   }
 
   watchGameResult(slotContract) {
@@ -146,17 +149,6 @@ class WatchSlot extends React.PureComponent {
     };
     dispatch(Actions.receiveSlotResult(gameInfo, this.slotGame.stopSpin));
   }
-
-  // playGame() {
-  //   const { dispatch, root, watchSlotState } = this.props;
-  //   const gameInfo = {
-  //     slotMachineContract: watchSlotState.get('slotMachineContract'),
-  //     playerAddress: root.get('account'),
-  //     betSize: watchSlotState.get('betSize'),
-  //     lineNum: watchSlotState.get('lineNum'),
-  //   };
-  //   dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
-  // }
 
   getSlotMachine(slotAddress, playerAddress) {
     const { dispatch } = this.props;

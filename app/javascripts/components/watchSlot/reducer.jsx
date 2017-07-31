@@ -83,23 +83,22 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
       });
     }
 
-    case ACTION_TYPES.START_TO_PLAY_GAME: {
+    case ACTION_TYPES.START_TO_WATCH_GAME: {
       return state.withMutations(currentState => {
         return currentState.set('isPlaying', true).set('hasError', false);
       });
     }
 
-    case ACTION_TYPES.FAILED_TO_PLAY_GAME: {
+    case ACTION_TYPES.FAILED_TO_WATCH_GAME: {
       return state.set('hasError', true);
     }
 
-    case ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME: {
+    case ACTION_TYPES.SUCCEEDED_TO_WATCH_GAME: {
       return state.withMutations(currentState => {
         return currentState
           .set('isPlaying', false)
           .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
-          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)))
-          .update('betsData', list => list.concat(action.payload.transaction.betData));
+          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)));
       });
     }
 

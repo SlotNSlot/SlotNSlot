@@ -24,7 +24,7 @@ const Slot = ({ match, location, rootState }) =>
       <Route exact path={`${match.url}/play/:slotAddress`} component={PlaySlot} />
       <Route exact path={`${match.url}/make`} component={MySlotListContainer} />
       <Route exact path={`${match.url}/make/:slotAddress`} component={WatchSlot} />
-      <Route exact path={`${match.url}/make/step/step/:step`} component={MakeGame} />
+      <Route exact path={`${match.url}/make/step/:step`} component={MakeGame} />
       <Route component={Status404} />
     </Switch>
     <Footer />

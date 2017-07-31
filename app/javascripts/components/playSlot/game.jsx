@@ -282,7 +282,7 @@ export default class SlotGame {
     this.winMoneyText.visible = false;
     this.ovalBackground.visible = false;
     this.drawingLines = [];
-    this.playGame();
+    if (!this.isOwnerPage) this.playGame();
   }
 
   autoSpinSwitch() {

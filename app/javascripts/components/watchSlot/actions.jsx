@@ -3,13 +3,12 @@ import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
 
 export const ACTION_TYPES = {
-  SET_BET_SIZE: 'watch_slot.SET_BET_SIZE',
-  SET_LINE_NUM: 'watch_slot.SET_LINE_NUM',
-  SET_BANK_ROLL: 'watch_slot.SET_BANK_ROLL',
+  SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
+  SET_LINE_NUM: 'play_slot.SET_LINE_NUM',
+  SET_BANK_ROLL: 'play_slot.SET_BANK_ROLL',
+  SET_DEPOSIT: 'play_slot.SET_DEPOSIT',
   SPIN_START: 'watch_slot.SPIN_START',
   SPIN_END: 'watch_slot.SPIN_END',
-  TOGGLE_EMOTION: 'watch_slot.TOGGLE_EMOTION',
-  SET_CATEGORY: 'watch_slot.SET_CATEGORY',
   SET_OCCUPIED_STATE: 'watch_slot.SET_OCCUPIED_STATE',
 
   START_TO_GET_SLOT_MACHINE: 'watch_slot.START_TO_GET_SLOT_MACHINE',
@@ -19,24 +18,14 @@ export const ACTION_TYPES = {
   FAILED_TO_OCCUPY_SLOT_MACHINE: 'watch_slot.FAILED_TO_OCCUPY_SLOT_MACHINE',
 
   START_TO_OCCUPY_SLOT_MACHINE: 'watch_slot.START_TO_OCCUPY_SLOT_MACHINE',
-  SET_DEPOSIT: 'watch_slot.SET_DEPOSIT',
-  START_TO_PLAY_GAME: 'watch_slot.START_TO_PLAY_GAME',
-  SUCCEEDED_TO_PLAY_GAME: 'watch_slot.SUCCEEDED_TO_PLAY_GAME',
-  FAILED_TO_PLAY_GAME: 'watch_slot.FAILED_TO_PLAY_GAME',
+  START_TO_WATCH_GAME: 'watch_slot.START_TO_WATCH_GAME',
+  SUCCEEDED_TO_WATCH_GAME: 'watch_slot.SUCCEEDED_TO_WATCH_GAME',
+  FAILED_TO_WATCH_GAME: 'watch_slot.FAILED_TO_WATCH_GAME',
 
   START_TO_SEND_ETHER_TO_CONTRACT: 'watch_slot.START_TO_SEND_ETHER_TO_CONTRACT',
   SEND_ETHER_TO_SLOT_CONTRACT: 'watch_slot.SEND_ETHER_TO_SLOT_CONTRACT',
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'watch_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 };
-
-export function setDeposit(weiValue) {
-  return {
-    type: ACTION_TYPES.SET_DEPOSIT,
-    payload: {
-      weiValue,
-    },
-  };
-}
 
 export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiValue) {
   return async dispatch => {
@@ -63,6 +52,33 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
         type: ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT,
       });
     }
+  };
+}
+
+export function setDeposit(weiValue) {
+  return {
+    type: ACTION_TYPES.SET_DEPOSIT,
+    payload: {
+      weiValue,
+    },
+  };
+}
+
+export function setBetSize(betSize) {
+  return {
+    type: ACTION_TYPES.SET_BET_SIZE,
+    payload: {
+      betSize,
+    },
+  };
+}
+
+export function setLineNum(lineNum) {
+  return {
+    type: ACTION_TYPES.SET_LINE_NUM,
+    payload: {
+      lineNum,
+    },
   };
 }
 
@@ -157,6 +173,71 @@ export function leaveSlotMachine(slotContract, playerAddress) {
   };
 }
 
+export function watchSlotInfo(slotContract, providerAddress) {
+  return async dispatch => {
+    try {
+      const result = await Web3Service.getContractPendingTransaction(slotContract, 'gameInitialized');
+      const data = result.data.substr(2);
+      const _betSize = Web3Service.makeEthFromWei(parseInt(data.substr(64, 64), 16));
+      const _lineNum = parseInt(data.substr(128), 16);
+      console.log(`
+        txHash : ${result.transactionHash},
+        betSize : ${_betSize} ETH
+        lineNum : ${_lineNum}
+        betAmount : ${_betSize * _lineNum} ETH
+      `);
+      dispatch({
+        type: ACTION_TYPES.SET_BET_SIZE,
+        payload: {
+          betSize: _betSize,
+        },
+      });
+      dispatch({
+        type: ACTION_TYPES.SET_LINE_NUM,
+        payload: {
+          lineNum: _lineNum,
+        },
+      });
+      dispatch({
+        type: ACTION_TYPES.START_TO_WATCH_GAME,
+        payload: {
+          txhash: result.transactionHash,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+}
+
+export function receiveSlotResult(playInfo, stopSpinFunc) {
+  return async dispatch => {
+    try {
+      const weiResult = await Web3Service.getSlotResult(playInfo.slotMachineContract);
+      const reward = weiResult;
+      const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
+      const ethReward = Web3Service.makeEthFromWei(reward);
+      const diffMoney = reward - betMoney;
+      console.log(`
+        ethReward: ${ethReward}
+        diffMoney: ${diffMoney}
+      `);
+      stopSpinFunc(ethReward);
+      dispatch({
+        type: ACTION_TYPES.SUCCEEDED_TO_WATCH_GAME,
+        payload: {
+          diffMoney,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      dispatch({
+        type: ACTION_TYPES.FAILED_TO_WATCH_GAME,
+      });
+    }
+  };
+}
+
 export function requestToPlayGame(playInfo, stopSpinFunc) {
   return async dispatch => {
     dispatch({
@@ -191,47 +272,5 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
           type: ACTION_TYPES.FAILED_TO_PLAY_GAME,
         });
       });
-  };
-}
-
-export function setBetSize(betSize) {
-  return {
-    type: ACTION_TYPES.SET_BET_SIZE,
-    payload: {
-      betSize,
-    },
-  };
-}
-
-export function setLineNum(lineNum) {
-  return {
-    type: ACTION_TYPES.SET_LINE_NUM,
-    payload: {
-      lineNum,
-    },
-  };
-}
-
-export function setBankRoll(bankRoll) {
-  return {
-    type: ACTION_TYPES.SET_BANK_ROLL,
-    payload: {
-      bankRoll,
-    },
-  };
-}
-
-export function toggleEmotion() {
-  return {
-    type: ACTION_TYPES.TOGGLE_EMOTION,
-  };
-}
-
-export function setCategory(tableNum) {
-  return {
-    type: ACTION_TYPES.SET_CATEGORY,
-    payload: {
-      tableNum,
-    },
   };
 }

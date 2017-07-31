@@ -47,7 +47,6 @@ class WatchSlot extends React.PureComponent {
       maxBet: watchSlotState.get('maxBet'),
       bankRoll: Web3Service.makeEthFromWei(watchSlotState.get('bankRoll')),
       yourStake: Web3Service.makeEthFromWei(watchSlotState.get('deposit')),
-      playGame: this.playGame.bind(this),
       isOwnerPage: true,
     });
   }
@@ -65,6 +64,15 @@ class WatchSlot extends React.PureComponent {
       this.slotGame.hasError = watchSlotState.get('hasError');
       this.slotGame.bankRoll = Web3Service.makeEthFromWei(watchSlotState.get('bankRoll'));
       this.slotGame.yourStake = Web3Service.makeEthFromWei(watchSlotState.get('deposit'));
+
+      if (watchSlotState.get('slotMachineContract')) {
+        this.watchGame(watchSlotState.get('slotMachineContract'));
+      }
+
+      if (!this.props.watchSlotState.get('isPlaying') && watchSlotState.get('isPlaying')) {
+        this.slotGame.startSpin();
+        this.watchGameResult(watchSlotState.get('slotMachineContract'));
+      }
 
       if (watchSlotState.get('hasError')) {
         this.slotGame.errorOccur();
@@ -122,16 +130,33 @@ class WatchSlot extends React.PureComponent {
     );
   }
 
-  playGame() {
-    const { dispatch, root, watchSlotState } = this.props;
+  watchGame(slotMachineContract) {
+    console.log('watch game is called');
+    const { dispatch, root } = this.props;
+    console.log(slotMachineContract);
+    dispatch(Actions.watchSlotInfo(slotMachineContract, root.get('account')));
+  }
+
+  watchGameResult(slotContract) {
+    const { dispatch, watchSlotState } = this.props;
     const gameInfo = {
-      slotMachineContract: watchSlotState.get('slotMachineContract'),
-      playerAddress: root.get('account'),
+      slotMachineContract: slotContract,
       betSize: watchSlotState.get('betSize'),
       lineNum: watchSlotState.get('lineNum'),
     };
-    dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
+    dispatch(Actions.receiveSlotResult(gameInfo, this.slotGame.stopSpin));
   }
+
+  // playGame() {
+  //   const { dispatch, root, watchSlotState } = this.props;
+  //   const gameInfo = {
+  //     slotMachineContract: watchSlotState.get('slotMachineContract'),
+  //     playerAddress: root.get('account'),
+  //     betSize: watchSlotState.get('betSize'),
+  //     lineNum: watchSlotState.get('lineNum'),
+  //   };
+  //   dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
+  // }
 
   getSlotMachine(slotAddress, playerAddress) {
     const { dispatch } = this.props;

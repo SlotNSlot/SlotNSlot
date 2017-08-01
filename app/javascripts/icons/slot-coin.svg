@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="269" height="290" viewBox="0 0 269 290">
+    <defs>
+        <linearGradient id="slot_coin_c" x1="4.125%" x2="94.423%" y1="4.084%" y2="93.497%">
+            <stop offset="0%" stop-color="#851EC2"/>
+            <stop offset="100%" stop-color="#229897"/>
+        </linearGradient>
+        <ellipse id="slot_coin_b" cx="96.5" cy="103.825" rx="96.5" ry="96.175"/>
+        <filter id="slot_coin_a" width="172.5%" height="172.8%" x="-35.2%" y="-24.4%" filterUnits="objectBoundingBox">
+            <feOffset dx="2" dy="23" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="19.5"/>
+            <feColorMatrix in="shadowBlurOuter1" values="0 0 0 0 0.384313725 0 0 0 0 0.341176471 0 0 0 0 0.854901961 0 0 0 0.331238678 0"/>
+        </filter>
+        <linearGradient id="slot_coin_f" x1="4.125%" x2="97.322%" y1="4.084%" y2="96.368%">
+            <stop offset="0%" stop-color="#851EC2"/>
+            <stop offset="100%" stop-color="#51E9E7"/>
+        </linearGradient>
+        <ellipse id="slot_coin_e" cx="96.5" cy="96.175" rx="96.5" ry="96.175"/>
+        <filter id="slot_coin_d" width="165.3%" height="165.5%" x="-31.6%" y="-28.1%" filterUnits="objectBoundingBox">
+            <feOffset dx="2" dy="9" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="19.5"/>
+            <feColorMatrix in="shadowBlurOuter1" values="0 0 0 0 0.384313725 0 0 0 0 0.341176471 0 0 0 0 0.854901961 0 0 0 0.331238678 0"/>
+        </filter>
+        <linearGradient id="slot_coin_g" x1="0%" y1="-15.648%" y2="141.06%">
+            <stop offset="0%" stop-color="#851EC2"/>
+            <stop offset="100%" stop-color="#51E9E7"/>
+        </linearGradient>
+        <ellipse id="slot_coin_h" cx="96.5" cy="96.565" rx="80.991" ry="80.718"/>
+        <filter id="slot_coin_i" width="104.3%" height="104.3%" x="-2.2%" y="-2.2%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceAlpha" result="shadowBlurInner1" stdDeviation="1"/>
+            <feOffset dy="5" in="shadowBlurInner1" result="shadowOffsetInner1"/>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" k2="-1" k3="1" operator="arithmetic" result="shadowInnerInner1"/>
+            <feColorMatrix in="shadowInnerInner1" values="0 0 0 0 0.321818002 0 0 0 0 0.090449635 0 0 0 0 0.592952806 0 0 0 1 0"/>
+        </filter>
+        <path id="slot_coin_j" d="M61.71 123.9h27.228c1.79 0 3.945-.054 6.465-.164 4.858-.254 7.287-2.075 7.287-5.46 0-1.93-.968-4.24-2.904-6.934-.803-1.165-2.757-3.586-5.862-7.262-3.214-3.932-5.35-6.971-6.41-9.119-1.096-2.257-1.644-4.696-1.644-7.317 0-2.875.603-5.696 1.808-8.463 1.206-2.766 2.922-5.333 5.15-7.699 2.301-2.402 5.022-4.532 8.164-6.388 6.318-3.713 12.381-5.57 18.189-5.57 2.849 0 5.277.437 7.286 1.31 2.046.91 3.634 2.167 4.767 3.768 1.095 1.638 1.643 3.531 1.643 5.679 0 2.038-.584 4.55-1.753 7.535a115.051 115.051 0 0 1-3.506 7.644l-.822 1.638c-.877 1.711-1.644 2.84-2.301 3.386-.694.582-1.607.873-2.74.873-1.314 0-2.392-.418-3.232-1.255-.876-.838-1.315-1.802-1.315-2.894 0-.801.201-1.693.603-2.676l.931-2.02 1.59-3.604c1.022-2.33 1.734-4.04 2.136-5.132.329-.947.493-1.766.493-2.458 0-1.892-1.242-2.839-3.726-2.839-2.337 0-5.095.674-8.272 2.02-3.397 1.42-6.155 3.04-8.273 4.86-4.42 3.604-6.63 7.335-6.63 11.193 0 1.42.402 2.876 1.206 4.369.767 1.565 2.21 3.567 4.328 6.006 3.25 3.858 5.57 6.789 6.958 8.79 1.534 2.258 2.612 4.278 3.232 6.061.658 1.893.987 3.84.987 5.843 0 3.021-.64 5.66-1.918 7.917-1.278 2.293-3.196 4.114-5.753 5.46-1.241.692-2.447 1.183-3.615 1.475-1.17.29-2.612.51-4.329.655-1.607.145-3.98.218-7.122.218h-29.42c-2.63 0-4.42-.273-5.37-.819-1.35-.8-2.026-1.984-2.026-3.549 0-2.038.931-3.513 2.794-4.423.986-.436 2.885-.655 5.698-.655z"/>
+        <filter id="slot_coin_k" width="105%" height="105.4%" x="-2.5%" y="-2.7%" filterUnits="objectBoundingBox">
+            <feGaussianBlur in="SourceAlpha" result="shadowBlurInner1" stdDeviation=".5"/>
+            <feOffset dy="3" in="shadowBlurInner1" result="shadowOffsetInner1"/>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" k2="-1" k3="1" operator="arithmetic" result="shadowInnerInner1"/>
+            <feColorMatrix in="shadowInnerInner1" values="0 0 0 0 0.117647059 0 0 0 0 0.0509803922 0 0 0 0 0.266666667 0 0 0 1 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g transform="translate(36 29)">
+            <use fill="#000" filter="url(#slot_coin_a)" xlink:href="#slot_coin_b"/>
+            <use fill="url(#slot_coin_c)" xlink:href="#slot_coin_b"/>
+        </g>
+        <g transform="translate(36 29)">
+            <use fill="#000" filter="url(#slot_coin_d)" xlink:href="#slot_coin_e"/>
+            <use fill="url(#slot_coin_f)" xlink:href="#slot_coin_e"/>
+        </g>
+        <g transform="translate(36 29)">
+            <use fill="url(#slot_coin_g)" xlink:href="#slot_coin_h"/>
+            <use fill="#000" filter="url(#slot_coin_i)" xlink:href="#slot_coin_h"/>
+        </g>
+        <g transform="translate(36 29)">
+            <use fill="#562CA7" xlink:href="#slot_coin_j"/>
+            <use fill="#000" filter="url(#slot_coin_k)" xlink:href="#slot_coin_j"/>
+        </g>
+    </g>
+</svg>

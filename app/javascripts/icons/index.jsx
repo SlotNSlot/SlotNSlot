@@ -35,6 +35,7 @@ const ICONS = {
   COMBINED_SHAPE_FILL: require('./combined-shape-2.svg'),
   SLOT_PLUS_BUTTON: require('./slot-plus-button.svg'),
   PLAY_BUTTON: require('./play-button.svg'),
+  SLOT_COIN: require('./slot-coin.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

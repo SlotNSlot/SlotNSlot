@@ -1,0 +1,39 @@
+.welcomeContainer {
+  display: flex;
+  height: 470px;
+  background-color: #1a1922;
+  padding-top: 75px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.innerContainer {
+  max-width: 940px;
+  text-align: center;
+
+  svg {
+    width: 150px;
+    height: 150px;
+  }
+
+  .title {
+    font-size: 32px;
+    letter-spacing: 0.3px;
+    color: #fff;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    font-weight: 300;
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  .content {
+    font-size: 24px;
+    letter-spacing: 0.2px;
+    font-weight: 300;
+    color: #9494ac;
+  }
+}

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import UpdateBlocker from './updateBlocker';
 import About from '../components/about';
 import Slot from '../components/slot';
+import ContributePage from '../components/contributePage';
 // actions
 import { setAccount } from './actions';
 // styles
@@ -31,6 +32,7 @@ class Root extends React.PureComponent {
         <UpdateBlocker location={location}>
           <Switch>
             <Route path="/slot" component={Slot} />
+            <Route path="/contribute" component={ContributePage} />
             <Route component={About} />
           </Switch>
         </UpdateBlocker>

@@ -6,7 +6,7 @@ const MakeAndPlayContainer = () =>
   <div className={styles.makeAndPlayContainer}>
     <div className={styles.innerContainer}>
       <div className={styles.makeAndPlayTitle}>
-        Why do you always <span>PLAY</span>? Now <span>MAKE</span> your own with SlotNSlot !
+        Tired of just <span>PLAY</span>ing? Now <span>MAKE</span> your own with SlotNSlot !
       </div>
       <div className={styles.makeAndPlayContext}>
         <img src="https://d1qh7kd1bid312.cloudfront.net/about/Browser_content.png" alt="browser" />
@@ -16,7 +16,7 @@ const MakeAndPlayContainer = () =>
             <div className={styles.bubbleTitle}>Make Slot</div>
             <div className={styles.bubbleText}>
               -Easiest way in the world to make your slots!<br />-Mine ETH through slots!<br />-You have control over
-              your slots' hit rates!
+              your slot settings!
             </div>
           </div>
         </div>

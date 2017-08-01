@@ -28,11 +28,19 @@
     background-color: #efeef5;
     padding: 40px;
     color: #1a1922;
+
+    @media (max-width: 800px) {
+      padding: 25px;
+    }
   }
 
   .content.hardCap {
     text-align: center;
     font-size: 41px;
+
+    @media (max-width: 800px) {
+      font-size: 28px;
+    }
   }
 
   .content.price {
@@ -40,11 +48,21 @@
     padding-right: 130px;
     font-size: 24px;
     line-height: 1.75;
+
+    @media (max-width: 800px) {
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 18px;
+    }
   }
 
   .content.protection {
     font-size: 21px;
     line-height: 1.53;
+
+    @media (max-width: 800px) {
+      font-size: 18px;
+    }
   }
 }
 
@@ -71,6 +89,13 @@
       letter-spacing: 0.2px;
       span {
         font-size: 30px;
+      }
+
+      @media (max-width: 800px) {
+        font-size: 16px;
+        span {
+          font-size: 21px;
+        }
       }
     }
   }

@@ -7,7 +7,8 @@ $top-navbar-height: 75px;
   right: 0;
   height: $top-navbar-height;
   z-index: 20;
-  background-color: und-color 250ms cubic-bezier(0.4, 0.0, 1, 1);
+  background-color: #222135;
+  transition: background-color 250ms cubic-bezier(0.4, 0.0, 1, 1);
 }
 
 .navbarContainer {
@@ -23,11 +24,10 @@ $top-navbar-height: 75px;
   height: $top-navbar-height;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .rightNavItem {
-  display: inline-block;
-  vertical-align: top;
   font-size: 16px;
   text-align: center;
   color: #fff;
@@ -37,10 +37,9 @@ $top-navbar-height: 75px;
   .item {
     display: inline-block;
     vertical-align: top;
-    line-height: $top-navbar-height;
     font-weight: 300;
+    padding: 15px 0;
     width: 96px;
-    height: 100%;
     cursor: pointer;
 
     &:hover {
@@ -77,8 +76,16 @@ $top-navbar-height: 75px;
 
   @media (max-width: 800px) {
     font-size: 12px;
-    width: 72px;
     margin-right: 0;
+
+    .item {
+      width: initial;
+      padding: 1em;
+    }
+
+    .crowdsaleBtn {
+      width: 100px;
+    }
   }
 }
 

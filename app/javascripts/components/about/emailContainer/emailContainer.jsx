@@ -14,7 +14,7 @@ class EmailContainer extends React.PureComponent {
               The World First online <span>Slot Machine Platform</span>, running on <span>Ethereum</span>
             </div>
             <div className={styles.subTitle}>
-              Make <span>your own Slots</span>! Play others and ruin them!
+              Make <span>your own Slots</span>! Play on others and ruin them!
             </div>
 
             <a href="https://youtu.be/9TtOFJ2InH8" target="_blank" className={styles.watchDemoBtn}>

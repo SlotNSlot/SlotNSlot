@@ -17,7 +17,7 @@ class EmailContainer extends React.PureComponent {
               Make <span>your own Slots</span>! Play others and ruin them!
             </div>
 
-            <a href="https://youtu.be/wNYFsxINSa8" target="_blank" className={styles.watchDemoBtn}>
+            <a href="https://youtu.be/9TtOFJ2InH8" target="_blank" className={styles.watchDemoBtn}>
               <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
               Watch Demo
             </a>

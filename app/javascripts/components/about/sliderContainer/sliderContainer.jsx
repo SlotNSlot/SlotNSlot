@@ -9,7 +9,7 @@ const sliderContainer = () =>
         <div className={styles.logoTitle}>
           <Icon icon="SLOT_N_SLOT_LOGO_NON_SHADOW" />
         </div>
-        <div className={styles.subTitle}>It's also on Mobile</div>
+        <div className={styles.subTitle}>Also on Mobile</div>
         <a
           className={styles.googlePlayLink}
           onClick={() => {
@@ -20,7 +20,7 @@ const sliderContainer = () =>
         </a>
       </div>
       <div className={styles.rightBlock}>
-        <div className={styles.title}>Play from everywhere</div>
+        <div className={styles.title}>Make & Play Everywhere</div>
         <div className={styles.context}>
           With mobile support, you can enjoy SlotNSlot anywhere. <br />
           Make&Play both works perfectly same as Web.

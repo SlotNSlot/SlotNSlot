@@ -15,7 +15,7 @@ const DemoContainer = () =>
         </div>
       </div>
 
-      <a href="https://youtu.be/wNYFsxINSa8" target="_blank">
+      <a href="https://youtu.be/9TtOFJ2InH8" target="_blank">
         <div className={styles.videoBox}>
           <Icon icon="PLAY_BUTTON" />
           <img src="https://d1qh7kd1bid312.cloudfront.net/about/macbook.png" alt="demo_image" />

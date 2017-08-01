@@ -12,7 +12,7 @@ const RoadmapContainer = () =>
           <div className={styles.bubbleContext}>
             <div className={styles.bubbleTitle}>Q1-2 2017</div>
             <div className={styles.bubbleText}>
-              Dev initiative<br />Core development
+              Project Initiative<br />Concept Design
             </div>
           </div>
         </div>
@@ -20,7 +20,7 @@ const RoadmapContainer = () =>
           <Icon className={styles.bubbleImage} icon="EVENT_BUBBLE_UP" />
           <div className={styles.bubbleContext}>
             <div className={styles.bubbleTitle}>Q4 2017</div>
-            <div className={styles.bubbleText}>Beta release</div>
+            <div className={styles.bubbleText}>Beta Release</div>
           </div>
         </div>
         <div className={`${styles.roadmapBubble} ${styles.roadmapBubbleDown}`}>
@@ -28,7 +28,7 @@ const RoadmapContainer = () =>
           <div className={styles.bubbleContext}>
             <div className={styles.bubbleTitle}>Q3 2017</div>
             <div className={styles.bubbleText}>
-              Prototype release<br />Crowdsale
+              Prototype *Showcase*<br />Crowdsale
             </div>
           </div>
         </div>
@@ -37,20 +37,11 @@ const RoadmapContainer = () =>
           <div className={styles.bubbleContext}>
             <div className={styles.bubbleTitle}>Q1 2018</div>
             <div className={styles.bubbleText}>
-              Official release<br />& dev of further features
+              Official Release<br />& Further Themes&Features
             </div>
           </div>
         </div>
-        {/*<div className={styles.roadmapBubble}>roadmapBubble</div>
-        <div className={styles.roadmapBubble}>roadmapBubble</div>
-        <div className={styles.roadmapBubble}>roadmapBubble</div>*/}
       </div>
     </div>
   </div>;
 export default RoadmapContainer;
-
-// EVENT_BUBBLE_UP
-// EVENT_BUBBLE_DOWN
-// http://slot-n-slot-assets.s3.amazonaws.com/about/time-line.png
-//  <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
-// import Icon from '../../../icons';

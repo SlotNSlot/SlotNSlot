@@ -13,7 +13,7 @@ const SlotListItem = ({ slotContract }) => {
     >
       <li className={`${styles.slotListItem} ${mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied}`}>
         <h2 className={styles.itemTitle}>
-          ✨<span>{slotContract.get('contract').address}</span>✨
+          ✨<span>{slotContract.get('meta').get('slotName')}</span>✨
         </h2>
         <div className={styles.infoWrapper}>
           <span className={styles.itemInfo}>

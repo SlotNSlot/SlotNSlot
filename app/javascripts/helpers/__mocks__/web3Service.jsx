@@ -32,14 +32,14 @@ class Web3Service {
     return Promise.resolve(3);
   }
 
-  getSlotMachineAddressFromProvider(providerAddress, index) {
-    if (providerAddress === 'forceFail') {
+  getSlotMachineAddressFromBanker(bankerAddress, index) {
+    if (bankerAddress === 'forceFail') {
       return Promise.reject();
     }
     return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
   }
 
-  getTheNumberOfProviders() {
+  getTheNumberOfBankers() {
     return Promise.resolve(3);
   }
 
@@ -64,7 +64,7 @@ class Web3Service {
     });
   }
 
-  getProviderAddress(index) {
+  getBankerAddress(index) {
     return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
   }
 

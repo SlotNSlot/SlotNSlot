@@ -13,12 +13,12 @@ const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const TOTAL_ROUND = ROUND_PER_CHAIN * SHA_CHAIN_NUM + 1;
 
-const SLOT_MANAGER_ADDRESS = '0xf97653893b74650fa8cbf6274f678fc3eb345759';
+const SLOT_MANAGER_ADDRESS = '0xf0c9118ba9d25dc6988fab0a4b6121fda8a476d8';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0x9b8d9840f8068a384e7d28d651270fd757cfc66aa38a41d9b9d3711f2c9d7cad',
-  providerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
+  bankerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
   gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
-  providerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
+  bankerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
   playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
   gameConfirmed: '0xb654f511efe7e8c482d791daeb53cbf4e4a036fcdd584b1c73fcde55b41962ad',
 };
@@ -93,7 +93,7 @@ class Web3Service {
 
   getNumOfSlotMachine(account) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getNumofSlotMachine(account, (err, result) => {
+      this.slotStorageContract.getNumOfSlotMachine(account, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -104,21 +104,21 @@ class Web3Service {
     });
   }
 
-  getTheNumberOfProviders() {
+  getTheNumberOfBankers() {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getNumofProvider((err, TheNumOfProvider) => {
+      this.slotStorageContract.getNumOfBanker((err, TheNumOfBanker) => {
         if (err) {
           reject(err);
         } else {
-          resolve(TheNumOfProvider);
+          resolve(TheNumOfBanker);
         }
       });
     });
   }
 
-  async getProviderAddress(index) {
+  async getBankerAddress(index) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.provideraddress(index, (err, result) => {
+      this.slotStorageContract.bankeraddress(index, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -148,7 +148,7 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineAddressFromProvider(account, index) {
+  async getSlotMachineAddressFromBanker(account, index) {
     return new Promise((resolve, reject) => {
       this.slotStorageContract.getSlotMachine(account, index, (err, result) => {
         if (err) {
@@ -172,13 +172,14 @@ class Web3Service {
     return parseFloat(this.web3.fromWei(weiValue, 'ether').valueOf(), 10);
   }
 
-  async createSlotMachine({ account, decider, minBet, maxBet, maxPrize }) {
+  async createSlotMachine({ account, decider, minBet, maxBet, maxPrize, slotName }) {
     return await new Promise((resolve, reject) => {
       this.slotManagerContract.createSlotMachine(
         decider,
         this.makeWeiFromEther(parseFloat(minBet, 10)),
         this.makeWeiFromEther(parseFloat(maxBet, 10)),
         maxPrize,
+        slotName,
         {
           gas: 2200000,
           from: account,
@@ -223,9 +224,10 @@ class Web3Service {
       this.getSlotMachineBankrupt(slotMachineContract, userType),
       this.getSlotMachineMaxBet(slotMachineContract),
       this.getSlotMachineMinBet(slotMachineContract),
-      this.getSlotMachineProviderBalance(slotMachineContract),
+      this.getSlotMachineBankerBalance(slotMachineContract),
       this.getSlotMachineMaxPrize(slotMachineContract),
       this.getPlayerBalance(slotMachineContract),
+      this.getSlotName(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -235,7 +237,20 @@ class Web3Service {
     });
     return payload;
   }
-
+  getSlotName(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mName((err, slotName) => {
+        if (err) {
+          reject(err);
+        } else {
+          const paddingIndex = slotName.substring(1).indexOf('0');
+          const partSlotName = slotName.substring(0, paddingIndex + 1);
+          const asciiSlotName = this.web3.toAscii(partSlotName);
+          resolve({ infoKey: 'slotName', infoVal: asciiSlotName });
+        }
+      });
+    });
+  }
   getSlotMachineOwner(slotMachineContract, userType, myAddress) {
     return new Promise((resolve, reject) => {
       slotMachineContract.owner((err, ownerAddress) => {
@@ -349,15 +364,15 @@ class Web3Service {
     });
   }
 
-  getSlotMachineProviderBalance(slotMachineContract) {
+  getSlotMachineBankerBalance(slotMachineContract) {
     return new Promise((resolve, reject) => {
-      slotMachineContract.providerBalance((err, providerBalance) => {
+      slotMachineContract.bankerBalance((err, bankerBalance) => {
         if (err) {
           reject(err);
         } else {
           resolve({
             infoKey: 'bankRoll',
-            infoVal: providerBalance,
+            infoVal: bankerBalance,
           });
         }
       });
@@ -401,9 +416,9 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          this.getContractPendingTransaction(slotMachineContract, 'providerSeedInitialized')
+          this.getContractPendingTransaction(slotMachineContract, 'bankerSeedInitialized')
             .then(result => {
-              console.log('Success to all of the occupy slot machine step. providerSeedInitialized');
+              console.log('Success to all of the occupy slot machine step. bankerSeedInitialized');
               resolve(result);
             })
             .catch(error => {
@@ -461,9 +476,9 @@ class Web3Service {
             reject(err);
           } else {
             console.log('initGameforPlayer Over.', result);
-            this.getContractPendingTransaction(slotMachineContract, 'providerSeedSet')
+            this.getContractPendingTransaction(slotMachineContract, 'bankerSeedSet')
               .then(result2 => {
-                console.log('providerSeedSet event txhash is ', result2.transactionHash);
+                console.log('bankerSeedSet event txhash is ', result2.transactionHash);
                 const isSetPlayerSeed = Store.get(slotMachineContractAddress).isSetPlayerSeed;
                 if (!isSetPlayerSeed.includes(result.transactionHash)) {
                   let sha;
@@ -540,7 +555,7 @@ class Web3Service {
     });
   }
 
-  makerPendingWatcher(slotMachineContracts, providerAddress) {
+  makerPendingWatcher(slotMachineContracts, bankerAddress) {
     const contractFilter = this.web3.eth.filter({
       fromBlock: 'pending',
       toBlock: 'pending',
@@ -567,10 +582,10 @@ class Web3Service {
 
             switch (topic) {
               case occupiedTopic:
-                this.watchGameOccupied(slotMachineContract.get('contract'), providerAddress);
+                this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress);
                 break;
               case initializedTopic:
-                this.watchGameInitialized(slotMachineContract.get('contract'), providerAddress, result.transactionHash);
+                this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result.transactionHash);
                 break;
               default:
                 break;
@@ -581,7 +596,7 @@ class Web3Service {
     });
   }
 
-  async watchGameOccupied(slotMachineContract, providerAddress) {
+  async watchGameOccupied(slotMachineContract, bankerAddress) {
     const slotMachineContractAddress = slotMachineContract.address;
     const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
 
@@ -599,7 +614,7 @@ class Web3Service {
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
 
-      slotMachineContract.initProviderSeed(shaArr, { from: providerAddress, gas: 2200000 }, (err, result) => {
+      slotMachineContract.initBankerSeed(shaArr, { from: bankerAddress, gas: 2200000 }, (err, result) => {
         if (err) {
           console.error(err);
         } else {
@@ -611,7 +626,7 @@ class Web3Service {
     }
   }
 
-  async watchGameInitialized(slotMachineContract, providerAddress, txHash) {
+  async watchGameInitialized(slotMachineContract, bankerAddress, txHash) {
     const slotMachineContractAddress = slotMachineContract.address;
     const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
 
@@ -629,7 +644,7 @@ class Web3Service {
         slotGenesisInfo.round -= 1;
         slotGenesisInfo.isInitWatched.push(txHash);
       });
-      slotMachineContract.setProviderSeed(sha, chainIndex, { from: providerAddress, gas: 2200000 }, (err, result) => {
+      slotMachineContract.setBankerSeed(sha, chainIndex, { from: bankerAddress, gas: 2200000 }, (err, result) => {
         if (err) {
           console.error(err);
         } else {

@@ -15,12 +15,12 @@ const TOTAL_ROUND = ROUND_PER_CHAIN * SHA_CHAIN_NUM + 1;
 
 const SLOT_MANAGER_ADDRESS = '0xf0c9118ba9d25dc6988fab0a4b6121fda8a476d8';
 const SLOT_TOPICS_ENCODED = {
-  gameOccupied: '0x9b8d9840f8068a384e7d28d651270fd757cfc66aa38a41d9b9d3711f2c9d7cad',
-  bankerSeedInitialized: '0x8d0bdfd21650f27342875e80b127c25cb3ef113b3a66e33d5a43a24e3596ae54',
-  gameInitialized: '0x27d3264e629ae25e7fe90a9682c7996faf1f7e2ebd4811ab0e48d35a127395c3',
-  bankerSeedSet: '0xf469f6de5027a0eedc080d2d6864547d375511617263a74cdb7b5c6ddb03463b',
-  playerSeedSet: '0x5aa65fdde29ba23c3f65a2503d0d12a3ab705ec0716306202a4c467bb9af15cb',
-  gameConfirmed: '0xb654f511efe7e8c482d791daeb53cbf4e4a036fcdd584b1c73fcde55b41962ad',
+  gameOccupied: '0xa8594317be29e78728fb10fbf57b1f8becff7bc83fa4639b9c3b0a4c965f9629',
+  bankerSeedInitialized: '0xa4338f9ae2970a5aa65035a4c9fb88da1cd0940e3df6fd42874bb3d862806972',
+  gameInitialized: '0x8ee0721a8192db672d90903b2f3f43a008072693b6f3bd23b10edd70a3140e65',
+  bankerSeedSet: '0x547c0210f25e72bdace62c858f92124df96c0e823422964d37c3c44b9b27da21',
+  playerSeedSet: '0x7fdcf2e3788a1693e58a2e3143f286e116767708d83f2a2ae8eb77d34322050e',
+  gameConfirmed: '0x61b7ea8f4e4be4f8752a99f6a292c9f4965d9527be512333e62b1fa8f82ad430',
 };
 
 Store.addPlugin(updatePlugin);

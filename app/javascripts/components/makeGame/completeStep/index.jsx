@@ -95,7 +95,10 @@ class MakeGameCompleteStep extends React.PureComponent {
 
     dispatch(setSlotName(e.currentTarget.value));
   }
-
+  getStringByte(s, b, i, c) {
+    for (b = i = 0; (c = s.charCodeAt(i++)); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
+    return b;
+  }
   makeSlotMachine() {
     const { dispatch, rootState, makeGameState } = this.props;
 
@@ -110,7 +113,12 @@ class MakeGameCompleteStep extends React.PureComponent {
     if (!account || !makeGameState.get('hitRatio') > 0 || !minBet || !maxBet) {
       return;
     }
-
+    // for slotMachineAPI 0.21
+    const stringByteLength = this.getStringByte(slotName);
+    if (stringByteLength > 16) {
+      alert('slotName has to be under 16 bytes');
+      return;
+    }
     const makeGameParams = {
       account,
       minBet,

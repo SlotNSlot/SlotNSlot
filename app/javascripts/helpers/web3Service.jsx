@@ -13,14 +13,14 @@ const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const TOTAL_ROUND = ROUND_PER_CHAIN * SHA_CHAIN_NUM + 1;
 
-const SLOT_MANAGER_ADDRESS = '0xf0c9118ba9d25dc6988fab0a4b6121fda8a476d8';
+const SLOT_MANAGER_ADDRESS = '0x8e560f068c951a7642639e1af7af10ee036cc6eb';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0xa8594317be29e78728fb10fbf57b1f8becff7bc83fa4639b9c3b0a4c965f9629',
   bankerSeedInitialized: '0xa4338f9ae2970a5aa65035a4c9fb88da1cd0940e3df6fd42874bb3d862806972',
-  gameInitialized: '0x8ee0721a8192db672d90903b2f3f43a008072693b6f3bd23b10edd70a3140e65',
-  bankerSeedSet: '0x547c0210f25e72bdace62c858f92124df96c0e823422964d37c3c44b9b27da21',
-  playerSeedSet: '0x7fdcf2e3788a1693e58a2e3143f286e116767708d83f2a2ae8eb77d34322050e',
-  gameConfirmed: '0x61b7ea8f4e4be4f8752a99f6a292c9f4965d9527be512333e62b1fa8f82ad430',
+  gameInitialized: '0xb7f32217976898f350090cced7da439b6a1de2d176c3895f4cf388c6a9388190',
+  bankerSeedSet: '0x05157405ea453181cba290132a142d488a688a03f0b08869ca47c88a0cbba8b5',
+  playerSeedSet: '0xee65ec46c8744067af9955308ee9958ab02a5882e505b3b06e3e4e50cada6014',
+  gameConfirmed: '0x1368b5893c84709f55237ada3ba22400bf115786939fd504096b5c8ad20d5d63',
 };
 
 Store.addPlugin(updatePlugin);
@@ -118,7 +118,7 @@ class Web3Service {
 
   async getBankerAddress(index) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.bankeraddress(index, (err, result) => {
+      this.slotStorageContract.bankerAddress(index, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);

@@ -90,6 +90,7 @@
     "dependencies": {
         "axios": "^0.16.2",
         "babel-runtime": "^6.23.0",
+        "big.js": "^3.1.3",
         "bignumber.js": "^4.0.2",
         "bootstrap": "^4.0.0-alpha.6",
         "has-flag": "^2.0.0",

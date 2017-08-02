@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import shuffle from 'lodash.shuffle';
+import Big from 'big.js'; // for arbitrary-precision decimal arithmetic.
 import Toast from '../../helpers/notieHelper';
 
 const ENTIRE_REEL_COUNT = 5;
@@ -302,7 +303,7 @@ export default class SlotGame {
       if (this.yourStake !== undefined) this.yourStakeText.text = `${this.yourStake} ETH`;
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
       if (this.lineNum !== undefined && this.betSize !== undefined)
-        this.betAmountText.text = this.betSize * this.lineNum;
+        this.betAmountText.text = this.betSize.times(this.lineNum);
       if (this.bigWinContainer.visible) {
         this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
         this.bigWinContainer.scale.y += 0.005 * this.bigWinPopping;
@@ -481,13 +482,12 @@ export default class SlotGame {
     }
   }
   async stopSpin(slotResult) {
-    const calculateResult = this.calculateSlot(slotResult);
     if (this.gameState === STATE_SPINNING) {
+      const calculateResult = this.calculateSlot(slotResult);
       if (calculateResult === 'BIG_WIN') {
         this.drawBigWin();
         return;
       }
-      this.gameState = STATE_STOPPING;
       this.slowingDistance = new Array(ENTIRE_REEL_COUNT * 2).fill(SLOWING_DISTANCE);
       await this.changeSlot();
       const valid = await this.checkValidity(this.slotLineInfo);
@@ -495,6 +495,7 @@ export default class SlotGame {
         this.drawBigWin();
         return;
       }
+      this.gameState = STATE_STOPPING;
       for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
         await this.stopReel(i);
       }
@@ -571,15 +572,16 @@ export default class SlotGame {
     const lineCaseArr = [];
     const duplicatedObj = {};
     const payLineInfos = [];
+
     for (let i = 0; i < PROBABILITY_VALUE_TABLE.length - 1; i += 1) {
       // Prize has to be selected by reverse order.
-      const prize = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i];
+      const prize = Big(this.betSize * PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - i]);
       if (sumPrize >= prize) {
         const prizeNum = Math.floor(sumPrize / prize);
         for (let j = 0; j < prizeNum; j += 1) {
           lineCaseArr.push(i);
         }
-        sumPrize -= prizeNum * prize;
+        sumPrize = sumPrize.minus(prize.times(prizeNum));
       }
     }
     for (let i = 0; i < lineCaseArr.length; i += 1) {
@@ -628,19 +630,19 @@ export default class SlotGame {
   }
   checkValidity(slotLineInfo) {
     return new Promise(resolve => {
-      let calculatedMoney = 0;
+      let calculatedMoney = Big(0);
       const calculatedLines = [];
       for (let i = 0; i < this.lineNum; i += 1) {
         const nowLine = WIN_LINE[i];
-        const slotStack = [];
+        const slotQueue = [];
         for (let j = 0; j < ENTIRE_REEL_COUNT; j += 1) {
           const slotY = nowLine[j];
-          slotStack.push(slotLineInfo[j][slotY]);
+          slotQueue.push(slotLineInfo[j][slotY]);
         }
-        const symbol = slotStack.shift()[0];
+        const symbol = slotQueue.shift()[0];
         let length = 1;
-        while (slotStack.length !== 0) {
-          const queueSymbol = slotStack.shift()[0];
+        while (slotQueue.length !== 0) {
+          const queueSymbol = slotQueue.shift()[0];
           if (symbol === queueSymbol) {
             length += 1;
           } else {
@@ -659,8 +661,8 @@ export default class SlotGame {
                   length: lineCase.length,
                 };
                 calculatedLines.push(lineCaseObj);
-                const price = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - j];
-                calculatedMoney += price;
+                const price = this.betSize.times(PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - j]);
+                calculatedMoney = calculatedMoney.plus(price);
                 found = true;
                 break;
               }
@@ -669,14 +671,14 @@ export default class SlotGame {
           }
         }
       }
-      if (calculatedMoney === this.winMoney) resolve(true);
+      if (calculatedMoney.eq(this.winMoney)) resolve(true);
       resolve(false);
     });
   }
   calculateSlot(sumPrize) {
     const lineNum = this.lineNum;
     this.winMoney = sumPrize;
-    if (sumPrize === 0) {
+    if (sumPrize.eq(0)) {
       // Earn nothing.
       return 0;
     }
@@ -911,11 +913,10 @@ export default class SlotGame {
       let randomNumString;
       for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
         for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
-          randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-          randomNumString = randomNum.toString();
           do {
             randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-          } while (avoidSymbolArr.indexOf(randomNum) !== -1);
+            randomNumString = randomNum.toString();
+          } while (avoidSymbolArr.indexOf(randomNumString) !== -1);
           const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
           // Save Slot Infos for avoiding inconsistency.
           // When reelNum is [0, 1, 2, 3, 4] and idx is [1, 2, 3]
@@ -973,7 +974,7 @@ export default class SlotGame {
           for (let j = 0; j < lineLength; j += 1) {
             const lineY = WIN_LINE[lineNum][j];
             this.newReelGroup[j * 2].children[lineY + 1].textures = this.symbols[lineSymbol];
-            this.slotLineInfo[j][lineY] = '*'; // It means have to be not changed.
+            this.slotLineInfo[j][lineY] = `${lineSymbol}*`; // It means have to be not changed.
           }
         }
         // Second, slot should have none of Win Lines except drawingLines .
@@ -981,7 +982,7 @@ export default class SlotGame {
         let i = 0;
         while (i < 3) {
           const symbolNum = this.slotLineInfo[2][i];
-          if (symbolNum === '*') {
+          if (symbolNum[1] === '*') {
             // Pass
             i += 1;
           } else if (secondReelInfos.indexOf(symbolNum) === -1 && avoidSymbolArr.indexOf(symbolNum) === -1) {
@@ -991,7 +992,7 @@ export default class SlotGame {
             // have to Change
             randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
             this.newReelGroup[4].children[i + 1].textures = this.symbols[randomNum];
-            this.slotLineInfo[2][i] = randomNum.toString;
+            this.slotLineInfo[2][i] = randomNum.toString();
           }
         }
       }
@@ -1099,9 +1100,9 @@ export default class SlotGame {
     betMinusBtn.on('pointerdown', () => {
       if (this.gameState !== STATE_WAITING) return;
       if (this.betSize - this.betUnit >= this.minBet) {
-        this.setBetSize(this.betSize - this.betUnit);
+        this.setBetSize(this.betSize.minus(this.betUnit));
       } else {
-        this.setBetSize(this.minBet);
+        this.setBetSize(Big(this.minBet));
       }
     });
     betMinusBtn.endFill();
@@ -1114,9 +1115,9 @@ export default class SlotGame {
     betPlusBtn.on('pointerdown', () => {
       if (this.gameState !== STATE_WAITING) return;
       if (this.betSize + this.betUnit <= this.maxBet) {
-        this.setBetSize(this.betSize + this.betUnit);
+        this.setBetSize(this.betSize.plus(this.betUnit));
       } else {
-        this.setBetSize(this.maxBet);
+        this.setBetSize(Big(this.maxBet));
       }
     });
     betPlusBtn.endFill();

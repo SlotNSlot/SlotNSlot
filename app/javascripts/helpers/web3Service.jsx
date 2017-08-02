@@ -2,12 +2,13 @@ import Web3 from 'web3';
 import Store from 'store';
 import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
+import Big from 'big.js'; // for arbitrary-precision decimal arithmetic.
 import { USER_TYPES } from '../components/slotList/actions';
 import Toast from './notieHelper';
 
-const managerABI = require('./managerABI.json').default;
-const storageABI = require('./storageABI.json').default;
-const slotMachineABI = require('./slotMachineABI.json').default;
+const managerABI = require('./managerABI.json');
+const storageABI = require('./storageABI.json');
+const slotMachineABI = require('./slotMachineABI.json');
 
 const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
@@ -33,7 +34,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myInitializedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
@@ -169,7 +170,7 @@ class Web3Service {
   }
 
   makeEthFromWei(weiValue) {
-    return parseFloat(this.web3.fromWei(weiValue, 'ether').valueOf(), 10);
+    return Big(this.web3.fromWei(weiValue, 'ether').valueOf());
   }
 
   async createSlotMachine({ account, decider, minBet, maxBet, maxPrize, slotName }) {
@@ -284,7 +285,7 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'deposit', infoVal: result });
+          resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
         }
       });
     });
@@ -339,7 +340,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'maxBet',
-            infoVal: this.makeEthFromWei(parseInt(mMaxBet.valueOf(), 10)),
+            infoVal: this.makeEthFromWei(mMaxBet),
           });
         }
       });
@@ -354,7 +355,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'minBet',
-            infoVal: this.makeEthFromWei(parseInt(mMinBet.valueOf(), 10)),
+            infoVal: this.makeEthFromWei(mMinBet),
           });
         }
       });
@@ -384,7 +385,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'bankRoll',
-            infoVal: bankerBalance,
+            infoVal: this.makeEthFromWei(bankerBalance),
           });
         }
       });
@@ -536,7 +537,8 @@ class Web3Service {
           // It because the result combined with 2 uint format data.
           const uintResult = result.data.substring(0, 66);
           const weiResult = this.web3.toDecimal(`${uintResult}`);
-          resolve(weiResult);
+          const ethResult = this.makeEthFromWei(weiResult);
+          resolve(ethResult);
         })
         .catch(error => {
           console.log('getSlotResult error is ', error);

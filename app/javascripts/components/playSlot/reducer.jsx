@@ -51,7 +51,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.SET_DEPOSIT: {
-      return state.set('deposit', action.payload.weiValue);
+      return state.set('deposit', action.payload.ethValue);
     }
 
     case ACTION_TYPES.SET_OCCUPIED_STATE: {
@@ -63,10 +63,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
         return currentState
           .set('isLoading', false)
           .set('hasError', false)
-          .set('minBet', parseFloat(action.payload.minBet))
-          .set('betSize', parseFloat(action.payload.minBet))
-          .set('maxBet', parseFloat(action.payload.maxBet))
-          .set('betUnit', parseFloat(action.payload.minBet))
+          .set('minBet', action.payload.minBet) // Big Number
+          .set('betSize', action.payload.minBet) // Big Number
+          .set('maxBet', action.payload.maxBet) // Big Number
+          .set('betUnit', action.payload.minBet) // Big Number
           .set('bankRoll', action.payload.bankRoll) // Big Number
           .set('deposit', action.payload.deposit) // Big Number
           .set('slotMachineContract', action.slotMachineContract)

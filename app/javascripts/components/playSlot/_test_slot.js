@@ -154,8 +154,7 @@ class SlotGameTest {
     const bigWinCases = {};
     const notValidatedCases = {};
     for (let i = 0; i < testNum; i += 1) {
-      // const slotResult = this.makeRandomPrize(this.lineNum);
-      const slotResult = 40;
+      const slotResult = this.makeRandomPrize(this.lineNum);
       const drawResult = this.calculateSlot(slotResult);
       switch (drawResult) {
         case '':
@@ -196,15 +195,15 @@ class SlotGameTest {
     const calculatedLines = [];
     for (let i = 0; i < this.lineNum; i += 1) {
       const nowLine = WIN_LINE[i];
-      const slotStack = [];
+      const slotQueue = [];
       for (let j = 0; j < ENTIRE_REEL_COUNT; j += 1) {
         const slotY = nowLine[j];
-        slotStack.push(slotLineInfo[j][slotY]);
+        slotQueue.push(slotLineInfo[j][slotY]);
       }
-      const symbol = slotStack.shift()[0];
+      const symbol = slotQueue.shift()[0];
       let length = 1;
-      while (slotStack.length !== 0) {
-        const queueSymbol = slotStack.shift()[0];
+      while (slotQueue.length !== 0) {
+        const queueSymbol = slotQueue.shift()[0];
         if (symbol === queueSymbol) {
           length += 1;
         } else {

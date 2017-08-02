@@ -2,7 +2,6 @@ import Web3 from 'web3';
 import Store from 'store';
 import updatePlugin from 'store/plugins/update';
 import EnvChecker from './envChecker';
-import Big from 'big.js'; // for arbitrary-precision decimal arithmetic.
 import { USER_TYPES } from '../components/slotList/actions';
 import Toast from './notieHelper';
 
@@ -170,7 +169,7 @@ class Web3Service {
   }
 
   makeEthFromWei(weiValue) {
-    return Big(this.web3.fromWei(weiValue, 'ether').valueOf());
+    return this.web3.toBigNumber(this.web3.fromWei(weiValue, 'ether').valueOf());
   }
 
   async createSlotMachine({ account, decider, minBet, maxBet, maxPrize, slotName }) {

@@ -19,7 +19,7 @@ const SlotListItem = ({ slotContract }) => {
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Total Stake</div>
             <div className={styles.infoValue}>
-              {`${weiToEther(slotContract.get('meta').get('bankRoll'))} ETH`}
+              {`${slotContract.get('meta').get('bankRoll')} ETH`}
             </div>
           </span>
           <span className={styles.itemInfo}>

@@ -60,7 +60,7 @@ class MakeGameCompleteStep extends React.PureComponent {
           <span className={styles.slotNameInputLabel}>SLOT NAME</span>
           <input
             onChange={e => {
-              this.handleSlotnameChange(e);
+              this.handleSlotNameChange(e);
             }}
             type="test"
             className={styles.slotNameInput}
@@ -90,7 +90,7 @@ class MakeGameCompleteStep extends React.PureComponent {
     );
   }
 
-  handleSlotnameChange(e) {
+  handleSlotNameChange(e) {
     const { dispatch } = this.props;
 
     dispatch(setSlotName(e.currentTarget.value));

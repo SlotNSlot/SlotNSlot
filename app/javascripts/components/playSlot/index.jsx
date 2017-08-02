@@ -49,8 +49,8 @@ class PlaySlot extends React.PureComponent {
       betUnit: playSlotState.get('betUnit'),
       minBet: playSlotState.get('minBet'),
       maxBet: playSlotState.get('maxBet'),
-      bankRoll: Web3Service.makeEthFromWei(playSlotState.get('bankRoll')),
-      yourStake: Web3Service.makeEthFromWei(playSlotState.get('deposit')),
+      bankRoll: playSlotState.get('bankRoll'),
+      yourStake: playSlotState.get('deposit'),
       setBetSize: this.setBetSize.bind(this),
       setLineNum: this.setLineNum.bind(this),
       playGame: this.playGame.bind(this),
@@ -68,8 +68,8 @@ class PlaySlot extends React.PureComponent {
       this.slotGame.maxBet = playSlotState.get('maxBet');
       this.slotGame.minBet = playSlotState.get('minBet');
       this.slotGame.hasError = playSlotState.get('hasError');
-      this.slotGame.bankRoll = Web3Service.makeEthFromWei(playSlotState.get('bankRoll'));
-      this.slotGame.yourStake = Web3Service.makeEthFromWei(playSlotState.get('deposit'));
+      this.slotGame.bankRoll = playSlotState.get('bankRoll');
+      this.slotGame.yourStake = playSlotState.get('deposit');
 
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
@@ -198,16 +198,14 @@ class PlaySlot extends React.PureComponent {
       alert('Your bet amount should be under your balance');
       return;
     }
-
-    const slotMachineContract = playSlotState.get('slotMachineContract');
+    const ethValueBigNumber = Web3Service.getWeb3().toBigNumber(ethValue);
     const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
-    const weiValueBigNumber = Web3Service.getWeb3().toBigNumber(weiValue);
-
+    const slotMachineContract = playSlotState.get('slotMachineContract');
     if (playSlotState.get('isOccupied')) {
       dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
     } else {
       dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
-      dispatch(Actions.setDeposit(weiValueBigNumber));
+      dispatch(Actions.setDeposit(ethValueBigNumber));
     }
   }
 

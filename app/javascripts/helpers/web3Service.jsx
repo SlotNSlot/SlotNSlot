@@ -169,7 +169,7 @@ class Web3Service {
   }
 
   makeEthFromWei(weiValue) {
-    return parseFloat(this.web3.fromWei(weiValue, 'ether').valueOf(), 10);
+    return this.web3.toBigNumber(this.web3.fromWei(weiValue, 'ether').valueOf());
   }
 
   async createSlotMachine({ account, decider, minBet, maxBet, maxPrize, slotName }) {
@@ -284,7 +284,7 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'deposit', infoVal: result });
+          resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
         }
       });
     });
@@ -339,7 +339,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'maxBet',
-            infoVal: this.makeEthFromWei(parseInt(mMaxBet.valueOf(), 10)),
+            infoVal: this.makeEthFromWei(mMaxBet),
           });
         }
       });
@@ -354,7 +354,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'minBet',
-            infoVal: this.makeEthFromWei(parseInt(mMinBet.valueOf(), 10)),
+            infoVal: this.makeEthFromWei(mMinBet),
           });
         }
       });
@@ -384,7 +384,7 @@ class Web3Service {
         } else {
           resolve({
             infoKey: 'bankRoll',
-            infoVal: bankerBalance,
+            infoVal: this.makeEthFromWei(bankerBalance),
           });
         }
       });
@@ -536,7 +536,8 @@ class Web3Service {
           // It because the result combined with 2 uint format data.
           const uintResult = result.data.substring(0, 66);
           const weiResult = this.web3.toDecimal(`${uintResult}`);
-          resolve(weiResult);
+          const ethResult = this.makeEthFromWei(weiResult);
+          resolve(ethResult);
         })
         .catch(error => {
           console.log('getSlotResult error is ', error);

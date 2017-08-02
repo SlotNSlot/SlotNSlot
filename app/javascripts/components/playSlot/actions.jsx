@@ -29,11 +29,11 @@ export const ACTION_TYPES = {
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 };
 
-export function setDeposit(weiValue) {
+export function setDeposit(ethValue) {
   return {
     type: ACTION_TYPES.SET_DEPOSIT,
     payload: {
-      weiValue,
+      ethValue,
     },
   };
 }
@@ -166,10 +166,9 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     const playPromise = Web3Service.playSlotMachine(playInfo);
     await Promise.all([rewardPromise, playPromise])
       .then(result => {
-        const reward = result[0];
-        const betMoney = playInfo.lineNum * Web3Service.makeWeiFromEther(playInfo.betSize);
-        const ethReward = Web3Service.makeEthFromWei(reward);
-        const diffMoney = reward - betMoney;
+        const ethReward = result[0];
+        const betMoney = playInfo.lineNum * playInfo.betSize;
+        const diffMoney = ethReward.minus(betMoney);
         const transaction = {};
         stopSpinFunc(ethReward);
         dispatch({

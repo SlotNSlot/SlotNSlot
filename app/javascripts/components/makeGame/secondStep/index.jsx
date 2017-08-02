@@ -52,11 +52,11 @@ class MakeGameSecondStep extends React.PureComponent {
                   type="number"
                   step="0.001"
                   min={0}
-                  max={parseFloat(rootState.get('balance'), 10)}
+                  max={parseFloat(rootState.get('balance').valueOf(), 10)}
                   onChange={e => {
                     this.handleTotalStakeChange(e);
                   }}
-                  value={makeGameState.get('totalStake')}
+                  value={parseFloat(makeGameState.get('totalStake'), 10)}
                 />
                 <span className={styles.stakeInputUnit}>ETH</span>
               </div>
@@ -64,7 +64,7 @@ class MakeGameSecondStep extends React.PureComponent {
                 <div className={styles.leftLabel}>0</div>
                 <Slider
                   min={0}
-                  max={parseFloat(rootState.get('balance'), 10)}
+                  max={parseFloat(rootState.get('balance').valueOf(), 10)}
                   step={0.001}
                   value={parseFloat(makeGameState.get('totalStake'), 10)}
                   onChange={totalStake => {
@@ -77,7 +77,7 @@ class MakeGameSecondStep extends React.PureComponent {
                   }}
                   className={styles.rightLabel}
                 >
-                  {rootState.get('balance')}
+                  {parseFloat(rootState.get('balance').valueOf(), 10).toFixed(3)}
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@ class MakeGameSecondStep extends React.PureComponent {
 
     return (
       parseFloat(makeGameState.get('totalStake'), 10) > 0 &&
-      parseFloat(makeGameState.get('totalStake'), 10) <= parseFloat(rootState.get('balance'))
+      parseFloat(makeGameState.get('totalStake'), 10) <= parseFloat(rootState.get('balance').valueOf())
     );
   }
 

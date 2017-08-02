@@ -124,15 +124,15 @@ describe('Root Reducer', () => {
   });
 
   describe('when receive SET_SLOT_NAME type action', () => {
-    it("should set slotname state to payload's slotname", () => {
+    it("should set slotName state to payload's slotName", () => {
       mockAction = {
         type: ACTION_TYPES.SET_SLOT_NAME,
         payload: {
-          slotname: 'my slot machine',
+          slotName: 'my slot machine',
         },
       };
 
-      expect(reducer(MAKE_GAME_INITIAL_STATE, mockAction).get('slotname')).toEqual('my slot machine');
+      expect(reducer(MAKE_GAME_INITIAL_STATE, mockAction).get('slotName')).toEqual('my slot machine');
     });
   });
 });

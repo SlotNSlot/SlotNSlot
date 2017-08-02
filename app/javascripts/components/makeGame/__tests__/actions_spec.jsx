@@ -70,11 +70,11 @@ describe('MakeGame Action Creators', () => {
   });
 
   describe('setSlotName action creator', () => {
-    it('should return SET_SLOT_NAME action with proper slotname payload', () => {
+    it('should return SET_SLOT_NAME action with proper slotName payload', () => {
       expect(Actions.setSlotName('my slot name')).toEqual({
         type: Actions.ACTION_TYPES.SET_SLOT_NAME,
         payload: {
-          slotname: 'my slot name',
+          slotName: 'my slot name',
         },
       });
     });

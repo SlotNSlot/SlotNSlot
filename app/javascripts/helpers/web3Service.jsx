@@ -5,9 +5,9 @@ import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 import Toast from './notieHelper';
 
-const managerABI = require('./managerABI.json');
-const storageABI = require('./storageABI.json');
-const slotMachineABI = require('./slotMachineABI.json');
+const managerABI = require('./managerABI.json').default;
+const storageABI = require('./storageABI.json').default;
+const slotMachineABI = require('./slotMachineABI.json').default;
 
 const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;

@@ -228,6 +228,7 @@ class Web3Service {
       this.getSlotMachineMaxPrize(slotMachineContract),
       this.getPlayerBalance(slotMachineContract),
       this.getSlotName(slotMachineContract),
+      this.getDecider(slotMachineContract),
     ];
     const payload = { address: slotMachineContract.address };
     await Promise.all(promiseArr).then(infoObjArr => {
@@ -236,6 +237,17 @@ class Web3Service {
       });
     });
     return payload;
+  }
+  getDecider(slotMachineContract) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.mDecider((err, decider) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ infoKey: 'decider', infoVal: decider });
+        }
+      });
+    });
   }
   getSlotName(slotMachineContract) {
     return new Promise((resolve, reject) => {
@@ -463,7 +475,7 @@ class Web3Service {
       const chainIndex = round % 3;
       console.log('game Start! round is ', round);
       console.log('chainIndex is ', chainIndex);
-      slotMachineContract.initGameforPlayer(
+      slotMachineContract.initGameForPlayer(
         this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
         playInfo.lineNum,
         chainIndex,
@@ -521,7 +533,9 @@ class Web3Service {
     return await new Promise((resolve, reject) => {
       this.getContractPendingTransaction(slotMachineContract, 'gameConfirmed')
         .then(result => {
-          const weiResult = this.web3.toDecimal(`${result.data}`);
+          // It because the result combined with 2 uint format data.
+          const uintResult = result.data.substring(0, 66);
+          const weiResult = this.web3.toDecimal(`${uintResult}`);
           resolve(weiResult);
         })
         .catch(error => {

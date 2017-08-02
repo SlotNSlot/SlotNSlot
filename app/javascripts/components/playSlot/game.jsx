@@ -469,7 +469,7 @@ export default class SlotGame {
       this.winMoneyText.visible = true;
       this.winMoneyText.scale.set(0, 0);
       this.winMoneyText.alpha = 0;
-      this.winMoneyText.text = `+${this.winMoney}`;
+      this.winMoneyText.text = `+${this.winMoney} ETH`;
       this.ovalBackground.width = 50 * this.winMoneyText.text.length;
       this.ovalBackground.visible = true;
       this.ovalBackground.scale.set(0, 0);
@@ -501,7 +501,7 @@ export default class SlotGame {
         this.winMoneyText.visible = true;
         this.winMoneyText.scale.set(0, 0);
         this.winMoneyText.alpha = 0;
-        this.winMoneyText.text = `+${this.winMoney}`;
+        this.winMoneyText.text = `+${this.winMoney} ETH`;
         this.ovalBackground.width = 50 * this.winMoneyText.text.length;
         this.ovalBackground.visible = true;
         this.ovalBackground.scale.set(0, 0);

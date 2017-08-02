@@ -30,7 +30,9 @@ const SlotListItem = ({ slotContract }) => {
           </span>
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Hit Ratio</div>
-            <div className={styles.infoValue}>10 %</div>
+            <div className={styles.infoValue}>
+              {`${slotContract.get('meta').get('decider') / 10} %`}
+            </div>
           </span>
         </div>
         <div className={styles.footer}>

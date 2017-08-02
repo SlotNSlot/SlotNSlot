@@ -14,10 +14,8 @@ const SlotList = ({ slotContracts, isMaking = false, showMakeItem = false }) => 
   }
 
   const slotItemsNode = slotContracts.map((slotContract, index) => {
-    if (slotContract.get('meta').get('available') && !slotContract.get('meta').get('bankrupt')) {
-      console.log(slotContract.get('contract'));
-      return <SlotListItem slotContract={slotContract} key={slotContract.get('contract').address} />;
-    }
+    // TODO : remove Btn for removing bankrupted slots.
+    return <SlotListItem slotContract={slotContract} key={slotContract.get('contract').address} />;
   });
 
   return (

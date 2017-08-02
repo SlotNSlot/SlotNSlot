@@ -13,7 +13,7 @@ const SlotListItem = ({ slotContract }) => {
     >
       <li className={`${styles.slotListItem} ${mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied}`}>
         <h2 className={styles.itemTitle}>
-          ✨<span>{slotContract.get('contract').address}</span>✨
+          ✨<span>{slotContract.get('meta').get('slotName')}</span>✨
         </h2>
         <div className={styles.infoWrapper}>
           <span className={styles.itemInfo}>
@@ -30,7 +30,9 @@ const SlotListItem = ({ slotContract }) => {
           </span>
           <span className={styles.itemInfo}>
             <div className={styles.infoTitle}>Hit Ratio</div>
-            <div className={styles.infoValue}>10 %</div>
+            <div className={styles.infoValue}>
+              {`${slotContract.get('meta').get('decider') / 10} %`}
+            </div>
           </span>
         </div>
         <div className={styles.footer}>

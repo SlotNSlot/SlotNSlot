@@ -32,6 +32,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   betsData: _betsData,
   tableCategory: 0,
   slotMachineContract: null,
+  slotName: '',
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -68,7 +69,8 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
           .set('betUnit', parseFloat(action.payload.minBet))
           .set('bankRoll', action.payload.bankRoll) // Big Number
           .set('deposit', action.payload.deposit) // Big Number
-          .set('slotMachineContract', action.slotMachineContract);
+          .set('slotMachineContract', action.slotMachineContract)
+          .set('slotName', action.payload.slotName);
       });
     }
 

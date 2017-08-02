@@ -33,7 +33,7 @@ async function getSlotMachines(account, userType, myAccount = null) {
   const slotMachineContracts = [];
 
   for (let i = totalNumOfSlotMachine - 1; i >= 0; i -= 1) {
-    const slotAddress = await Web3Service.getSlotMachineAddressFromProvider(account, i);
+    const slotAddress = await Web3Service.getSlotMachineAddressFromBanker(account, i);
     slotAddresses.push(slotAddress);
   }
 
@@ -82,18 +82,18 @@ export function getAllSlotMachines(myAccount) {
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
     });
 
-    const providerAddresses = [];
-    const bigNumOfProviders = await Web3Service.getTheNumberOfProviders();
-    const numbOfProviders = parseInt(bigNumOfProviders.valueOf(), 10);
+    const bankerAddresses = [];
+    const bigNumOfBankers = await Web3Service.getTheNumberOfBankers();
+    const numbOfBankers = parseInt(bigNumOfBankers.valueOf(), 10);
 
-    for (let i = numbOfProviders - 1; i >= 0; i -= 1) {
-      const address = await Web3Service.getProviderAddress(i);
-      providerAddresses.push(address);
+    for (let i = numbOfBankers - 1; i >= 0; i -= 1) {
+      const address = await Web3Service.getBankerAddress(i);
+      bankerAddresses.push(address);
     }
 
     const promiseArr = [];
-    providerAddresses.forEach(providerAddress => {
-      promiseArr.push(getSlotMachines(providerAddress, USER_TYPES.PLAYER, myAccount));
+    bankerAddresses.forEach(bankerAddress => {
+      promiseArr.push(getSlotMachines(bankerAddress, USER_TYPES.PLAYER, myAccount));
     });
 
     await Promise.all(promiseArr)

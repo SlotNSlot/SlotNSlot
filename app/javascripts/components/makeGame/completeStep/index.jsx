@@ -82,7 +82,7 @@ class MakeGameCompleteStep extends React.PureComponent {
               this.makeSlotMachine();
             }}
             buttonText="CONFIRM"
-            disabled={!makeGameState.get('slotname')}
+            disabled={!makeGameState.get('slotName')}
             className={styles.linkButton}
           />
         </div>
@@ -105,6 +105,7 @@ class MakeGameCompleteStep extends React.PureComponent {
     const maxBet = makeGameState.get('betMaxValue');
     const maxPrize = makeGameState.get('maxPrize');
     const totalStake = makeGameState.get('totalStake');
+    const slotName = makeGameState.get('slotName');
 
     if (!account || !makeGameState.get('hitRatio') > 0 || !minBet || !maxBet) {
       return;
@@ -117,6 +118,7 @@ class MakeGameCompleteStep extends React.PureComponent {
       decider: hitRatio * 10,
       maxPrize,
       totalStake,
+      slotName,
     };
 
     dispatch(requestToMakeGame(makeGameParams));

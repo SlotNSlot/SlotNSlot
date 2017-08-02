@@ -126,7 +126,9 @@ class PlaySlot extends React.PureComponent {
       <div className={styles.playSlotSection}>
         <div className={styles.playSlotContainer}>
           <div className={styles.innerHeader}>
-            <div className={styles.slotName}>Slot Name</div>
+            <div className={styles.slotName}>
+              ✨{playSlotState.get('slotName')}✨
+            </div>
             <div className={styles.rightBtns}>
               <button
                 className={styles.helpBtn}

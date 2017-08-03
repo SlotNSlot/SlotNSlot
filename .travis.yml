@@ -2,38 +2,16 @@ sudo: required
 language: node_js
 node_js:
 - '8'
-python:
-- '2.7'
-env:
-  matrix:
-  - CXX=g++-4.8
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 branches:
   only:
   - master
-cache:
-  directories:
-  - node_modules
-before_install:
-  - npm config set spin false
-  - npm install -g npm@^4
+  - develop
 install:
-  - sudo apt-get update && sudo apt-get --assume-yes install zip unzip
-  - npm install -g truffle
   - npm install
-script:
-  - truffle compile
-before_deploy:
-  - git config credential.helper "store --file=.git/credentials"
-  - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
-#deploy:
-#  skip_cleanup: true
-#  provider: script
-#  script: if [ "$TRAVIS_BRANCH" = "master" ]; then node --max_old_space_size=3000 $(which npm) run deploy:prod; fi
-#  on:
-#    branch: master
+before_script:
+  - git config --global user.email "engineers@slotnslot.com"
+  - git config --global user.name "Travis CI"
+  - chmod +x ./scripts/travisBuild.sh
+script: ./scripts/travisBuild.sh
+after_script:
+  - sh 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/SlotNSlot/SlotNSlot.git --tags -f'

@@ -174,7 +174,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
           time: moment().format('YY.MM.DD H:mm:ss'),
           bet: `${betMoney.valueOf()} ETH`,
           result: 'success',
-          profit: `${ethReward.valueOf()} ETH`,
+          profit: `${diffMoney.valueOf()} ETH`,
         };
         stopSpinFunc(ethReward);
         dispatch({

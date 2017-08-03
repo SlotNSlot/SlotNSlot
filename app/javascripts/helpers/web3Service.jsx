@@ -256,7 +256,13 @@ class Web3Service {
           reject(err);
         } else {
           const paddingIndex = slotName.substring(1).indexOf('0');
-          const partSlotName = slotName.substring(0, paddingIndex + 1);
+          let partSlotName;
+          if (paddingIndex === -1) {
+            // If there is no margin, all data is slotName
+            partSlotName = slotName;
+          } else {
+            partSlotName = slotName.substring(0, paddingIndex + 1);
+          }
           const asciiSlotName = this.web3.toAscii(partSlotName);
           resolve({ infoKey: 'slotName', infoVal: asciiSlotName });
         }

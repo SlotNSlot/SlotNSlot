@@ -51,6 +51,7 @@ class PlaySlot extends React.PureComponent {
       maxBet: playSlotState.get('maxBet'),
       bankRoll: playSlotState.get('bankRoll'),
       yourStake: playSlotState.get('deposit'),
+      slotName: playSlotState.get('slotName'),
       setBetSize: this.setBetSize.bind(this),
       setLineNum: this.setLineNum.bind(this),
       playGame: this.playGame.bind(this),
@@ -70,6 +71,7 @@ class PlaySlot extends React.PureComponent {
       this.slotGame.hasError = playSlotState.get('hasError');
       this.slotGame.bankRoll = playSlotState.get('bankRoll');
       this.slotGame.yourStake = playSlotState.get('deposit');
+      this.slotGame.slotName = playSlotState.get('slotName');
 
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
@@ -91,7 +93,7 @@ class PlaySlot extends React.PureComponent {
 
   render() {
     const { playSlotState } = this.props;
-    const _data = playSlotState.get('betsData').toJS();
+    const betsData = playSlotState.get('betsData').toJS();
     const tableCategory = playSlotState.get('tableCategory');
 
     let loader = null;
@@ -117,6 +119,23 @@ class PlaySlot extends React.PureComponent {
         accessor: 'result',
       },
       {
+        getProps: (state, rowInfo) => {
+          let cellFontColor = null;
+          if (rowInfo !== undefined) {
+            if (parseFloat(rowInfo.row.profit) > 0) {
+              cellFontColor = '#00CDAC';
+              rowInfo.row.profit = `+${rowInfo.row.profit}`;
+            } else if (parseFloat(rowInfo.row.profit) < 0) {
+              cellFontColor = '#FF2A48';
+              rowInfo.row.profit = `-${rowInfo.row.profit}`;
+            }
+          }
+          return {
+            style: {
+              color: cellFontColor,
+            },
+          };
+        },
         Header: 'PROFIT',
         accessor: 'profit',
       },
@@ -175,15 +194,13 @@ class PlaySlot extends React.PureComponent {
             </div>
           </div>
           <div className={styles.tableWrapper}>
-            {/* <ReactTable
+            <ReactTable
               className=""
-              data={_data.filter(e => {
-                return tableCategory === 0 ? e.id === 1 : 1;
-              })}
+              data={betsData}
               columns={columns}
               defaultPageSize={10}
               showPageSizeOptions={false}
-            /> */}
+            />
           </div>
         </div>
       </div>

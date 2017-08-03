@@ -4,17 +4,6 @@ import Web3Service from '../../helpers/web3Service';
 
 const emotionTypes = ['Thank', 'Threaten', 'Oops', 'Sorry', 'Well Played', 'Greetings'];
 
-const _betsData = [];
-for (let i = 0; i < 45; i += 1) {
-  _betsData.push({
-    id: Math.floor(Math.random() * 4 + 1),
-    time: `17.07.0${Math.floor(Math.random() * 9 + 1)}`,
-    bet: Math.floor(Math.random() * 30 + 1) * 100,
-    result: 'success',
-    profit: Math.floor(Math.random() * 20 - 10) * 100,
-  });
-}
-
 export const PLAY_SLOT_INITIAL_STATE = fromJS({
   isLoading: false,
   isPlaying: false,
@@ -29,7 +18,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   maxBet: 20,
   emotionClicked: 0,
   emotionList: emotionTypes,
-  betsData: _betsData,
+  betsData: [],
   tableCategory: 0,
   slotMachineContract: null,
   slotName: '',
@@ -109,16 +98,20 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.FAILED_TO_PLAY_GAME: {
-      return state.set('hasError', true);
+      return state.withMutations(currentState => {
+        action.payload.transaction.id = currentState.get('betsData').size + 1;
+        return currentState.set('hasError', true).update('betsData', list => list.push(action.payload.transaction));
+      });
     }
 
     case ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME: {
       return state.withMutations(currentState => {
+        action.payload.transaction.id = currentState.get('betsData').size + 1;
         return currentState
           .set('isPlaying', false)
           .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
           .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)))
-          .update('betsData', list => list.concat(action.payload.transaction.betData));
+          .update('betsData', list => list.push(action.payload.transaction));
       });
     }
 

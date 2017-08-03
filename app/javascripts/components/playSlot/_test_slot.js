@@ -224,6 +224,7 @@ class SlotGameTest {
               calculatedLines.push(lineCaseObj);
               const price = PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - j];
               calculatedMoney += price;
+              if (calculatedMoney > this.winMoney) return false;
               found = true;
               break;
             }

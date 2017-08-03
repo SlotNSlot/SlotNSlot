@@ -1,4 +1,5 @@
 import { push } from 'react-router-redux';
+import moment from 'moment';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
 
@@ -169,7 +170,12 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
         const ethReward = result[0];
         const betMoney = playInfo.lineNum * playInfo.betSize;
         const diffMoney = ethReward.minus(betMoney);
-        const transaction = {};
+        const transaction = {
+          time: moment().format('YY.MM.DD H:mm:ss'),
+          bet: `${betMoney.valueOf()} ETH`,
+          result: 'success',
+          profit: `${diffMoney.valueOf()} ETH`,
+        };
         stopSpinFunc(ethReward);
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
@@ -186,8 +192,17 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
           text: 'There was an error for playing a slot machine',
           stay: true,
         });
+        const transaction = {
+          time: moment().format('YY.MM.DD H:mm:ss'),
+          bet: '',
+          result: 'fail',
+          profit: '',
+        };
         dispatch({
           type: ACTION_TYPES.FAILED_TO_PLAY_GAME,
+          payload: {
+            transaction,
+          },
         });
       });
   };

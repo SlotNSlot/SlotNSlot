@@ -91,7 +91,7 @@ class PlaySlot extends React.PureComponent {
 
   render() {
     const { playSlotState } = this.props;
-    const _data = playSlotState.get('betsData').toJS();
+    const betsData = playSlotState.get('betsData').toJS();
     const tableCategory = playSlotState.get('tableCategory');
 
     let loader = null;
@@ -175,15 +175,13 @@ class PlaySlot extends React.PureComponent {
             </div>
           </div>
           <div className={styles.tableWrapper}>
-            {/* <ReactTable
+            <ReactTable
               className=""
-              data={_data.filter(e => {
-                return tableCategory === 0 ? e.id === 1 : 1;
-              })}
+              data={betsData}
               columns={columns}
               defaultPageSize={10}
               showPageSizeOptions={false}
-            /> */}
+            />
           </div>
         </div>
       </div>

@@ -663,6 +663,7 @@ export default class SlotGame {
                 calculatedLines.push(lineCaseObj);
                 const price = this.betSize.times(PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - j]);
                 calculatedMoney = calculatedMoney.plus(price);
+                if (calculatedMoney > this.winMoney) return false;
                 found = true;
                 break;
               }

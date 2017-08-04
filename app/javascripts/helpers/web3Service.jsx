@@ -255,14 +255,11 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          const paddingIndex = slotName.substring(1).indexOf('0');
-          let partSlotName;
-          if (paddingIndex === -1) {
-            // If there is no margin, all data is slotName
-            partSlotName = slotName;
-          } else {
-            partSlotName = slotName.substring(0, paddingIndex + 1);
+          let i = 2;
+          for (; i < slotName.length; i += 2) {
+            if (slotName.substr(i, 2) === '00') break;
           }
+          const partSlotName = slotName.substring(0, i);
           const asciiSlotName = this.web3.toAscii(partSlotName);
           resolve({ infoKey: 'slotName', infoVal: asciiSlotName });
         }
@@ -532,6 +529,8 @@ class Web3Service {
                   const eventResultSha = result.data.substr(2, 64); // 3332
                   console.log('eventResultSha is ', eventResultSha);
                   if (this.makeS3Sha(1, eventResultSha) !== beforeSha) {
+                    console.log('beforeSha is ', beforeSha);
+                    console.log('eventResultSha is ', eventResultSha);
                     // TODO : cash out & return to play List.
                     throw new Error('Banker throw invalid seed');
                   }
@@ -668,9 +667,9 @@ class Web3Service {
     const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatched;
     if (!isOccuWatched) {
       if (eventResult.data === undefined) return;
-      if (eventResult.data.length !== 2 + SHA_CHAIN_NUM * 64) return;
+      if (eventResult.data.length !== 2 + (1 + SHA_CHAIN_NUM) * 64) return;
       const playerShaArr = [];
-      const playerAddress = eventResult.data.substr(2, 64);
+      const playerAddress = eventResult.data.substr(26, 40);
       let initIndex = 2 + 64;
       for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
         playerShaArr.push(eventResult.data.substr(initIndex, 64));
@@ -680,11 +679,9 @@ class Web3Service {
       Store.update(slotMachineContract.address, slotGenesisInfo => {
         slotGenesisInfo.playerAddress = playerAddress;
         slotGenesisInfo.playerShaArr = playerShaArr;
-        console.log('init playerShaArr is ', playerShaArr);
         for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
           shaArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
         }
-        console.log('shaArr is ', INIT_ROUND);
         slotGenesisInfo.isOccuWatched = true;
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
@@ -705,9 +702,9 @@ class Web3Service {
     const slotMachineContractAddress = slotMachineContract.address;
     const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
 
-    if (!isInitWatched.includes(eventResult.txHash)) {
+    if (!isInitWatched.includes(eventResult.transactionHash)) {
       if (eventResult.data === undefined) return;
-      if (eventResult.data.length !== 2 + SHA_CHAIN_NUM * 64) return;
+      if (eventResult.data.length !== 2 + (1 + SHA_CHAIN_NUM) * 64) return;
       const playerAddress = eventResult.data.substr(26, 40);
       if (playerAddress !== Store.get(slotMachineContractAddress).playerAddress) return;
       const eventResultIndex = this.web3.toDecimal(eventResult.data.substr(2 + 64 * 3, 40));
@@ -718,6 +715,7 @@ class Web3Service {
         sha = this.makeS3Sha(shaCount, shaVal);
         console.log(`chainIndex is ${eventResultIndex}, shaCount is ${shaCount}, sha is ${sha}`);
         slotGenesisInfo.round[eventResultIndex] -= 1;
+        slotGenesisInfo.isInitWatched.push(eventResult.transactionHash);
       });
       slotMachineContract.setBankerSeed(sha, eventResultIndex, { from: bankerAddress, gas: 2200000 }, err => {
         if (err) {
@@ -726,10 +724,7 @@ class Web3Service {
           Toast.notie.alert({
             text: `Your Slotmachine ${slotMachineContractAddress} is initialized.`,
           });
-
-          Store.update(slotMachineContractAddress, slotGenesisInfo => {
-            slotGenesisInfo.isInitWatched.push(eventResult.txHash);
-          });
+          console.log('Store is ', Store.get(slotMachineContract.address));
         }
       });
     }

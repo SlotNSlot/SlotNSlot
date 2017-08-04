@@ -435,43 +435,43 @@ class Web3Service {
     return new Promise((resolve, reject) => {
       console.log('Start to Occupy slot machine');
       const shaArr = [];
-      Store.update(slotMachineContract.address, slotGenesisInfo => {
+      const slotMachineContractAddress = slotMachineContract.address;
+      Store.update(slotMachineContractAddress, slotGenesisInfo => {
         for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
           shaArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
         }
         console.log('shaCount is ', INIT_ROUND);
         console.log('start sha is ', shaArr);
       });
+      this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedInitialized')
+        .then(result => {
+          console.log('bankerSeedInitialized result is ', result);
+          const bankerShaData = result.data;
+          let initIndex = 2;
+          const bankerShaArr = [];
+          Store.update(slotMachineContractAddress, slotGenesisInfo => {
+            for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
+              bankerShaArr.push(bankerShaData.substr(initIndex, 64));
+              initIndex += 64;
+            }
+            slotGenesisInfo.bankerShaArr = bankerShaArr;
+          });
+          console.log('bankerShaArr is ', bankerShaArr);
+          console.log('Success to all of the occupy slot machine step. bankerSeedInitialized');
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
       slotMachineContract.occupy(shaArr, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
         if (err) {
           reject(err);
-        } else {
-          this.getContractPendingTransaction(slotMachineContract, 'bankerSeedInitialized')
-            .then(result => {
-              console.log('bankerSeedInitialized result is ', result);
-              const bankerShaData = result.data;
-              let initIndex = 2;
-              const bankerShaArr = [];
-              Store.update(slotMachineContract.address, slotGenesisInfo => {
-                for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
-                  bankerShaArr.push(bankerShaData.substr(initIndex, 64));
-                  initIndex += 64;
-                }
-                slotGenesisInfo.bankerShaArr = bankerShaArr;
-              });
-              console.log('bankerShaArr is ', bankerShaArr);
-              console.log('Success to all of the occupy slot machine step. bankerSeedInitialized');
-              resolve(result);
-            })
-            .catch(error => {
-              reject(error);
-            });
         }
       });
     });
   }
 
-  async getContractPendingTransaction(slotMachineContract, eventName) {
+  async getContractPendingTransaction(slotMachineContractAddress, eventName, chainIndex = null) {
     return await new Promise((resolve, reject) => {
       console.log('eventName is ', eventName);
       const contractFilter = this.web3.eth.filter({
@@ -484,11 +484,21 @@ class Web3Service {
           reject(err);
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
-          if (result.address === slotMachineContract.address) {
+          if (result.address === slotMachineContractAddress) {
             for (let i = 0; i < result.topics.length; i += 1) {
               if (result.topics[i] === encodedSha) {
-                contractFilter.stopWatching();
-                resolve(result);
+                if (chainIndex != null) {
+                  const eventResultIndex = this.web3.toDecimal(result.data.substr(2 + 64, 64));
+                  if (chainIndex === eventResultIndex) {
+                    console.log('new Event is ', result);
+                    console.log('new Event chainindex is ', chainIndex);
+                    contractFilter.stopWatching();
+                    resolve(result);
+                  }
+                } else {
+                  contractFilter.stopWatching();
+                  resolve(result);
+                }
               }
             }
           }
@@ -505,6 +515,51 @@ class Web3Service {
       const chainIndex = (SHA_CHAIN_NUM * ROUND_PER_CHAIN - round) % 3;
       console.log('game Start! round is ', round);
       console.log('chainIndex is ', chainIndex);
+      this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedSet', chainIndex)
+        .then(result => {
+          const isBankerSeedSet = Store.get(slotMachineContractAddress).isBankerSeedSet;
+          if (!isBankerSeedSet.includes(result.transactionHash)) {
+            // Sha Validation
+            const beforeSha = Store.get(slotMachineContractAddress).bankerShaArr[chainIndex]; // 3333
+            const eventResultSha = result.data.substr(2, 64); // 3332
+            console.log('eventResultSha is ', eventResultSha);
+            console.log('beforeSha is ', beforeSha);
+            if (this.makeS3Sha(1, eventResultSha).substr(2, 64) !== beforeSha) {
+              // TODO : cash out & return to play List.
+              throw new Error('Banker throw invalid seed');
+            }
+            let sha;
+            Store.update(slotMachineContractAddress, slotGenesisInfo => {
+              const shaVal = slotGenesisInfo.val[chainIndex];
+              const shaCount = Math.ceil(slotGenesisInfo.round / 3);
+              sha = this.makeS3Sha(shaCount, shaVal);
+              console.log(`round is ${round}, chainIndex is ${chainIndex}, sha is ${sha}`);
+              slotGenesisInfo.round -= 1;
+              slotGenesisInfo.isBankerSeedSet.push(result.transactionHash);
+              slotGenesisInfo.bankerShaArr[chainIndex] = eventResultSha;
+            });
+            slotMachineContract.setPlayerSeed(
+              sha,
+              chainIndex,
+              {
+                from: playInfo.playerAddress,
+                gas: 1000000,
+              },
+              async (err2, result3) => {
+                if (err2) {
+                  reject(err2);
+                } else {
+                  resolve(result3);
+                }
+              },
+            );
+          }
+        })
+        .catch(err2 => {
+          console.log(err2);
+          reject(err2);
+        });
+      console.log('initGameForPlayer start');
       slotMachineContract.initGameForPlayer(
         this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
         playInfo.lineNum,
@@ -516,55 +571,6 @@ class Web3Service {
         err => {
           if (err) {
             reject(err);
-          } else {
-            console.log('initGameforPlayer Over.');
-            this.getContractPendingTransaction(slotMachineContract, 'bankerSeedSet', chainIndex)
-              .then(result => {
-                console.log('bankerSeedSet result is ', result);
-                console.log('bankerSeedSet event txhash is ', result.transactionHash);
-                const isBankerSeedSet = Store.get(slotMachineContractAddress).isBankerSeedSet;
-                if (!isBankerSeedSet.includes(result.transactionHash)) {
-                  // Sha Validation
-                  const beforeSha = Store.get(slotMachineContractAddress).bankerShaArr[chainIndex]; // 3333
-                  const eventResultSha = result.data.substr(2, 64); // 3332
-                  console.log('eventResultSha is ', eventResultSha);
-                  if (this.makeS3Sha(1, eventResultSha).substr(2, 64) !== beforeSha) {
-                    console.log('beforeSha is ', beforeSha);
-                    console.log('eventResultSha is ', eventResultSha);
-                    // TODO : cash out & return to play List.
-                    throw new Error('Banker throw invalid seed');
-                  }
-                  let sha;
-                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
-                    const shaVal = slotGenesisInfo.val[chainIndex];
-                    const shaCount = Math.ceil(slotGenesisInfo.round / 3);
-                    sha = this.makeS3Sha(shaCount, shaVal);
-                    console.log(`round is ${round}, chainIndex is ${chainIndex}, sha is ${sha}`);
-                    slotGenesisInfo.round -= 1;
-                    slotGenesisInfo.isBankerSeedSet.push(result.transactionHash);
-                    slotGenesisInfo.bankerShaArr[chainIndex] = eventResultSha;
-                  });
-                  slotMachineContract.setPlayerSeed(
-                    sha,
-                    chainIndex,
-                    {
-                      from: playInfo.playerAddress,
-                      gas: 1000000,
-                    },
-                    async (err2, result3) => {
-                      if (err2) {
-                        reject(err2);
-                      } else {
-                        resolve(result3);
-                      }
-                    },
-                  );
-                }
-              })
-              .catch(err2 => {
-                console.log(err2);
-                reject(err2);
-              });
           }
         },
       );
@@ -574,7 +580,9 @@ class Web3Service {
   async getSlotResult(slotMachineContract) {
     return await new Promise((resolve, reject) => {
       const slotMachineContractAddress = slotMachineContract.address;
-      this.getContractPendingTransaction(slotMachineContract, 'gameConfirmed')
+      const round = Store.get(slotMachineContractAddress).round;
+      const chainIndex = (SHA_CHAIN_NUM * ROUND_PER_CHAIN - round) % 3;
+      this.getContractPendingTransaction(slotMachineContractAddress, 'gameConfirmed', chainIndex)
         .then(result => {
           const isGameConfirmed = Store.get(slotMachineContractAddress).isGameConfirmed;
           if (!isGameConfirmed.includes(result.transactionHash)) {
@@ -701,9 +709,9 @@ class Web3Service {
   async watchGameInitialized(slotMachineContract, bankerAddress, eventResult) {
     const slotMachineContractAddress = slotMachineContract.address;
     const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
-    console.log('isInitWatched is ', isInitWatched);
-    console.log('eventResult.transactionHash is ', eventResult.transactionHash);
     if (!isInitWatched.includes(eventResult.transactionHash)) {
+      console.log('isInitWatched is ', isInitWatched);
+      console.log('eventResult.transactionHash is ', eventResult.transactionHash);
       if (eventResult.data === undefined) return;
       if (eventResult.data.length !== 2 + (1 + SHA_CHAIN_NUM) * 64) return;
       const playerAddress = eventResult.data.substr(26, 40);

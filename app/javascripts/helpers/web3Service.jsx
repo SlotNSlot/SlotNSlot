@@ -502,7 +502,7 @@ class Web3Service {
       const slotMachineContract = playInfo.slotMachineContract;
       const slotMachineContractAddress = slotMachineContract.address;
       const round = Store.get(slotMachineContractAddress).round;
-      const chainIndex = round % 3;
+      const chainIndex = (SHA_CHAIN_NUM * ROUND_PER_CHAIN - round) % 3;
       console.log('game Start! round is ', round);
       console.log('chainIndex is ', chainIndex);
       slotMachineContract.initGameForPlayer(
@@ -701,13 +701,14 @@ class Web3Service {
   async watchGameInitialized(slotMachineContract, bankerAddress, eventResult) {
     const slotMachineContractAddress = slotMachineContract.address;
     const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
-
+    console.log('isInitWatched is ', isInitWatched);
+    console.log('eventResult.transactionHash is ', eventResult.transactionHash);
     if (!isInitWatched.includes(eventResult.transactionHash)) {
       if (eventResult.data === undefined) return;
       if (eventResult.data.length !== 2 + (1 + SHA_CHAIN_NUM) * 64) return;
       const playerAddress = eventResult.data.substr(26, 40);
       if (playerAddress !== Store.get(slotMachineContractAddress).playerAddress) return;
-      const eventResultIndex = this.web3.toDecimal(eventResult.data.substr(2 + 64 * 3, 40));
+      const eventResultIndex = this.web3.toDecimal(eventResult.data.substr(2 + 64 * 3, 64));
       let sha;
       Store.update(slotMachineContractAddress, slotGenesisInfo => {
         const shaVal = slotGenesisInfo.val[eventResultIndex];

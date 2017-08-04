@@ -304,6 +304,7 @@ export default class SlotGame {
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
       if (this.lineNum !== undefined && this.betSize !== undefined)
         this.betAmountText.text = this.betSize.times(this.lineNum);
+      if (this.slotName !== undefined) this.slotNameText.text = this.slotName;
       if (this.bigWinContainer.visible) {
         this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
         this.bigWinContainer.scale.y += 0.005 * this.bigWinPopping;
@@ -663,6 +664,7 @@ export default class SlotGame {
                 calculatedLines.push(lineCaseObj);
                 const price = this.betSize.times(PROBABILITY_VALUE_TABLE[PROBABILITY_VALUE_TABLE.length - 1 - j]);
                 calculatedMoney = calculatedMoney.plus(price);
+                if (calculatedMoney > this.winMoney) return false;
                 found = true;
                 break;
               }
@@ -1027,21 +1029,21 @@ export default class SlotGame {
     ribbon.width = 675.6;
     ribbon.height = 491.3;
 
-    const ribbonText = new Text('JACKPOT SLOT', {
+    this.slotNameText = new Text('JACKPOT SLOT', {
       fontSize: '31.3px',
       letterSpacing: 1.3,
       align: 'center',
       fill: '0xf6b115',
     });
-    ribbonText.anchor.set(0.5, 0.5);
-    ribbonText.position.set(470, 120);
+    this.slotNameText.anchor.set(0.5, 0.5);
+    this.slotNameText.position.set(470, 120);
 
     const yourStake = new Sprite(TextureCache['your-stake.png']);
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
 
-    this.yourStakeText = new Text('2.5345 ETH', {
+    this.yourStakeText = new Text('0 ETH', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'right',
@@ -1055,7 +1057,7 @@ export default class SlotGame {
     bankRoll.width = 352;
     bankRoll.height = 61;
 
-    this.bankRollText = new Text('14.3894 ETH', {
+    this.bankRollText = new Text('0 ETH', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'left',
@@ -1069,7 +1071,7 @@ export default class SlotGame {
     betAmount.width = 149;
     betAmount.height = 65;
 
-    this.betAmountText = new Text('0.4', {
+    this.betAmountText = new Text('0', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
@@ -1083,7 +1085,7 @@ export default class SlotGame {
     betSize.width = 185;
     betSize.height = 65;
 
-    this.betSizeText = new Text('0.12332', {
+    this.betSizeText = new Text('0', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
@@ -1139,7 +1141,7 @@ export default class SlotGame {
     lineNum.width = 186;
     lineNum.height = 65;
 
-    this.lineNumText = new Text('0.1', {
+    this.lineNumText = new Text('1', {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',
@@ -1216,7 +1218,7 @@ export default class SlotGame {
     this.UIContainer.addChild(this.autoBtn);
     this.UIContainer.addChild(this.autoStopBtn);
     // Text Component
-    this.UIContainer.addChild(ribbonText);
+    this.UIContainer.addChild(this.slotNameText);
     this.UIContainer.addChild(this.bankRollText);
     this.UIContainer.addChild(this.yourStakeText);
     this.UIContainer.addChild(this.betAmountText);
@@ -1230,6 +1232,7 @@ export default class SlotGame {
     bigWin.anchor.set(0.5, 0.5);
     bigWin.position.set(2, 11);
     bigWin.blendMode = PIXI.BLEND_MODES.SCREEN;
+
     const bigWinBackGround = new Sprite.fromImage('assets/images/slot/big-win-front@2x.png');
     bigWinBackGround.anchor.set(0.5, 0.5);
     bigWinBackGround.alpha = 1;

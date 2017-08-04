@@ -528,7 +528,7 @@ class Web3Service {
                   const beforeSha = Store.get(slotMachineContractAddress).bankerShaArr[chainIndex]; // 3333
                   const eventResultSha = result.data.substr(2, 64); // 3332
                   console.log('eventResultSha is ', eventResultSha);
-                  if (this.makeS3Sha(1, eventResultSha) !== beforeSha) {
+                  if (this.makeS3Sha(1, eventResultSha).substr(2, 64) !== beforeSha) {
                     console.log('beforeSha is ', beforeSha);
                     console.log('eventResultSha is ', eventResultSha);
                     // TODO : cash out & return to play List.

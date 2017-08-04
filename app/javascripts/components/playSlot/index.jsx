@@ -6,6 +6,7 @@ import * as Actions from './actions';
 import Web3Service from '../../helpers/web3Service';
 import styles from './playSlot.scss';
 import './react-table.scss';
+import { USER_TYPES } from '../slotList/actions';
 
 let gameAlreadyLoaded = false;
 let slotMachineLoaded = false;
@@ -20,11 +21,10 @@ function mapStateToProps(appState) {
 class PlaySlot extends React.PureComponent {
   constructor(props) {
     super(props);
-
     this.setDeposit = this.setDeposit.bind(this);
     this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
     this.slotAddress = this.props.match.params.slotAddress;
-    Web3Service.createGenesisRandomNumber(this.slotAddress);
+    Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
   }
 
   componentDidMount() {

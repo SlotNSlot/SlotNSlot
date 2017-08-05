@@ -86,8 +86,6 @@ class PlaySlot extends React.PureComponent {
 
   componentWillUnmount() {
     if (this.slotGame) {
-      const ctx = this.canvas.getContext('webgl');
-      ctx.clear(ctx.DEPTH_BUFFER_BIT);
       this.slotGame.removeCurrentGame();
       gameAlreadyLoaded = false;
       slotMachineLoaded = false;

@@ -1,4 +1,5 @@
 import { fromJS } from 'immutable';
+import Big from 'big.js';
 import { ACTION_TYPES } from './actions';
 import Web3Service from '../../helpers/web3Service';
 
@@ -9,7 +10,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   isPlaying: false,
   isOccupied: false,
   hasError: false,
-  betSize: 20,
+  betSize: Big(20),
   lineNum: 20,
   deposit: 0,
   bankRoll: 0,

@@ -1094,7 +1094,7 @@ export default class SlotGame {
     betSize.width = 185;
     betSize.height = 65;
 
-    this.betSizeText = new Text('0', {
+    this.betSizeText = new Text(Big(0), {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',

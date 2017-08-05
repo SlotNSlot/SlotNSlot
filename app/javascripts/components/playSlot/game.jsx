@@ -93,8 +93,8 @@ function kComb(set, k) {
 }
 
 const WIN_LINE = [
-  [0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 0],
+  [0, 0, 0, 0, 0, 1],
   [2, 2, 2, 2, 2, 2],
   [2, 1, 0, 1, 2, 3],
   [0, 1, 2, 1, 2, 4],
@@ -1004,7 +1004,6 @@ export default class SlotGame {
 
   removeCurrentGame() {
     PIXI.loader.reset();
-    this.canvas.remove();
     window.cancelAnimationFrame(this.requestId);
   }
 

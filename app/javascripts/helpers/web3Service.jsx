@@ -92,9 +92,9 @@ class Web3Service {
     return this.web3;
   }
 
-  getNumOfSlotMachine(account) {
+  getAllSlotMachineAddressesArray() {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getNumOfSlotMachine(account, (err, result) => {
+      this.slotStorageContract.getAllSlotMachinesArray((err, result) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -105,21 +105,9 @@ class Web3Service {
     });
   }
 
-  getTheNumberOfBankers() {
+  getNumOfSlotMachine(account) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getNumOfBanker((err, TheNumOfBanker) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(TheNumOfBanker);
-        }
-      });
-    });
-  }
-
-  async getBankerAddress(index) {
-    return new Promise((resolve, reject) => {
-      this.slotStorageContract.bankerAddress(index, (err, result) => {
+      this.slotStorageContract.getNumOfSlotMachine(account, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -149,9 +137,9 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineAddressFromBanker(account, index) {
+  async getSlotMachinesFromBanker(bankerAddress) {
     return new Promise((resolve, reject) => {
-      this.slotStorageContract.getSlotMachine(account, index, (err, result) => {
+      this.slotStorageContract.getSlotMachines(bankerAddress, (err, result) => {
         if (err) {
           console.error(err);
           reject(err);

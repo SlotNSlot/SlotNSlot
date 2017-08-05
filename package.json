@@ -97,6 +97,7 @@
         "history": "^4.6.2",
         "immutable": "^3.8.1",
         "is-ci": "^1.0.10",
+        "lodash.isempty": "^4.4.0",
         "lodash.shuffle": "^4.2.0",
         "lodash.throttle": "^4.1.1",
         "moment": "^2.18.1",

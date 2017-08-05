@@ -5,6 +5,26 @@ import Icon from '../../../icons';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
 
 class EmailContainer extends React.PureComponent {
+  async subscribeEmail(e) {
+    e.preventDefault();
+    const emailInput = this.emailInput.value;
+    // e-mail validation by regular expression
+    const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!reg.test(emailInput)) {
+      alert('Please input valid e-mail');
+    } else {
+      try {
+        await Axios.post(
+          `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
+        );
+        alert('You are on the subscribe list now');
+        this.emailInput.value = '';
+      } catch (err) {
+        alert(`Failed: ${err.response.data.error}`);
+      }
+    }
+  }
+
   render() {
     return (
       <div className={styles.emailComponent}>
@@ -17,10 +37,25 @@ class EmailContainer extends React.PureComponent {
               Make <span>your own Slots</span>! Play on others and ruin them!
             </div>
 
-            <a href="https://youtu.be/9TtOFJ2InH8" target="_blank" className={styles.watchDemoBtn}>
-              <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
-              Watch Demo
-            </a>
+            <form
+              onSubmit={e => {
+                this.subscribeEmail(e);
+              }}
+              className={styles.emailForm}
+            >
+              <div className={styles.emailInputWrapper}>
+                <input
+                  ref={c => {
+                    this.emailInput = c;
+                  }}
+                  className={styles.emailInput}
+                  placeholder="Enter your email address"
+                />
+                <button type="submit" className={styles.subscribeBtn}>
+                  Subscribe
+                </button>
+              </div>
+            </form>
           </div>
         </div>
         <CrowdSaleContainer />

@@ -31,6 +31,10 @@ const MakeAndPlayContainer = () =>
           </div>
         </div>
       </div>
+      <a href="https://youtu.be/9TtOFJ2InH8" target="_blank" className={styles.watchDemoBtn}>
+        <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
+        Watch Demo
+      </a>
     </div>
   </div>;
 export default MakeAndPlayContainer;

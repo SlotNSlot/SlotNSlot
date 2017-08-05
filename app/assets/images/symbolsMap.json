@@ -1857,7 +1857,7 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "symbolsMap.png",
+	"image": "https://d1qh7kd1bid312.cloudfront.net/symbolsMap.png",
 	"format": "RGBA8888",
 	"size": {"w":4014,"h":2676},
 	"scale": "1",

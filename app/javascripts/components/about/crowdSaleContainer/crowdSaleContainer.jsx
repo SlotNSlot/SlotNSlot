@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import styles from './crowdSaleContainer.scss';
 import { updateCountdown } from './actions';
@@ -62,13 +63,9 @@ class CrowdSaleContainer extends React.PureComponent {
               <div className={styles.counterTag}>Seconds</div>
             </div>
           </div>
-          <a
-            className={styles.moreInfomation}
-            href="https://medium.com/@kkenji1024/better-ico-investors-must-be-protected-84b760fda5f0"
-            target="_blank"
-          >
+          <Link to="/contribute" className={styles.moreInformation}>
             More Information &gt;
-          </a>
+          </Link>
         </div>
       </div>
     );

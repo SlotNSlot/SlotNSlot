@@ -57,33 +57,6 @@
   }
 }
 
-.watchDemoBtn {
-  display: block;
-  margin: 0 auto;
-  font-weight: 300;
-  width: 187.7px;
-  font-size: 18px;
-  text-align: center;
-  vertical-align: middle;
-  color: #fff !important;
-  height: 50.5px;
-  line-height: 50.5px;
-  border-radius: 100.2px;
-  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
-  box-shadow: 2px 3px 24px 0 #2b1c45;
-
-  svg {
-    width: 7.6px;
-    height: 10.5px;
-    margin-right: 6.9px;
-  }
-
-  &:hover {
-    color: inherit;
-    text-decoration: inherit;
-  }
-}
-
 .linkBlock {
   margin: 50px auto 0 auto;
   height: 50px;
@@ -96,5 +69,48 @@
     height: 51px;
     display: inline-block;
     object-fit: contain;
+  }
+}
+
+.emailInput {
+  font-size: 18px;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-color: #fff;
+  padding-left: 23px;
+  border: none;
+  outline: none;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+}
+
+.emailForm {
+  display: flex;
+  justify-content: center;
+}
+
+.subscribeBtn {
+  font-weight: 300;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 143.2px;
+  font-size: 18px;
+  text-align: center;
+  color: #fff;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
+  box-shadow: 2px 3px 24px 0 #2b1c45;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
   }
 }

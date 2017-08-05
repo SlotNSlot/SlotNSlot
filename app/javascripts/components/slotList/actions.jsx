@@ -46,7 +46,7 @@ async function getSlotMachines(account, userType, myAccount = null) {
         meta: slotInfo,
       });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   }
   return fromJS(slotMachineContracts);

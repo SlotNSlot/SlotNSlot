@@ -97,3 +97,36 @@
     }
   }
 }
+
+.watchDemoBtn {
+  display: block;
+  margin: 0 auto;
+  font-weight: 300;
+  width: 187.7px;
+  font-size: 18px;
+  text-align: center;
+  vertical-align: middle;
+  color: #fff !important;
+  height: 50.5px;
+  line-height: 50.5px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
+  box-shadow: 2px 3px 24px 0 #2b1c45;
+
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  z-index: 2;
+
+  svg {
+    width: 7.6px;
+    height: 10.5px;
+    margin-right: 6.9px;
+  }
+
+  &:hover {
+    color: inherit;
+    text-decoration: inherit;
+  }
+}

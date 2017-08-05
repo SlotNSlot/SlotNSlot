@@ -21,6 +21,7 @@ const SLOT_TOPICS_ENCODED = {
   bankerSeedSet: '0x05157405ea453181cba290132a142d488a688a03f0b08869ca47c88a0cbba8b5',
   playerSeedSet: '0xee65ec46c8744067af9955308ee9958ab02a5882e505b3b06e3e4e50cada6014',
   gameConfirmed: '0x1368b5893c84709f55237ada3ba22400bf115786939fd504096b5c8ad20d5d63',
+  playerLeft: '0x471055d6adcbcece6a26aaf208fc1e5e978d9ebd07c0293ea1ac2a00dab7ec98',
 };
 
 Store.addPlugin(updatePlugin);
@@ -197,6 +198,25 @@ class Web3Service {
                 resolve(result);
               }
             });
+          }
+        },
+      );
+    });
+  }
+
+  async removeSlotMachine(slotMachineContractAddress, account) {
+    return await new Promise((resolve, reject) => {
+      this.slotManagerContract.removeSlotMachine(
+        slotMachineContractAddress,
+        {
+          gas: 2200000,
+          from: account,
+        },
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
           }
         },
       );
@@ -394,8 +414,8 @@ class Web3Service {
     });
   }
 
-  createGenesisRandomNumber(slotAddress, userType) {
-    if (Store.get(slotAddress) !== undefined) {
+  createGenesisRandomNumber(slotAddress, userType, reset = false) {
+    if (Store.get(slotAddress) !== undefined && !reset) {
       console.log('already slotGenesisRandomNumber exist ', Store.get(slotAddress));
     } else {
       let slotGenesisInfo = {};
@@ -645,13 +665,14 @@ class Web3Service {
       } else if (addressList.includes(result.address)) {
         const occupiedTopic = SLOT_TOPICS_ENCODED.gameOccupied;
         const initializedTopic = SLOT_TOPICS_ENCODED.gameInitialized;
+        const playerLeftTopic = SLOT_TOPICS_ENCODED.playerLeft;
 
         if (result.topics) {
           result.topics.forEach(topic => {
             const slotMachineContract = slotMachineContracts.find(slotMachine => {
               return slotMachine.get('contract').address === result.address;
             });
-
+            const slotMachineContractAddress = slotMachineContract.get('contract').address;
             switch (topic) {
               case occupiedTopic:
                 this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
@@ -660,6 +681,13 @@ class Web3Service {
               case initializedTopic:
                 this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
                 console.log('initializedTopic is ', result);
+                break;
+              case playerLeftTopic: // reset Genesis Number
+                this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
+                Toast.notie.alert({
+                  text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
+                });
+                console.log('playerLeftTopic is ', result);
                 break;
               default:
                 break;

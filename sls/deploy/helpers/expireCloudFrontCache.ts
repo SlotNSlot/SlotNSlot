@@ -5,7 +5,7 @@ let cloudfrontProductionId: string;
 if (process.env.NODE_ENV === "production") {
   cloudfrontProductionId = 'E2P9PNNPXVN2HE';
 } else {
-  cloudfrontProductionId = 'E364NRMOU35TBS';
+  cloudfrontProductionId = 'E3R0FKX17MAJ0I';
 }
 
 function expireCloudFrontCache() {

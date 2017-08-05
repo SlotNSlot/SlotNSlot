@@ -194,8 +194,8 @@ export default class SlotGame {
     // Add the canvas to the HTML document
     PIXI.loader
       .add([
-        { url: 'assets/images/symbolsMap.json', crossOrigin: true },
-        { url: 'assets/images/slotMap.json', crossOrigin: true },
+        { url: 'https://d1qh7kd1bid312.cloudfront.net/symbolsMap.json', crossOrigin: true },
+        { url: 'https://d1qh7kd1bid312.cloudfront.net/slotMap.json', crossOrigin: true },
         { url: 'https://d1qh7kd1bid312.cloudfront.net/big-win-front@2x.png', crossOrigin: true },
         { url: 'https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png', crossOrigin: true },
         { url: 'https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png', crossOrigin: true },

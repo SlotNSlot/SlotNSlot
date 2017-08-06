@@ -407,6 +407,7 @@ class Web3Service {
       console.log('already slotGenesisRandomNumber exist ', Store.get(slotAddress));
     } else {
       let slotGenesisInfo = {};
+
       switch (userType) {
         case USER_TYPES.PLAYER:
           slotGenesisInfo = {

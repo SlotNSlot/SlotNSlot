@@ -1,6 +1,12 @@
 import React from 'react';
 import styles from './demoContainer.scss';
 import Icon from '../../../icons';
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
+
+const handleWatchDemoClick = () => {
+  handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+  window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
+};
 
 const DemoContainer = () =>
   <div className={styles.demoContainer}>
@@ -15,7 +21,7 @@ const DemoContainer = () =>
         </div>
       </div>
 
-      <a href="https://youtu.be/9TtOFJ2InH8" target="_blank">
+      <a onClick={handleWatchDemoClick}>
         <div className={styles.videoBox}>
           <Icon icon="PLAY_BUTTON" />
           <img src="https://d1qh7kd1bid312.cloudfront.net/about/macbook.png" alt="demo_image" />

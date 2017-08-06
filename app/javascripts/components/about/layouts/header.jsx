@@ -2,6 +2,8 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+// helpers
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 // actions
 import { reactScrollTop, leaveScrollTop } from './actions';
 // components
@@ -50,29 +52,51 @@ class Header extends React.PureComponent {
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
-                href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
-                target="_blank"
+                onClick={() => {
+                  this.openLinkWithTrack('https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md');
+                }}
               >
                 White Paper
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot');
+                }}
+              >
                 GitHub
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://www.hipchat.com/gIUbFZBvh');
+                }}
+              >
                 Chat
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://medium.com/@kkenji1024" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://medium.com/@kkenji1024');
+                }}
+              >
                 Blog
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <Link className={styles.crowdsaleBtn} to="/contribute">
+              <Link
+                onClick={() => {
+                  this.trackWordsOnly();
+                }}
+                className={styles.crowdsaleBtn}
+                to="/contribute"
+              >
                 Contribution
               </Link>
             </li>
@@ -80,6 +104,15 @@ class Header extends React.PureComponent {
         </div>
       </div>
     );
+  }
+
+  trackWordsOnly() {
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+  }
+
+  openLinkWithTrack(linkUrl) {
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+    window.open(linkUrl, '_blank');
   }
 
   handleScrollEvent() {

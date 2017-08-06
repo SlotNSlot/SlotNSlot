@@ -2,6 +2,7 @@ import React from 'react';
 import Axios from 'axios';
 import styles from './emailContainer.scss';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 
 class EmailContainer extends React.PureComponent {
   async subscribeEmail(e) {
@@ -16,7 +17,8 @@ class EmailContainer extends React.PureComponent {
         await Axios.post(
           `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
         );
-        goog_report_conversion(window.location.href);
+
+        handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.EMAIL_SUBSCRIBE);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {

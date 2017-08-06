@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import styles from './crowdSaleContainer.scss';
+// helpers
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 import { updateCountdown } from './actions';
+import styles from './crowdSaleContainer.scss';
 
 function mapStateToProps(appState) {
   return {
@@ -63,12 +65,22 @@ class CrowdSaleContainer extends React.PureComponent {
               <div className={styles.counterTag}>Seconds</div>
             </div>
           </div>
-          <Link to="/contribute" className={styles.moreInformation}>
+          <Link
+            onClick={() => {
+              this.trackWordsOnly();
+            }}
+            to="/contribute"
+            className={styles.moreInformation}
+          >
             More Information &gt;
           </Link>
         </div>
       </div>
     );
+  }
+
+  trackWordsOnly() {
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
   }
 
   updateTimer() {

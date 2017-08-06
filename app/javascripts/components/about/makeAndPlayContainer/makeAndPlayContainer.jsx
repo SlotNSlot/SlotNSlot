@@ -1,6 +1,12 @@
 import React from 'react';
 import styles from './makeAndPlayContainer.scss';
 import Icon from '../../../icons';
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
+
+const handleWatchDemoClick = () => {
+  handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+  window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
+};
 
 const MakeAndPlayContainer = () =>
   <div className={styles.makeAndPlayContainer}>
@@ -31,7 +37,7 @@ const MakeAndPlayContainer = () =>
           </div>
         </div>
       </div>
-      <a href="https://youtu.be/9TtOFJ2InH8" target="_blank" className={styles.watchDemoBtn}>
+      <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>
         <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
         Watch Demo
       </a>

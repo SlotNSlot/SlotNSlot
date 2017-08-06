@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import React from 'react';
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 import styles from './mailingContainer.scss';
 
 class MailingContainer extends React.PureComponent {
@@ -15,7 +16,8 @@ class MailingContainer extends React.PureComponent {
         await Axios.post(
           `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
         );
-        goog_report_conversion(window.location.href);
+
+        handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.EMAIL_SUBSCRIBE);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {

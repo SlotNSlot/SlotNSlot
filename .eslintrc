@@ -13,7 +13,11 @@
         "describe": 1,
         "it": 1,
         "expect": 1,
-        "beforeEach": 1
+        "beforeEach": 1,
+        "document": 1,
+        "window": 1,
+        "goog_snippet_vars": 1,
+        "goog_report_conversion": 1
     },
     "parserOptions": {
         "ecmaVersion": 8

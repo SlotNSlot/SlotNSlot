@@ -88,6 +88,7 @@ class PlaySlot extends React.PureComponent {
     if (this.slotGame) {
       this.slotGame.removeCurrentGame();
       gameAlreadyLoaded = false;
+      slotMachineLoaded = false;
     }
   }
 

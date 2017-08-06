@@ -6,14 +6,16 @@ class MailingContainer extends React.PureComponent {
   async subscribeEmail(e) {
     e.preventDefault();
     const emailInput = this.emailInput.value;
-    console.log(emailInput);
     // e-mail validation by regular expression
     const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!reg.test(emailInput)) {
       alert('Please input valid e-mail');
     } else {
       try {
-        await Axios.post(`https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`);
+        await Axios.post(
+          `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
+        );
+        goog_report_conversion(window.location.href);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {

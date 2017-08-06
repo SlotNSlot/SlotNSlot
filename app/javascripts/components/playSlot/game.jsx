@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import shuffle from 'lodash.shuffle';
+import isEmpty from 'lodash.isempty';
 import Big from 'big.js'; // for arbitrary-precision decimal arithmetic.
 import Toast from '../../helpers/notieHelper';
 
@@ -93,8 +94,8 @@ function kComb(set, k) {
 }
 
 const WIN_LINE = [
-  [0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 0],
+  [0, 0, 0, 0, 0, 1],
   [2, 2, 2, 2, 2, 2],
   [2, 1, 0, 1, 2, 3],
   [0, 1, 2, 1, 2, 4],
@@ -191,71 +192,80 @@ export default class SlotGame {
       this.reelGroup[index] = new PIXI.Container();
       this.reelGroup[index].vy = 0;
     });
-    // Add the canvas to the HTML document
-    PIXI.loader
-      .add([
-        { url: 'assets/images/symbolsMap.json', crossOrigin: true },
-        { url: 'assets/images/slotMap.json', crossOrigin: true },
-        { url: 'https://d1qh7kd1bid312.cloudfront.net/big-win-front@2x.png', crossOrigin: true },
-        { url: 'https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png', crossOrigin: true },
-        { url: 'https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png', crossOrigin: true },
-        { url: 'https://d1qh7kd1bid312.cloudfront.net/auto-stop@2x.png', crossOrigin: true },
-      ])
-      .on('progress', (loader, resource) => {
-        console.log('LOADING...');
-      })
-      .load(() => {
-        this.drawUI();
-        // Make frame list from spriteSheets symbol by symbol.
-        const spritesNum = [9, 7, 6, 7, 6, 9, 24, 19, 23, 24, 24, 24, 24];
-        for (let i = 1; i <= ALL_SYMBOL_COUNT; i += 1) {
-          const imglist = [];
-          for (let j = 0; j < spritesNum[i - 1]; j += 1) {
-            const val = j < 10 ? `0${j}` : j;
-            const frame = PIXI.Texture.fromFrame(`Symbol${i}_${val}.png`);
-            imglist.push(frame);
-          }
-          this.symbols[i - 1] = imglist;
-        }
-        // Random symbol's coordinates are set per reelGroup.
-        for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
-          for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
-            const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
-            const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
-            symbol.width = SYMBOL_WIDTH;
-            symbol.height = SYMBOL_HEIGHT;
-            symbol.x = 0;
-            symbol.y =
-              idx < ITEMS_PER_HALF_REEL
-                ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
-                : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
-            symbol.animationSpeed = 0.3;
-            symbol.play();
-            if (idx < ITEMS_PER_HALF_REEL) {
-              this.reelGroup[reelNum * 2].addChild(symbol);
-            } else {
-              this.reelGroup[reelNum * 2 + 1].addChild(symbol);
-            }
-          }
-          this.reelContainer.addChild(this.reelGroup[reelNum * 2]);
-          this.reelContainer.addChild(this.reelGroup[reelNum * 2 + 1]);
 
-          // Set reel group position
-          this.reelGroup[reelNum * 2].y = 0;
-          this.reelGroup[reelNum * 2 + 1].y = (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL;
-          this.reelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
-          this.reelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
-        }
+    if (isEmpty(PIXI.utils.TextureCache)) {
+      PIXI.loader
+        .add([
+          { url: 'assets/images/symbolsMap.json', crossOrigin: true },
+          { url: 'assets/images/slotMap.json', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/big-win-front@2x.png', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/auto-stop@2x.png', crossOrigin: true },
+        ])
+        .on('progress', (_loader, _resource) => {
+          // TODO: Add loading screen
+          console.log('LOADING...');
+        })
+        .load(() => {
+          this.initGame();
+        });
+    } else {
+      this.initGame();
+    }
+  }
 
-        this.reelContainer.x = SLOT_START_X;
-        this.reelContainer.y = SLOWING_DISTANCE;
-        this.stage.addChild(this.reelContainer);
-        this.stage.addChild(this.UIContainer);
-        // Tell the `renderer` to `render` the `stage`
-        this.renderer.render(this.stage);
-        // When load function is ended, then start gameLoop
-        this.gameLoop();
-      });
+  initGame() {
+    this.drawUI();
+    // Make frame list from spriteSheets symbol by symbol.
+    const spritesNum = [9, 7, 6, 7, 6, 9, 24, 19, 23, 24, 24, 24, 24];
+    for (let i = 1; i <= ALL_SYMBOL_COUNT; i += 1) {
+      const imglist = [];
+      for (let j = 0; j < spritesNum[i - 1]; j += 1) {
+        const val = j < 10 ? `0${j}` : j;
+        const frame = PIXI.Texture.fromFrame(`Symbol${i}_${val}.png`);
+        imglist.push(frame);
+      }
+      this.symbols[i - 1] = imglist;
+    }
+    // Random symbol's coordinates are set per reelGroup.
+    for (let reelNum = 0; reelNum < ENTIRE_REEL_COUNT; reelNum += 1) {
+      for (let idx = 0; idx < ITEM_PER_ENTIRE_REEL; idx += 1) {
+        const randomNum = Math.floor(Math.random() * ALL_SYMBOL_COUNT);
+        const symbol = new PIXI.extras.AnimatedSprite(this.symbols[randomNum]);
+        symbol.width = SYMBOL_WIDTH;
+        symbol.height = SYMBOL_HEIGHT;
+        symbol.x = 0;
+        symbol.y =
+          idx < ITEMS_PER_HALF_REEL
+            ? (symbol.height + SYMBOL_HEIGHT_GAP) * idx
+            : (symbol.height + SYMBOL_HEIGHT_GAP) * (idx - ITEMS_PER_HALF_REEL);
+        symbol.animationSpeed = 0.3;
+        symbol.play();
+        if (idx < ITEMS_PER_HALF_REEL) {
+          this.reelGroup[reelNum * 2].addChild(symbol);
+        } else {
+          this.reelGroup[reelNum * 2 + 1].addChild(symbol);
+        }
+      }
+      this.reelContainer.addChild(this.reelGroup[reelNum * 2]);
+      this.reelContainer.addChild(this.reelGroup[reelNum * 2 + 1]);
+
+      // Set reel group position
+      this.reelGroup[reelNum * 2].y = 0;
+      this.reelGroup[reelNum * 2 + 1].y = (SYMBOL_HEIGHT + SYMBOL_HEIGHT_GAP) * ITEMS_PER_HALF_REEL;
+      this.reelGroup[reelNum * 2].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+      this.reelGroup[reelNum * 2 + 1].x = (SYMBOL_WIDTH + SYMBOL_WIDTH_GAP) * reelNum;
+    }
+
+    this.reelContainer.x = SLOT_START_X;
+    this.reelContainer.y = SLOWING_DISTANCE;
+    this.stage.addChild(this.reelContainer);
+    this.stage.addChild(this.UIContainer);
+    // Tell the `renderer` to `render` the `stage`
+    this.renderer.render(this.stage);
+    // When load function is ended, then start gameLoop
+    this.gameLoop();
   }
 
   startSpin() {
@@ -1003,8 +1013,7 @@ export default class SlotGame {
   }
 
   removeCurrentGame() {
-    PIXI.loader.reset();
-    this.canvas.remove();
+    this.renderer.destroy();
     window.cancelAnimationFrame(this.requestId);
   }
 
@@ -1085,7 +1094,7 @@ export default class SlotGame {
     betSize.width = 185;
     betSize.height = 65;
 
-    this.betSizeText = new Text('0', {
+    this.betSizeText = new Text(Big(0), {
       fontSize: '18.8px',
       letterSpacing: 0.8,
       align: 'center',

@@ -1,4 +1,5 @@
 import { fromJS } from 'immutable';
+import Big from 'big.js';
 import { ACTION_TYPES } from './actions';
 import Web3Service from '../../helpers/web3Service';
 
@@ -9,7 +10,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   isPlaying: false,
   isOccupied: false,
   hasError: false,
-  betSize: 20,
+  betSize: Big(20),
   lineNum: 20,
   deposit: 0,
   bankRoll: 0,
@@ -26,6 +27,13 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
   switch (action.type) {
+    case '@@router/LOCATION_CHANGE': {
+      // for initializing slot Info
+      if (state !== PLAY_SLOT_INITIAL_STATE) {
+        return PLAY_SLOT_INITIAL_STATE;
+      }
+      return state;
+    }
     case ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT:
     case ACTION_TYPES.START_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {

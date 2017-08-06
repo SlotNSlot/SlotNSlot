@@ -32,17 +32,6 @@ class Web3Service {
     return Promise.resolve(3);
   }
 
-  getSlotMachineAddressFromBanker(bankerAddress, index) {
-    if (bankerAddress === 'forceFail') {
-      return Promise.reject();
-    }
-    return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
-  }
-
-  getTheNumberOfBankers() {
-    return Promise.resolve(3);
-  }
-
   getSlotMachineContract(slotAddress) {
     if (slotAddress === 'forceFail') {
       return undefined;
@@ -62,10 +51,6 @@ class Web3Service {
       maxBet: 0.003,
       name: 'mockSlotMachine',
     });
-  }
-
-  getBankerAddress(index) {
-    return Promise.resolve('kdsjflvncnxmnsdnjnqwnjndsjncncncjsdjkas');
   }
 
   getSlotMachines(account) {

@@ -21,52 +21,45 @@ export const ACTION_TYPES = {
   CHANGE_SORTING_OPTION: 'slot_list.CHANGE_SORTING_OPTION',
 };
 
-async function getSlotMachines(account, userType, myAccount = null) {
-  const bigNumberOfTotalNumOfSlotMachine = await Web3Service.getNumOfSlotMachine(account);
-  const totalNumOfSlotMachine = parseInt(bigNumberOfTotalNumOfSlotMachine.valueOf(), 10);
-
-  if (totalNumOfSlotMachine === 0) {
-    return List();
+async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
+  const contract = Web3Service.getSlotMachineContract(slotMachineContractAddress);
+  console.log('contract is ', contract);
+  try {
+    const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
+    return {
+      contract,
+      meta: slotInfo,
+    };
+  } catch (err) {
+    return null;
   }
-
-  const slotAddresses = [];
-  const slotMachineContracts = [];
-
-  for (let i = totalNumOfSlotMachine - 1; i >= 0; i -= 1) {
-    const slotAddress = await Web3Service.getSlotMachineAddressFromBanker(account, i);
-    slotAddresses.push(slotAddress);
-  }
-
-  for (let i = 0; i < slotAddresses.length; i += 1) {
-    const contract = Web3Service.getSlotMachineContract(slotAddresses[i]);
-    try {
-      const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
-      slotMachineContracts.push({
-        contract,
-        meta: slotInfo,
-      });
-    } catch (err) {
-      // console.log(err);
-    }
-  }
-  return fromJS(slotMachineContracts);
 }
 
-export function getMySlotMachines(account) {
+export function getMySlotMachines(myAccount) {
   return async dispatch => {
     dispatch({
       type: ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES,
     });
 
     try {
-      const slotMachineContracts = await getSlotMachines(account, USER_TYPES.MAKER);
-      dispatch({
-        type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
-        payload: {
-          slotContracts: slotMachineContracts,
-        },
+      const slotMachineAddressesArray = await Web3Service.getSlotMachinesFromBanker(myAccount);
+      const promiseArr = [];
+      slotMachineAddressesArray.forEach(slotMachineContractAddress => {
+        promiseArr.push(getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.MAKER, myAccount));
       });
-      Web3Service.makerPendingWatcher(slotMachineContracts, account);
+      await Promise.all(promiseArr).then(resultArr => {
+        const filteredArr = resultArr.filter(slotContractInfo => {
+          return slotContractInfo !== null;
+        });
+        const slotContracts = fromJS(filteredArr);
+        dispatch({
+          type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
+          payload: {
+            slotContracts,
+          },
+        });
+        Web3Service.makerPendingWatcher(slotContracts, myAccount);
+      });
     } catch (err) {
       console.error(err);
       dispatch({
@@ -81,44 +74,29 @@ export function getAllSlotMachines(myAccount) {
     dispatch({
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
     });
-
-    const bankerAddresses = [];
-    const bigNumOfBankers = await Web3Service.getTheNumberOfBankers();
-    const numbOfBankers = parseInt(bigNumOfBankers.valueOf(), 10);
-
-    for (let i = numbOfBankers - 1; i >= 0; i -= 1) {
-      const address = await Web3Service.getBankerAddress(i);
-      bankerAddresses.push(address);
-    }
-
-    const promiseArr = [];
-    bankerAddresses.forEach(bankerAddress => {
-      promiseArr.push(getSlotMachines(bankerAddress, USER_TYPES.PLAYER, myAccount));
-    });
-
-    await Promise.all(promiseArr)
-      .then(resultArr => {
-        const filteredArray = resultArr.filter(contractList => {
-          return contractList.size > 0;
+    try {
+      const allSlotMachineAddressesArray = await Web3Service.getAllSlotMachineAddressesArray();
+      const promiseArr = [];
+      allSlotMachineAddressesArray.forEach(slotMachineContractAddress => {
+        promiseArr.push(getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.PLAYER, myAccount));
+      });
+      await Promise.all(promiseArr).then(resultArr => {
+        const filteredArr = resultArr.filter(slotContractInfo => {
+          return slotContractInfo !== null;
         });
-
-        const slotContracts = List(filteredArray).flatten(true);
-
+        const slotContracts = fromJS(filteredArr);
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
           payload: {
             slotContracts,
           },
         });
-      })
-      .catch(error => {
-        if (error) {
-          console.error(error);
-        }
-        dispatch({
-          type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,
-        });
       });
+    } catch (err) {
+      dispatch({
+        type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,
+      });
+    }
   };
 }
 

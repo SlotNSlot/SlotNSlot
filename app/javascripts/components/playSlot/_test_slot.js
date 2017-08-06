@@ -76,8 +76,8 @@ function kComb(set, k) {
 }
 
 const WIN_LINE = [
-  [0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 0],
+  [0, 0, 0, 0, 0, 1],
   [2, 2, 2, 2, 2, 2],
   [2, 1, 0, 1, 2, 3],
   [0, 1, 2, 1, 2, 4],
@@ -153,6 +153,8 @@ class SlotGameTest {
     let bigWinNum = 0;
     const bigWinCases = {};
     const notValidatedCases = {};
+    const jsTest = {};
+    let jsTestNum = 0;
     for (let i = 0; i < testNum; i += 1) {
       const slotResult = this.makeRandomPrize(this.lineNum);
       const drawResult = this.calculateSlot(slotResult);
@@ -177,6 +179,19 @@ class SlotGameTest {
               notValidatedCases[slotResult] += 1;
             }
             notValidatedNum += 1;
+          } else {
+            let slotLineValue = '';
+            for (let j = 0; j < this.slotLineInfo.length; j += 1) {
+              for (let k = 0; k < 3; k += 1) {
+                slotLineValue += this.slotLineInfo[j][k][0];
+              }
+            }
+            if (jsTest[slotLineValue] === undefined) {
+              jsTest[slotLineValue] = 1;
+              jsTestNum += 1;
+            } else {
+              jsTest[slotLineValue] += 1;
+            }
           }
           break;
       }
@@ -186,6 +201,7 @@ class SlotGameTest {
     console.log('Not validated cases is ', notValidatedCases);
     console.log('Big Win case is ', bigWinNum);
     console.log('Big Win cases is ', bigWinCases);
+    console.log('jsTestNum is ', jsTestNum);
     const endTime = new Date();
     const secGap = (endTime.getTime() - startTime.getTime()) / 1000;
     console.log(`Running time is ${secGap} second.`);

@@ -1,11 +1,18 @@
 import React from 'react';
+import ReactGA from 'react-ga';
 import styles from './footer.scss';
 import Icon from '../../../icons';
 // helpers
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 
 const openLinkWithTrack = linkUrl => {
+  ReactGA.event({
+    category: 'link-click',
+    action: 'click-from-Footer',
+    label: linkUrl,
+  });
   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+
   window.open(linkUrl, '_blank');
 };
 
@@ -37,7 +44,7 @@ const Footer = () =>
         <a
           className={styles.btnContainer}
           onClick={() => {
-            openLinkWithTrack('https://www.hipchat.com/gIUbFZBvh');
+            openLinkWithTrack('https://discord.gg/f97RkQf');
           }}
         >
           <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />

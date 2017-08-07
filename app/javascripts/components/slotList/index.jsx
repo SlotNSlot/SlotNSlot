@@ -56,7 +56,6 @@ class SlotListContainer extends React.PureComponent {
     const { slotListState } = this.props;
 
     let content = null;
-    // Handle Loading State
     if (slotListState.get('isLoading')) {
       content = (
         <div className={styles.spinnerContainer}>
@@ -64,9 +63,9 @@ class SlotListContainer extends React.PureComponent {
         </div>
       );
     } else if (slotListState.get('hasError')) {
-      content = <div>Sorry. We had error to get slot machines.</div>;
+      content = <div>Sorry. We had an error to get the slot machines.</div>;
     } else if (!slotListState.get('allSlotContracts') || !slotListState.get('allSlotContracts').size === 0) {
-      content = <div>We don't have any slot machines yet.</div>;
+      content = <div>There are no slot machines yet.</div>;
     } else {
       content = <SlotList slotContracts={slotListState.get('allSlotContracts')} />;
     }

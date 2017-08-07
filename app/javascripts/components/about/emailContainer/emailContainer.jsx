@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
+import ReactGA from 'react-ga';
 import styles from './emailContainer.scss';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
@@ -18,6 +19,11 @@ class EmailContainer extends React.PureComponent {
           `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
         );
 
+        ReactGA.event({
+          category: 'subscribe',
+          action: 'subscribe-from-top-EmailContainer',
+          label: 'subscribe-email',
+        });
         handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.EMAIL_SUBSCRIBE);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';

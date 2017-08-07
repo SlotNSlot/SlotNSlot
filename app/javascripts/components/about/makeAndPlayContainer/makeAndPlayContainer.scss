@@ -112,12 +112,12 @@
   border-radius: 100.2px;
   background-image: linear-gradient(125deg, #7a48ca, #60aedc);
   box-shadow: 2px 3px 24px 0 #2b1c45;
-
   position: relative;
   left: 0;
   right: 0;
   bottom: 30px;
   z-index: 2;
+  cursor: pointer;
 
   svg {
     width: 7.6px;

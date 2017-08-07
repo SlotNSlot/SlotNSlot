@@ -32,7 +32,7 @@ const DemoContainer = () =>
         </div>
       </div>
 
-      <a onClick={handleWatchDemoClick}>
+      <a className={styles.watchDemoButton} onClick={handleWatchDemoClick}>
         <div className={styles.videoBox}>
           <Icon icon="PLAY_BUTTON" />
           <img src="https://d1qh7kd1bid312.cloudfront.net/about/macbook.png" alt="demo_image" />

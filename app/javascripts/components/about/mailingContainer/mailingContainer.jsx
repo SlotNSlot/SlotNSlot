@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import React from 'react';
+import ReactGA from 'react-ga';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 import styles from './mailingContainer.scss';
 
@@ -17,6 +18,11 @@ class MailingContainer extends React.PureComponent {
           `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
         );
 
+        ReactGA.event({
+          category: 'subscribe',
+          action: 'subscribe-from-bottom-MailingContainer',
+          label: 'subscribe-email',
+        });
         handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.EMAIL_SUBSCRIBE);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';

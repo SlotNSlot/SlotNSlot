@@ -5,6 +5,10 @@
   align-items: center;
   justify-content: center;
 
+  .watchDemoButton {
+    cursor: pointer;
+  }
+
   .innerContainer {
     max-width: 960px;
     margin: 0 auto;

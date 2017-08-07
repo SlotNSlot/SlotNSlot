@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+import ReactGA from 'react-ga';
 // helpers
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 // actions
@@ -73,7 +74,7 @@ class Header extends React.PureComponent {
               <a
                 className={styles.item}
                 onClick={() => {
-                  this.openLinkWithTrack('https://www.hipchat.com/gIUbFZBvh');
+                  this.openLinkWithTrack('https://discord.gg/f97RkQf');
                 }}
               >
                 Chat
@@ -107,10 +108,20 @@ class Header extends React.PureComponent {
   }
 
   trackWordsOnly() {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: '/contribute',
+    });
     handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
   }
 
   openLinkWithTrack(linkUrl) {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: linkUrl,
+    });
     handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
     window.open(linkUrl, '_blank');
   }

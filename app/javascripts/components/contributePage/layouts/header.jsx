@@ -38,7 +38,7 @@ class Header extends React.PureComponent {
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
+              <a className={styles.item} href="https://discord.gg/f97RkQf" target="_blank">
                 Chat
               </a>
             </li>

@@ -20,7 +20,7 @@ const Footer = () =>
         >
           <Icon className={styles.snsBtn} icon="REDDIT_FOR_FOOTER" />
         </a>
-        <a className={styles.btnContainer} href="https://www.hipchat.com/gIUbFZBvh" target="_blank">
+        <a className={styles.btnContainer} href="https://discord.gg/f97RkQf" target="_blank">
           <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />
         </a>
         <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">

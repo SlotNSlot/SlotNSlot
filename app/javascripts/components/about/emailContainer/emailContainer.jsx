@@ -1,12 +1,14 @@
 import React from 'react';
 import Axios from 'axios';
+import ReactGA from 'react-ga';
 import styles from './emailContainer.scss';
-import Icon from '../../../icons';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 
 class EmailContainer extends React.PureComponent {
   async subscribeEmail(e) {
     e.preventDefault();
+
     const emailInput = this.emailInput.value;
     // e-mail validation by regular expression
     const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -17,6 +19,13 @@ class EmailContainer extends React.PureComponent {
         await Axios.post(
           `https://uabahwzd5e.execute-api.us-east-1.amazonaws.com/prod/subscribeMailingList?email=${emailInput}`,
         );
+
+        ReactGA.event({
+          category: 'subscribe',
+          action: 'subscribe-from-top-EmailContainer',
+          label: 'subscribe-email',
+        });
+        handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.EMAIL_SUBSCRIBE);
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {

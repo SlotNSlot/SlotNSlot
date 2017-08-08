@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 // components
+import AdWords from '../helpers/adwords';
 import UpdateBlocker from './updateBlocker';
 import About from '../components/about';
 import Slot from '../components/slot';
@@ -29,6 +30,7 @@ class Root extends React.PureComponent {
 
     return (
       <div>
+        <AdWords />
         <UpdateBlocker location={location}>
           <Switch>
             <Route path="/slot" component={Slot} />

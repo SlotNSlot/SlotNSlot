@@ -68,7 +68,7 @@ const LINE_CASES = [
 // Function of getting Combinations in Array for calculateSlot
 // source : https://gist.github.com/axelpale/3118596
 function kComb(set, k) {
-  var i, j, combs, head, tailcombs;
+  let i, j, combs, head, tailcombs;
   if (k > set.length || k <= 0) {
     return [];
   }
@@ -148,6 +148,8 @@ export default class SlotGame {
     this.blurFilter = new PIXI.filters.BlurYFilter(10);
     this.lsdFilter = new PIXI.filters.ColorMatrixFilter();
     this.lsdFilter.lsd();
+    this.darkFilter = new PIXI.filters.ColorMatrixFilter();
+    this.darkFilter.brightness(0.5);
     this.winLines = new PIXI.Graphics();
     // Game Variable Initialization
     this.stage = null;
@@ -202,6 +204,8 @@ export default class SlotGame {
           { url: 'https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/auto-stop@2x.png', crossOrigin: true },
+          { url: 'assets/images/slot/combined-shape@2x.png', crossOrigin: true },
+          { url: 'assets/images/slot/player-stake@2x.png', crossOrigin: true },
         ])
         .on('progress', (_loader, _resource) => {
           // TODO: Add loading screen
@@ -289,7 +293,7 @@ export default class SlotGame {
     this.winMoneyText.visible = false;
     this.ovalBackground.visible = false;
     this.drawingLines = [];
-    this.playGame();
+    if (!this.isWatcherPage) this.playGame();
   }
 
   autoSpinSwitch() {
@@ -312,8 +316,9 @@ export default class SlotGame {
       if (this.lineNum !== undefined) this.lineNumText.text = `${this.lineNum}`;
       if (this.yourStake !== undefined) this.yourStakeText.text = `${this.yourStake} ETH`;
       if (this.bankRoll !== undefined) this.bankRollText.text = `${this.bankRoll} ETH`;
-      if (this.lineNum !== undefined && this.betSize !== undefined)
+      if (this.lineNum !== undefined && this.betSize !== undefined) {
         this.betAmountText.text = this.betSize.times(this.lineNum);
+      }
       if (this.slotName !== undefined) this.slotNameText.text = this.slotName;
       if (this.bigWinContainer.visible) {
         this.bigWinContainer.scale.x += 0.005 * this.bigWinPopping;
@@ -324,6 +329,12 @@ export default class SlotGame {
       }
       console.log('WAITING...');
       if (this.autoSpinStatus) this.startSpin();
+      if (this.isWatcherPage) {
+        if (this.checkInitQueue()) {
+          this.shiftInitEvent();
+          this.startSpin();
+        }
+      }
     } else if (this.gameState === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
         reel.y += reel.vy;
@@ -331,6 +342,12 @@ export default class SlotGame {
           reel.y -= reel.height * 2;
         }
       });
+      if (this.isWatcherPage) {
+        if (this.checkConfirmQueue()) {
+          console.log('check!');
+          this.shiftConfirmEvent();
+        }
+      }
     } else if (this.gameState === STATE_STOPPING) {
       this.reelGroup.forEach((reel, index) => {
         if (!this.spinStatus[Math.floor(index / 2)]) {
@@ -411,6 +428,7 @@ export default class SlotGame {
       } else {
         this.drawingPercentageList = null;
         this.gameState = STATE_WAITING;
+        if (this.isWatcherPage) this.stopEnd();
       }
     } else if (this.gameState === STATE_BIG_WIN) {
       if (this.bigWinPercentage <= 1) {
@@ -462,6 +480,7 @@ export default class SlotGame {
       } else {
         this.reelGroup = this.newReelGroup;
         this.gameState = STATE_WAITING;
+        if (this.isWatcherPage) this.stopEnd();
       }
     }
 
@@ -525,6 +544,7 @@ export default class SlotGame {
         this.ovalBackground.alpha = 0;
       } else {
         this.gameState = STATE_WAITING;
+        if (this.isWatcherPage) this.stopEnd();
       }
     }
   }
@@ -1023,7 +1043,12 @@ export default class SlotGame {
     const Graphics = PIXI.Graphics;
     const Text = PIXI.Text;
 
-    const mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    let mergedBackground = null;
+    if (this.isWatcherPage) {
+      mergedBackground = new Sprite.fromImage('assets/images/slot/combined-shape@2x.png');
+    } else {
+      mergedBackground = new Sprite(TextureCache['mergedImage.png']);
+    }
     mergedBackground.position.set(0, 0);
     mergedBackground.width = 940;
     mergedBackground.height = 660;
@@ -1047,7 +1072,12 @@ export default class SlotGame {
     this.slotNameText.anchor.set(0.5, 0.5);
     this.slotNameText.position.set(470, 120);
 
-    const yourStake = new Sprite(TextureCache['your-stake.png']);
+    let yourStake = null;
+    if (this.isWatcherPage) {
+      yourStake = new Sprite.fromImage('assets/images/slot/player-stake@2x.png');
+    } else {
+      yourStake = new Sprite(TextureCache['your-stake.png']);
+    }
     yourStake.position.set(41.8, 12.3);
     yourStake.width = 351;
     yourStake.height = 60;
@@ -1107,30 +1137,14 @@ export default class SlotGame {
     betMinusBtn.beginFill(0, 0);
     betMinusBtn.drawRect(194, 583, 38, 57);
     betMinusBtn.interactive = true;
-    betMinusBtn.buttonMode = true;
-    betMinusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.betSize - this.betUnit >= this.minBet) {
-        this.setBetSize(this.betSize.minus(this.betUnit));
-      } else {
-        this.setBetSize(Big(this.minBet));
-      }
-    });
+    betMinusBtn.buttonMode = !this.isWatcherPage;
     betMinusBtn.endFill();
 
     const betPlusBtn = new Graphics();
     betPlusBtn.beginFill(0, 0);
     betPlusBtn.drawRect(333, 583, 38, 57);
     betPlusBtn.interactive = true;
-    betPlusBtn.buttonMode = true;
-    betPlusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.betSize + this.betUnit <= this.maxBet) {
-        this.setBetSize(this.betSize.plus(this.betUnit));
-      } else {
-        this.setBetSize(Big(this.maxBet));
-      }
-    });
+    betPlusBtn.buttonMode = !this.isWatcherPage;
     betPlusBtn.endFill();
 
     const maxBet = new Sprite(TextureCache['max-bet.png']);
@@ -1138,12 +1152,7 @@ export default class SlotGame {
     maxBet.width = 63;
     maxBet.height = 65;
     maxBet.interactive = true;
-    maxBet.buttonMode = true;
-    maxBet.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      this.setBetSize(this.maxBet);
-      this.setLineNum(20);
-    });
+    maxBet.buttonMode = !this.isWatcherPage;
 
     const lineNum = new Sprite(TextureCache['line.png']);
     lineNum.position.set(436, 580);
@@ -1163,52 +1172,84 @@ export default class SlotGame {
     lineMinusBtn.beginFill(0, 0);
     lineMinusBtn.drawRect(440, 583, 38, 57);
     lineMinusBtn.interactive = true;
-    lineMinusBtn.buttonMode = true;
-    lineMinusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.lineNum > 1) {
-        this.setLineNum(this.lineNum - 1);
-      }
-    });
+    lineMinusBtn.buttonMode = !this.isWatcherPage;
     lineMinusBtn.endFill();
 
     const linePlusBtn = new Graphics();
     linePlusBtn.beginFill(0, 0);
     linePlusBtn.drawRect(580, 583, 38, 57);
     linePlusBtn.interactive = true;
-    linePlusBtn.buttonMode = true;
-    linePlusBtn.on('pointerdown', () => {
-      if (this.gameState !== STATE_WAITING) return;
-      if (this.lineNum < 20) {
-        this.setLineNum(this.lineNum + 1);
-      }
-    });
+    linePlusBtn.buttonMode = !this.isWatcherPage;
     linePlusBtn.endFill();
 
     const spinBtn = new Sprite(TextureCache['spin.png']);
     spinBtn.interactive = true;
-    spinBtn.buttonMode = true;
-    spinBtn.on('pointerdown', this.startSpin);
+    spinBtn.buttonMode = !this.isWatcherPage;
     spinBtn.position.set(620, 580);
     spinBtn.width = 186;
     spinBtn.height = 65;
 
     this.autoBtn = new Sprite(TextureCache['auto.png']);
     this.autoBtn.interactive = true;
-    this.autoBtn.buttonMode = true;
-    this.autoBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoBtn.buttonMode = !this.isWatcherPage;
     this.autoBtn.position.set(804, 580);
     this.autoBtn.width = 93;
     this.autoBtn.height = 65;
 
     this.autoStopBtn = new Sprite.fromImage('assets/images/slot/auto-stop@2x.png');
     this.autoStopBtn.interactive = true;
-    this.autoStopBtn.buttonMode = true;
-    this.autoStopBtn.on('pointerdown', this.autoSpinSwitch);
+    this.autoStopBtn.buttonMode = !this.isWatcherPage;
     this.autoStopBtn.position.set(804, 580);
     this.autoStopBtn.width = 93;
     this.autoStopBtn.height = 65;
     this.autoStopBtn.visible = false;
+
+    // For Owner Page
+    if (this.isWatcherPage) {
+      betAmount.filters = [this.darkFilter];
+      betSize.filters = [this.darkFilter];
+      lineNum.filters = [this.darkFilter];
+      spinBtn.filters = [this.darkFilter];
+      maxBet.filters = [this.darkFilter];
+      this.autoBtn.filters = [this.darkFilter];
+    } else {
+      betMinusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.betSize - this.betUnit >= this.minBet) {
+          this.setBetSize(this.betSize.minus(this.betUnit));
+        } else {
+          this.setBetSize(Big(this.minBet));
+        }
+      });
+      betPlusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.betSize + this.betUnit <= this.maxBet) {
+          this.setBetSize(this.betSize.plus(this.betUnit));
+        } else {
+          this.setBetSize(Big(this.maxBet));
+        }
+      });
+      maxBet.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        this.setBetSize(this.maxBet);
+        this.setLineNum(20);
+      });
+      lineMinusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.lineNum > 1) {
+          this.setLineNum(this.lineNum - 1);
+        }
+      });
+      linePlusBtn.on('pointerdown', () => {
+        if (this.gameState !== STATE_WAITING) return;
+        if (this.lineNum < 20) {
+          this.setLineNum(this.lineNum + 1);
+        }
+      });
+      spinBtn.on('pointerdown', this.startSpin);
+      this.autoBtn.on('pointerdown', this.autoSpinSwitch);
+      this.autoStopBtn.on('pointerdown', this.autoSpinSwitch);
+    }
 
     this.stage.addChild(slotBackground);
     this.UIContainer.addChild(mergedBackground);

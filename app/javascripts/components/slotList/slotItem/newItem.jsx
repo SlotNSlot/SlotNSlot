@@ -23,7 +23,7 @@ const NewSlotListItem = ({ isMaking = false }) => {
   }
 
   return (
-    <Link to="/slot/make/1">
+    <Link to="/slot/make/step/1">
       <li className={styles.newSlotListItem}>
         <div className={styles.newSlotListItemContent}>
           {content}

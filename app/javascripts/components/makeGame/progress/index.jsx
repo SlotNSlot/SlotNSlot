@@ -14,11 +14,17 @@ const steps = currentStep => {
     let progressBall;
     if (i + 1 <= currentStep) {
       progressBall = (
-        <Link to={`/slot/make/${i + 1}`} className={i + 1 <= currentStep ? styles.activeBall : styles.deactiveBall} />
+        <Link
+          to={`/slot/make/step/${i + 1}`}
+          className={i + 1 <= currentStep ? styles.activeBall : styles.deactiveBall}
+        />
       );
     } else {
       progressBall = (
-        <div to={`/slot/make/${i + 1}`} className={i + 1 <= currentStep ? styles.activeBall : styles.deactiveBall} />
+        <div
+          to={`/slot/make/step/${i + 1}`}
+          className={i + 1 <= currentStep ? styles.activeBall : styles.deactiveBall}
+        />
       );
     }
 

@@ -136,7 +136,7 @@ class MakeGameCompleteStep extends React.PureComponent {
   goToPage(step) {
     const { dispatch } = this.props;
 
-    dispatch(push(`/slot/make/${step}`));
+    dispatch(push(`/slot/make/step/${step}`));
   }
 }
 

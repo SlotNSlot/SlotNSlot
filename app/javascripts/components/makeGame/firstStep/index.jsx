@@ -85,7 +85,7 @@ class MakeGameFirstStep extends React.PureComponent {
   goToNextPage() {
     const { dispatch } = this.props;
 
-    dispatch(push('/slot/make/2'));
+    dispatch(push('/slot/make/step/2'));
   }
 
   selectHitRatio(hitRatio) {

@@ -4,6 +4,7 @@ import Web3Service from '../../helpers/web3Service';
 export const USER_TYPES = {
   PLAYER: 0,
   MAKER: 1,
+  WATCHER: 2,
 };
 
 export const ACTION_TYPES = {

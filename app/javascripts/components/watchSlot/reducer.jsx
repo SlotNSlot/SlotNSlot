@@ -5,8 +5,8 @@ import Big from 'big.js';
 
 export const WATCH_SLOT_INITIAL_STATE = fromJS({
   isLoading: false,
-  isPlaying: false,
   isOccupied: false,
+  animationStatus: 0, // 0(stopped), 1(spinning), 2(going to stopped)
   hasError: false,
   betSize: Big(20),
   lineNum: 20,
@@ -16,8 +16,10 @@ export const WATCH_SLOT_INITIAL_STATE = fromJS({
   minBet: 2,
   maxBet: 20,
   slotMachineContract: null,
-  recentTxHash: '',
   slotName: '',
+  initQueue: [],
+  confirmQueue: [],
+  chainIndex: 0,
 });
 
 export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
@@ -55,71 +57,55 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
       });
     }
 
-    case ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT: {
-      return state.withMutations(currentState => {
-        const bigNumber = Web3Service.getWeb3().toBigNumber(
-          parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10),
-        );
-        return currentState.set('deposit', bigNumber).set('isLoading', false).set('hasError', false);
-      });
-    }
-
-    case ACTION_TYPES.START_TO_OCCUPY_SLOT_MACHINE: {
-      return state.withMutations(currentState => {
-        return currentState.set('isLoading', true).set('hasError', false);
-      });
-    }
-
-    case ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT:
-    case ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE: {
-      return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('hasError', true);
-      });
-    }
-
-    case ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: {
-      return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('hasError', false).set('isOccupied', true);
-      });
-    }
-
-    case ACTION_TYPES.START_TO_WATCH_GAME: {
-      return state.withMutations(currentState => {
-        return currentState.set('isPlaying', true).set('hasError', false).set('recentTxHash', action.payload.txHash);
-      });
-    }
-
-    case ACTION_TYPES.FAILED_TO_WATCH_GAME: {
-      return state.set('hasError', true);
-    }
-
-    case ACTION_TYPES.SUCCEEDED_TO_WATCH_GAME: {
+    case ACTION_TYPES.SPIN_START: {
       return state.withMutations(currentState => {
         return currentState
-          .set('isPlaying', false)
-          .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
-          .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)));
+          .set('animationStatus', 1)
+          .set('lineNum', action.payload.lineNum)
+          .set('betSize', action.payload.betSize)
+          .set('chainIndex', action.payload.chainIndex);
       });
     }
 
-    case ACTION_TYPES.SET_BET_SIZE: {
-      return state.set('betSize', action.payload.betSize);
+    case ACTION_TYPES.STOP_START: {
+      return state.withMutations(currentState => {
+        const betAmount = currentState.get('betSize').times(currentState.get('lineNum'));
+        const diffMoney = action.payload.winMoney.minus(betAmount);
+        return currentState
+          .set('animationStatus', 2)
+          .set('deposit', currentState.get('deposit').plus(diffMoney))
+          .set('bankRoll', currentState.get('bankRoll').minus(diffMoney));
+      });
     }
 
-    case ACTION_TYPES.SET_LINE_NUM: {
-      return state.set('lineNum', action.payload.lineNum);
+    case ACTION_TYPES.STOP_END: {
+      return state.set('animationStatus', 0);
     }
 
-    case ACTION_TYPES.SET_BANK_ROLL: {
-      return state.set('bankRoll', action.payload.bankRoll);
+    case ACTION_TYPES.PUSH_INIT_EVENT: {
+      return state.update('initQueue', list => list.push(action.payload.gameInfo));
     }
 
-    case ACTION_TYPES.SPIN_START: {
-      return state.set('isSpinning', true);
+    case ACTION_TYPES.SHIFT_INIT_EVENT: {
+      return state.withMutations(currentState => {
+        const updatedDeposit =
+          currentState.get('deposit') -
+          currentState.get('initQueue').get(0).betSize * currentState.get('initQueue').get(0).lineNum;
+        return currentState
+          .set('isPlaying', true)
+          .set('deposit', updatedDeposit)
+          .set('betSize', currentState.get('initQueue').get(0).betSize)
+          .set('lineNum', currentState.get('initQueue').get(0).lineNum)
+          .shift('initQueue');
+      });
     }
 
-    case ACTION_TYPES.SPIN_END: {
-      return state.set('isSpinning', false);
+    case ACTION_TYPES.PUSH_CONFIRM_EVENT: {
+      return state.update('confirmQueue', list => list.push(action.payload));
+    }
+
+    case ACTION_TYPES.SHIFT_CONFIRM_EVENT: {
+      return state.update('confirmQueue', list => list.delete(action.queueIndex));
     }
 
     default:

@@ -1,78 +1,25 @@
 import { push } from 'react-router-redux';
+import { fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
 import Store from 'store';
-// import USER_TYPES from '../slotList/actions';
+import { USER_TYPES } from '../slotList/actions';
 
 export const ACTION_TYPES = {
-  SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
-  SET_LINE_NUM: 'play_slot.SET_LINE_NUM',
-  SET_BANK_ROLL: 'play_slot.SET_BANK_ROLL',
-  SPIN_START: 'watch_slot.SPIN_START',
-  SPIN_END: 'watch_slot.SPIN_END',
   SET_OCCUPIED_STATE: 'watch_slot.SET_OCCUPIED_STATE',
+  SPIN_START: 'watch_slot.SPIN_START',
+  STOP_START: 'watch_slot.STOP_START',
+  STOP_END: 'watch_slot.STOP_END',
 
   START_TO_GET_SLOT_MACHINE: 'watch_slot.START_TO_GET_SLOT_MACHINE',
   SUCCEEDED_TO_GET_SLOT_MACHINE: 'watch_slot.SUCCEED_TO_GET_SLOT_MACHINE',
   FAILED_TO_GET_SLOT_MACHINE: 'watch_slot.FAILED_TO_GET_SLOT_MACHINE',
-  SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: 'watch_slot.SUCCEED_TO_OCCUPY_SLOT_MACHINE',
-  FAILED_TO_OCCUPY_SLOT_MACHINE: 'watch_slot.FAILED_TO_OCCUPY_SLOT_MACHINE',
 
-  START_TO_OCCUPY_SLOT_MACHINE: 'watch_slot.START_TO_OCCUPY_SLOT_MACHINE',
-  START_TO_WATCH_GAME: 'watch_slot.START_TO_WATCH_GAME',
-  SUCCEEDED_TO_WATCH_GAME: 'watch_slot.SUCCEEDED_TO_WATCH_GAME',
-  FAILED_TO_WATCH_GAME: 'watch_slot.FAILED_TO_WATCH_GAME',
-
-  START_TO_SEND_ETHER_TO_CONTRACT: 'watch_slot.START_TO_SEND_ETHER_TO_CONTRACT',
-  SEND_ETHER_TO_SLOT_CONTRACT: 'watch_slot.SEND_ETHER_TO_SLOT_CONTRACT',
-  FAILED_TO_SEND_ETHER_TO_CONTRACT: 'watch_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
+  PUSH_INIT_EVENT: 'watch_slot.PUSH_INIT_EVENT',
+  SHIFT_INIT_EVENT: 'watch_slot.SHIFT_INIT_EVENT',
+  PUSH_CONFIRM_EVENT: 'watch_slot.PUSH_CONFIRM_EVENT',
+  SHIFT_CONFIRM_EVENT: 'watch_slot.SHIFT_CONFIRM_EVENT',
 };
-
-export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiValue) {
-  return async dispatch => {
-    dispatch({
-      type: ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT,
-    });
-
-    try {
-      await Web3Service.sendEtherToAccount({
-        from: playerAccount,
-        to: slotMachineContract.address,
-        etherValue: Web3Service.makeEthFromWei(weiValue),
-      });
-
-      dispatch({
-        type: ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT,
-        payload: {
-          weiValue,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-      dispatch({
-        type: ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT,
-      });
-    }
-  };
-}
-
-export function setBetSize(betSize) {
-  return {
-    type: ACTION_TYPES.SET_BET_SIZE,
-    payload: {
-      betSize,
-    },
-  };
-}
-
-export function setLineNum(lineNum) {
-  return {
-    type: ACTION_TYPES.SET_LINE_NUM,
-    payload: {
-      lineNum,
-    },
-  };
-}
 
 export function setOccupiedState(isOccupied) {
   return {
@@ -80,6 +27,57 @@ export function setOccupiedState(isOccupied) {
     payload: {
       occupied: isOccupied,
     },
+  };
+}
+
+async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
+  const contract = Web3Service.getSlotMachineContract(slotMachineContractAddress);
+  console.log('contract is ', contract);
+  try {
+    const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
+    return {
+      contract,
+      meta: slotInfo,
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+export function getMySlotMachines(myAccount) {
+  return async () => {
+    try {
+      const slotMachineAddressesArray = await Web3Service.getSlotMachinesFromBanker(myAccount);
+      const promiseArr = [];
+      slotMachineAddressesArray.forEach(slotMachineContractAddress => {
+        promiseArr.push(getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.MAKER, myAccount));
+      });
+      console.log('slotMachineAddressesArray is ', slotMachineAddressesArray);
+      await Promise.all(promiseArr).then(resultArr => {
+        const filteredArr = resultArr.filter(slotContractInfo => {
+          return slotContractInfo !== null;
+        });
+        const slotContracts = fromJS(filteredArr);
+        Web3Service.makerPendingWatcher(slotContracts, myAccount);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+}
+
+export function attachEventWatcher(slotAddress, eventHandler) {
+  return async dispatch => {
+    try {
+      Web3Service.slotEventMonitor(slotAddress, eventHandler);
+    } catch (error) {
+      Toast.notie.alert({
+        type: 'error',
+        text: `Invalid Error: ${error}`,
+        stay: true,
+      });
+      dispatch(push('/slot/make'));
+    }
   };
 }
 
@@ -119,41 +117,6 @@ export function getSlotMachine(slotAddress, playerAddress) {
   };
 }
 
-export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
-  return async dispatch => {
-    const slotInfo = await Web3Service.getSlotMachineInfo(slotMachineContract);
-    if (slotInfo.mPlayer === playerAddress) {
-      alert('game is already occupied');
-      return;
-    }
-
-    if (!weiValue) {
-      alert('You should set deposit');
-      return;
-    }
-
-    dispatch({
-      type: ACTION_TYPES.START_TO_OCCUPY_SLOT_MACHINE,
-    });
-
-    try {
-      await Web3Service.occupySlotMachine(slotMachineContract, playerAddress, weiValue);
-      dispatch({
-        type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
-      });
-    } catch (err) {
-      Toast.notie.alert({
-        type: 'error',
-        text: `There was an error for occupying this slot machine. ${err}`,
-        stay: true,
-      });
-      dispatch({
-        type: ACTION_TYPES.FAILED_TO_OCCUPY_SLOT_MACHINE,
-      });
-    }
-  };
-}
-
 export function removeSlotMachine(slotContract, playerAddress) {
   return async dispatch => {
     try {
@@ -165,74 +128,79 @@ export function removeSlotMachine(slotContract, playerAddress) {
   };
 }
 
-export function watchSlotInfo(slotContract) {
+export function pushInitEvent(gameInfo) {
   return async dispatch => {
-    try {
-      const result = await Web3Service.getContractPendingTransaction(slotContract.address, 'gameInitialized');
-
-      let curInitEvent = Store.get('initEvent') || {};
-      const txHash = result.transactionHash;
-      if (!(txHash in curInitEvent)) curInitEvent[txHash] = true;
-      Store.set('initEvent', curInitEvent);
-
-      const data = result.data.substr(2);
-      console.log(data);
-      const _betSize = Web3Service.makeEthFromWei(parseInt(data.substr(64, 64), 16));
-      const _lineNum = parseInt(data.substr(128, 64), 16);
-      console.log(`
-        txHash : ${result.transactionHash},
-        betSize : ${_betSize} ETH
-        lineNum : ${_lineNum}
-        betAmount : ${_betSize * _lineNum} ETH
-      `);
-      dispatch({
-        type: ACTION_TYPES.SET_BET_SIZE,
-        payload: {
-          betSize: _betSize,
-        },
-      });
-      dispatch({
-        type: ACTION_TYPES.SET_LINE_NUM,
-        payload: {
-          lineNum: _lineNum,
-        },
-      });
-      dispatch({
-        type: ACTION_TYPES.START_TO_WATCH_GAME,
-        payload: {
-          txHash: result.transactionHash,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    dispatch({
+      type: ACTION_TYPES.PUSH_INIT_EVENT,
+      payload: {
+        betSize: gameInfo.betSize,
+        lineNum: gameInfo.lineNum,
+        chainIndex: gameInfo.chainIndex,
+      },
+    });
   };
 }
 
-export function receiveSlotResult(playInfo, stopSpinFunc) {
+export function shiftInitEvent() {
   return async dispatch => {
-    try {
-      const ethResult = await Web3Service.getWatchResult(playInfo.slotMachineContract);
-      const betMoney = playInfo.lineNum * playInfo.betSize;
-      const diffMoney = ethResult.minus(betMoney);
-      console.log(`
-        ethResult: ${ethResult}
-        diffMoney: ${diffMoney}
-      `);
-      const temp = Store.get('initEvent');
-      console.log(temp);
-      stopSpinFunc(ethResult);
-      dispatch({
-        type: ACTION_TYPES.SUCCEEDED_TO_WATCH_GAME,
-        payload: {
-          diffMoney,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-      dispatch({
-        type: ACTION_TYPES.FAILED_TO_WATCH_GAME,
-      });
-    }
+    dispatch({
+      type: ACTION_TYPES.SHIFT_INIT_EVENT,
+    });
+  };
+}
+
+export function pushConfirmEvent(gameResult) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.PUSH_CONFIRM_EVENT,
+      payload: {
+        winMoney: gameResult.winMoney,
+        chainIndex: gameResult.chainIndex,
+      },
+    });
+  };
+}
+
+export function shiftConfirmEvent(queueIndex) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.SHIFT_CONFIRM_EVENT,
+      payload: {
+        queueIndex,
+      },
+    });
+  };
+}
+
+export function spinStart(gameInfo) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.SPIN_START,
+      payload: {
+        betSize: gameInfo.betSize,
+        lineNum: gameInfo.lineNum,
+        chainIndex: gameInfo.chainIndex,
+      },
+    });
+  };
+}
+
+export function stopStart(gameResult) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.STOP_START,
+      payload: {
+        winMoney: gameResult.winMoney,
+        chainIndex: gameResult.chainIndex,
+      },
+    });
+  };
+}
+
+export function stopEnd() {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.STOP_END,
+    });
   };
 }

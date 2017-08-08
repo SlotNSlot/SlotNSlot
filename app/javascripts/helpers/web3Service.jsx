@@ -402,6 +402,86 @@ class Web3Service {
     });
   }
 
+  /**
+    * @param  {string} slotMachineContractAddress contractAdress for Store key
+    * @param  {function} handleWeb3EventsFunc event callback handler
+    * @return {void}
+  */
+  slotEventMonitor(slotMachineContractAddress, handleWeb3EventsFunc) {
+    if (!Store.get(slotMachineContractAddress)) {
+      throw new Error('Invalid connect. Please try it again from your slot list.');
+    }
+
+    Store.update(slotMachineContractAddress, slotGenesisInfo => {
+      slotGenesisInfo.isOccuWatchedAtWatcherPage = false;
+      slotGenesisInfo.isInitWatchedAtWatcherPage = [];
+      slotGenesisInfo.isConfirmWatchedAtWatcherPage = [];
+      slotGenesisInfo.nowConfirmIndex = null;
+    });
+
+    const contractFilter = this.web3.eth.filter({
+      fromBlock: 'pending',
+      toBlock: 'pending',
+    });
+
+    contractFilter.watch((err, result) => {
+      if (err) {
+        console.error(err);
+      } else if (slotMachineContractAddress === result.address) {
+        if (result.topics) {
+          result.topics.forEach(topic => {
+            switch (topic) {
+              case SLOT_TOPICS_ENCODED.gameOccupied:
+                console.log('occupied result is ', result);
+                const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatchedAtWatcherPage;
+                if (!isOccuWatched) {
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    slotGenesisInfo.isOccuWatchedAtWatcherPage = true;
+                  });
+                  handleWeb3EventsFunc('gameOccupied');
+                }
+                console.log('occupiedTopic is ', result);
+                break;
+
+              case SLOT_TOPICS_ENCODED.gameInitialized:
+                const isInitWatched = Store.get(slotMachineContractAddress).isInitWatchedAtWatcherPage;
+                if (!isInitWatched.includes(result.transactionHash)) {
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    slotGenesisInfo.isInitWatchedAtWatcherPage.push(result.transactionHash);
+                  });
+                  handleWeb3EventsFunc('gameInitialized', result);
+                }
+
+                break;
+
+              case SLOT_TOPICS_ENCODED.gameConfirmed:
+                const resultChainIndex = parseInt(result.data.substr(2).substr(64, 64), 16);
+                const isConfirmWatched = Store.get(slotMachineContractAddress).isConfirmWatchedAtWatcherPage;
+                const nowConfirmIndex = Store.get(slotMachineContractAddress).nowConfirmIndex;
+                console.log('isConfirmWatched is ', isConfirmWatched);
+                if (!isConfirmWatched.includes(result.transactionHash) && nowConfirmIndex !== resultChainIndex) {
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    slotGenesisInfo.isConfirmWatchedAtWatcherPage.push(result.transactionHash);
+                    slotGenesisInfo.nowConfirmIndex = resultChainIndex;
+                  });
+                  handleWeb3EventsFunc('gameConfirmed', result);
+                }
+
+                break;
+
+              case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
+                handleWeb3EventsFunc('playerLeft');
+                console.log('playerLeftTopic is ', result);
+                break;
+
+              default:
+                break;
+            }
+          });
+        }
+      }
+    });
+  }
   createGenesisRandomNumber(slotAddress, userType, reset = false) {
     if (Store.get(slotAddress) !== undefined && !reset) {
       console.log('already slotGenesisRandomNumber exist ', Store.get(slotAddress));
@@ -667,10 +747,6 @@ class Web3Service {
       if (err) {
         console.error(err);
       } else if (addressList.includes(result.address)) {
-        const occupiedTopic = SLOT_TOPICS_ENCODED.gameOccupied;
-        const initializedTopic = SLOT_TOPICS_ENCODED.gameInitialized;
-        const playerLeftTopic = SLOT_TOPICS_ENCODED.playerLeft;
-
         if (result.topics) {
           result.topics.forEach(topic => {
             const slotMachineContract = slotMachineContracts.find(slotMachine => {
@@ -678,21 +754,24 @@ class Web3Service {
             });
             const slotMachineContractAddress = slotMachineContract.get('contract').address;
             switch (topic) {
-              case occupiedTopic:
+              case SLOT_TOPICS_ENCODED.gameOccupied:
                 this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
                 console.log('occupiedTopic is ', result);
                 break;
-              case initializedTopic:
+
+              case SLOT_TOPICS_ENCODED.gameInitialized:
                 this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
                 console.log('initializedTopic is ', result);
                 break;
-              case playerLeftTopic: // reset Genesis Number
+
+              case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
                 this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
                 Toast.notie.alert({
                   text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
                 });
                 console.log('playerLeftTopic is ', result);
                 break;
+
               default:
                 break;
             }
@@ -742,8 +821,6 @@ class Web3Service {
     const slotMachineContractAddress = slotMachineContract.address;
     const isInitWatched = Store.get(slotMachineContractAddress).isInitWatched;
     if (!isInitWatched.includes(eventResult.transactionHash)) {
-      console.log('isInitWatched is ', isInitWatched);
-      console.log('eventResult.transactionHash is ', eventResult.transactionHash);
       if (eventResult.data === undefined) return;
       if (eventResult.data.length !== 2 + (1 + SHA_CHAIN_NUM) * 64) return;
       const playerAddress = eventResult.data.substr(26, 40);

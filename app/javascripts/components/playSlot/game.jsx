@@ -328,9 +328,11 @@ export default class SlotGame {
       }
       console.log('WAITING...');
       if (this.autoSpinStatus) this.startSpin();
-      if (this.checkInitQueue()) {
-        this.shiftInitEvent();
-        this.startSpin();
+      if (this.isWatcherPage) {
+        if (this.checkInitQueue()) {
+          this.shiftInitEvent();
+          this.startSpin();
+        }
       }
     } else if (this.gameState === STATE_SPINNING) {
       this.reelGroup.forEach(reel => {
@@ -339,9 +341,11 @@ export default class SlotGame {
           reel.y -= reel.height * 2;
         }
       });
-      if (this.checkConfirmQueue()) {
-        console.log('check!');
-        this.shiftConfirmEvent();
+      if (this.isWatcherPage) {
+        if (this.checkConfirmQueue()) {
+          console.log('check!');
+          this.shiftConfirmEvent();
+        }
       }
     } else if (this.gameState === STATE_STOPPING) {
       this.reelGroup.forEach((reel, index) => {

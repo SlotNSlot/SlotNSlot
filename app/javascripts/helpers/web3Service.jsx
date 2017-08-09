@@ -13,7 +13,7 @@ const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const INIT_ROUND = ROUND_PER_CHAIN + 1;
 
-const SLOT_MANAGER_ADDRESS = '0x8bfa888e95e25ad09511b96730311fd0938bb8f7';
+const SLOT_MANAGER_ADDRESS = '0xdbc3e11e344e7449eb34a35fe8bd9b0902b01d13';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0xa8594317be29e78728fb10fbf57b1f8becff7bc83fa4639b9c3b0a4c965f9629',
   bankerSeedInitialized: '0xa4338f9ae2970a5aa65035a4c9fb88da1cd0940e3df6fd42874bb3d862806972',
@@ -34,7 +34,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myInitializedGameInitWatchers = {};
 
-    if (typeof web3 === 'undefined') {
+    if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);

@@ -222,17 +222,30 @@ class Web3Service {
       });
     });
   }
+
+  async kickPlayer(slotMachineContract, bankerAddress) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.leave({ from: bankerAddress, gas: 1000000 }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
   // 0 [player], 1 [maker]
   async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     const slotInfo = await this.getInfo(slotMachineContract);
     if (userType === USER_TYPES.PLAYER) {
-      if (slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
+      if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
         throw new Error('This slot is already occupied');
       }
       if (slotInfo.owner === myAddress) {
         throw new Error('This slot is mine');
       }
     }
+
     const playerBalance = await this.getPlayerBalance(slotMachineContract);
     const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
     return payload;
@@ -385,6 +398,7 @@ class Web3Service {
             round: [], // at BankerSide, this will be asynchronus. So round will be saved each Chain.
             isOccuWatched: false,
             isInitWatched: [],
+            noRecentActing: true,
           };
           for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
             slotGenesisInfo.val.push(Math.random().toString());
@@ -611,6 +625,27 @@ class Web3Service {
     });
   }
 
+  playerKickedWatcher(slotMachineContractAddress) {
+    const contractFilter = this.web3.eth.filter({
+      fromBlock: 'pending',
+      toBlock: 'pending',
+    });
+
+    contractFilter.watch((err, result) => {
+      if (err) {
+        console.error(err);
+      } else if (slotMachineContractAddress === result.address) {
+        if (result.topics) {
+          result.topics.forEach(topic => {
+            if (topic === SLOT_TOPICS_ENCODED.playerLeft) {
+              console.log('you are kicked');
+            }
+          });
+        }
+      }
+    });
+  }
+
   makerPendingWatcher(slotMachineContracts, bankerAddress) {
     const contractFilter = this.web3.eth.filter({
       fromBlock: 'pending',
@@ -622,6 +657,17 @@ class Web3Service {
       this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER);
       return slotMachineContractAddress;
     });
+
+    setInterval(() => {
+      addressList.forEach(slotMachineContractAddress => {
+        if (Store.get(slotMachineContractAddress).noRecentActing === true) {
+          const slotMachineContract = slotMachineContracts.find(
+            slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
+          );
+          this.kickPlayer(slotMachineContract, bankerAddress);
+        }
+      });
+    }, 1000 * 60 * 5); // per 5 minute
 
     contractFilter.watch((err, result) => {
       if (err) {
@@ -643,6 +689,8 @@ class Web3Service {
                 this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
                 console.log('initializedTopic is ', result);
                 break;
+
+              // TODO : case SLOT_TOPICS_ENCODED.playerSeedSet: // noRecentActing
 
               case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
                 this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
@@ -682,6 +730,7 @@ class Web3Service {
           shaArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
         }
         slotGenesisInfo.isOccuWatched = true;
+        slotGenesisInfo.noRecentActing = false; // for DEMO kicking
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
 
@@ -714,6 +763,7 @@ class Web3Service {
         console.log(`chainIndex is ${eventResultIndex}, shaCount is ${shaCount}, sha is ${sha}`);
         slotGenesisInfo.round[eventResultIndex] -= 1;
         slotGenesisInfo.isInitWatched.push(eventResult.transactionHash);
+        slotGenesisInfo.noRecentActing = false; // for DEMO kicking
       });
       slotMachineContract.setBankerSeed(sha, eventResultIndex, { from: bankerAddress, gas: 2200000 }, err => {
         if (err) {

@@ -19,7 +19,40 @@ export const ACTION_TYPES = {
   SHIFT_INIT_EVENT: 'watch_slot.SHIFT_INIT_EVENT',
   PUSH_CONFIRM_EVENT: 'watch_slot.PUSH_CONFIRM_EVENT',
   SHIFT_CONFIRM_EVENT: 'watch_slot.SHIFT_CONFIRM_EVENT',
+
+  START_TO_KICK_PLAYER: 'watch_slot.START_TO_KICK_PLAYER',
+  SUCCEEDED_TO_KICK_PLAYER: 'watch_slot.SUCCEEDED_TO_KICK_PLAYER',
+  FAILED_TO_KICK_PLAYER: 'watch_slot.FAILED_TO_KICK_PLAYER',
 };
+
+export function kickPlayer(slotAddress, bankerAddress) {
+  return async dispatch => {
+    dispatch({
+      type: ACTION_TYPES.START_TO_KICK_PLAYER,
+    });
+    try {
+      const slotMachineContract = Web3Service.getSlotMachineContract(slotAddress);
+      await Web3Service.kickPlayer(slotMachineContract, bankerAddress);
+
+      dispatch({
+        type: ACTION_TYPES.SUCCEEDED_TO_KICK_PLAYER,
+      });
+      Toast.notie.alert({
+        text: 'Player was kicked successfully.',
+      });
+    } catch (err) {
+      dispatch({
+        type: ACTION_TYPES.FAILED_TO_KICK_PLAYER,
+      });
+
+      Toast.notie.alert({
+        type: 'error',
+        text: `There was an error for kicking player. ${err}`,
+        stay: true,
+      });
+    }
+  };
+}
 
 export function setDeposit(deposit) {
   return {
@@ -75,7 +108,7 @@ export function getMySlotMachines(myAccount) {
 }
 
 export function attachEventWatcher(slotAddress, eventHandler) {
-  return async dispatch => {
+  return async () => {
     try {
       Web3Service.slotEventMonitor(slotAddress, eventHandler);
     } catch (error) {
@@ -89,7 +122,7 @@ export function attachEventWatcher(slotAddress, eventHandler) {
   };
 }
 
-export function getSlotMachine(slotAddress, playerAddress) {
+export function getSlotMachine(slotAddress) {
   return async dispatch => {
     dispatch({
       type: ACTION_TYPES.START_TO_GET_SLOT_MACHINE,
@@ -98,11 +131,6 @@ export function getSlotMachine(slotAddress, playerAddress) {
     try {
       const slotMachineContract = Web3Service.getSlotMachineContract(slotAddress);
       const slotInfo = await Web3Service.getSlotMachineInfo(slotMachineContract);
-
-      // Set occupied state
-      if (slotInfo.mPlayer === playerAddress) {
-        dispatch(setOccupiedState(true));
-      }
 
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE,
@@ -120,7 +148,7 @@ export function getSlotMachine(slotAddress, playerAddress) {
         stay: true,
       });
 
-      dispatch(push('/slot/play'));
+      dispatch(push('/slot/make'));
     }
   };
 }

@@ -20,6 +20,7 @@ export const WATCH_SLOT_INITIAL_STATE = fromJS({
   initQueue: [],
   confirmQueue: [],
   chainIndex: 0,
+  player: '',
 });
 
 export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
@@ -57,7 +58,8 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
           .set('bankRoll', action.payload.bankRoll) // Big Number
           .set('deposit', action.payload.deposit) // Big Number
           .set('slotMachineContract', action.slotMachineContract)
-          .set('slotName', action.payload.slotName);
+          .set('slotName', action.payload.slotName)
+          .set('player', action.payload.mPlayer);
       });
     }
 
@@ -110,6 +112,22 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SHIFT_CONFIRM_EVENT: {
       return state.update('confirmQueue', list => list.delete(action.queueIndex));
+    }
+
+    case ACTION_TYPES.START_TO_KICK_PLAYER: {
+      return state.set('isLoading', true);
+    }
+
+    case ACTION_TYPES.FAILED_TO_KICK_PLAYER: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
+      });
+    }
+
+    case ACTION_TYPES.SUCCEEDED_TO_KICK_PLAYER: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('player', '');
+      });
     }
 
     default:

@@ -11,7 +11,11 @@ const SlotListItem = ({ slotContract, isBanker }) => {
       to={`/slot/${isBanker ? 'make' : 'play'}/${slotContract.get('contract').address}`}
       className={`${slotContract.get('meta').get('mPlayer')}`}
     >
-      <li className={`${styles.slotListItem} ${mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied}`}>
+      <li
+        className={`${styles.slotListItem} ${isBanker
+          ? mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied
+          : ''}`}
+      >
         <h2 className={styles.itemTitle}>
           ✨<span>{slotContract.get('meta').get('slotName')}</span>✨
         </h2>

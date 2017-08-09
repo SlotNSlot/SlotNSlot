@@ -4,6 +4,7 @@ import ReactGA from 'react-ga';
 import styles from './emailContainer.scss';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
+import Icon from '../../../icons';
 
 class EmailContainer extends React.PureComponent {
   async subscribeEmail(e) {
@@ -64,6 +65,30 @@ class EmailContainer extends React.PureComponent {
                 </button>
               </div>
             </form>
+
+            <div className={styles.linkBlock}>
+              <a className={styles.btnContainer} href="https://t.me/slotnslot_ico" target="_blank">
+                <Icon className={styles.snsBtn} icon="TELEGRAM" />
+              </a>
+              <a className={styles.btnContainer} href="https://www.facebook.com/slotnslot.eth" target="_blank">
+                <Icon className={styles.snsBtn} icon="FACEBOOK" />
+              </a>
+              <a className={styles.btnContainer} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+                <Icon className={styles.snsBtn} icon="GITHUB" />
+              </a>
+              <a className={styles.btnContainer} href="https://www.reddit.com/r/slotnslot" target="_blank">
+                <Icon className={styles.snsBtn} icon="REDDIT" />
+              </a>
+              <a className={styles.btnContainer} href="https://discord.gg/f97RkQf" target="_blank">
+                <Icon className={styles.snsBtn} icon="DISCORD" />
+              </a>
+              <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
+                <Icon className={styles.snsBtn} icon="TWITTER" />
+              </a>
+              <a className={styles.btnContainer} href="https://medium.com/@kkenji1024" target="_blank">
+                <Icon className={styles.snsBtn} icon="MEDIUM" />
+              </a>
+            </div>
           </div>
         </div>
         <CrowdSaleContainer />

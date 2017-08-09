@@ -14,7 +14,7 @@
   height: 100%;
   display: flex;
   align-items: center;
-  padding-top: 30px;
+  // padding-top: 30px;
 }
 
 .emailTitle {
@@ -50,7 +50,7 @@
   letter-spacing: 1.5px;
   text-align: center;
   color: #8280bd;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
 
   span {
     font-weight: 400;
@@ -58,15 +58,15 @@
 }
 
 .linkBlock {
-  margin: 50px auto 0 auto;
+  margin: 30px auto 0 auto;
   height: 50px;
   text-align: center;
   cursor: pointer;
 
   .snsBtn {
-    margin: 0 10px;
-    width: 51px;
-    height: 51px;
+    margin: 0 5px;
+    width: 40.5px;
+    height: 40.5px;
     display: inline-block;
     object-fit: contain;
   }

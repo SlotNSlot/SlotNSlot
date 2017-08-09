@@ -13,7 +13,7 @@ const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const INIT_ROUND = ROUND_PER_CHAIN + 1;
 
-const SLOT_MANAGER_ADDRESS = '0x9cb0765d9305b93088c0acc1558395203f535737';
+const SLOT_MANAGER_ADDRESS = '0x8bfa888e95e25ad09511b96730311fd0938bb8f7';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0xa8594317be29e78728fb10fbf57b1f8becff7bc83fa4639b9c3b0a4c965f9629',
   bankerSeedInitialized: '0xa4338f9ae2970a5aa65035a4c9fb88da1cd0940e3df6fd42874bb3d862806972',
@@ -222,68 +222,48 @@ class Web3Service {
       });
     });
   }
-
+  // 0 [player], 1 [maker]
   async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
-    // 0 [player], 1 [maker]
-    const promiseArr = [
-      this.getSlotMachinePlayer(slotMachineContract, userType),
-      this.getSlotMachineOwner(slotMachineContract, userType, myAddress),
-      this.getSlotMachineAvailable(slotMachineContract, userType),
-      this.getSlotMachineBankrupt(slotMachineContract, userType),
-      this.getSlotMachineMaxBet(slotMachineContract),
-      this.getSlotMachineMinBet(slotMachineContract),
-      this.getSlotMachineBankerBalance(slotMachineContract),
-      this.getSlotMachineMaxPrize(slotMachineContract),
-      this.getPlayerBalance(slotMachineContract),
-      this.getSlotName(slotMachineContract),
-      this.getDecider(slotMachineContract),
-    ];
-    const payload = { address: slotMachineContract.address };
-    await Promise.all(promiseArr).then(infoObjArr => {
-      infoObjArr.forEach(infoObj => {
-        payload[infoObj.infoKey] = infoObj.infoVal;
-      });
-    });
+    const slotInfo = await this.getInfo(slotMachineContract);
+    if (userType === USER_TYPES.PLAYER) {
+      if (slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
+        throw new Error('This slot is already occupied');
+      }
+      if (slotInfo.owner === myAddress) {
+        throw new Error('This slot is mine');
+      }
+    }
+    const playerBalance = await this.getPlayerBalance(slotMachineContract);
+    const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
     return payload;
   }
-  getDecider(slotMachineContract) {
+  getInfo(slotMachineContract) {
+    // mPlayer, owner, mName, mDecider, mMinBet, mMaxBet, mMaxPrize, bankerBalance
+    // => mPlayer, owner, slotName, decider, minBet, maxBet, maxPrize, bankRoll
     return new Promise((resolve, reject) => {
-      slotMachineContract.mDecider((err, decider) => {
+      slotMachineContract.getInfo((err, result) => {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'decider', infoVal: decider });
-        }
-      });
-    });
-  }
-  getSlotName(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mName((err, slotName) => {
-        if (err) {
-          reject(err);
-        } else {
+          const hexSlotName = result[2];
           let i = 2;
-          for (; i < slotName.length; i += 2) {
-            if (slotName.substr(i, 2) === '00') break;
+          for (; i < hexSlotName.length; i += 2) {
+            if (hexSlotName.substr(i, 2) === '00') break;
           }
-          const partSlotName = slotName.substring(0, i);
+          const partSlotName = hexSlotName.substring(0, i);
           const asciiSlotName = this.web3.toAscii(partSlotName);
-          resolve({ infoKey: 'slotName', infoVal: asciiSlotName });
-        }
-      });
-    });
-  }
-  getSlotMachineOwner(slotMachineContract, userType, myAddress) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.owner((err, ownerAddress) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && ownerAddress === myAddress) {
-            reject();
-          }
-          resolve({ infoKey: 'owner', infoVal: ownerAddress });
+
+          const slotInfo = {
+            mPlayer: result[0],
+            owner: result[1],
+            slotName: asciiSlotName,
+            decider: result[3],
+            minBet: this.makeEthFromWei(result[4]),
+            maxBet: this.makeEthFromWei(result[5]),
+            maxPrize: result[6],
+            bankRoll: this.makeEthFromWei(result[7]),
+          };
+          resolve(slotInfo);
         }
       });
     });
@@ -296,107 +276,6 @@ class Web3Service {
           reject(err);
         } else {
           resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
-        }
-      });
-    });
-  }
-
-  getSlotMachinePlayer(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mPlayer((err, mPlayer) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && mPlayer !== '0x0000000000000000000000000000000000000000') {
-            reject('This slot is already occupied!');
-          }
-          resolve({ infoKey: 'mPlayer', infoVal: mPlayer });
-        }
-      });
-    });
-  }
-
-  getSlotMachineAvailable(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mAvailable((err, mAvailable) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not available!');
-          resolve({ infoKey: 'available', infoVal: mAvailable });
-        }
-      });
-    });
-  }
-
-  getSlotMachineBankrupt(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mBankrupt((err, mBankrupt) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && mBankrupt) reject('This slot is bankrupted!');
-          resolve({ infoKey: 'bankrupt', infoVal: mBankrupt });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMaxBet(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMaxBet((err, mMaxBet) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'maxBet',
-            infoVal: this.makeEthFromWei(mMaxBet),
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMinBet(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMinBet((err, mMinBet) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'minBet',
-            infoVal: this.makeEthFromWei(mMinBet),
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMaxPrize(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMaxPrize((err, mMaxPrize) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'maxPrize',
-            infoVal: mMaxPrize,
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineBankerBalance(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.bankerBalance((err, bankerBalance) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'bankRoll',
-            infoVal: this.makeEthFromWei(bankerBalance),
-          });
         }
       });
     });

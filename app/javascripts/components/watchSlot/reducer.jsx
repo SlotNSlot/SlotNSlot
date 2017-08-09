@@ -5,7 +5,6 @@ import Big from 'big.js';
 
 export const WATCH_SLOT_INITIAL_STATE = fromJS({
   isLoading: false,
-  isOccupied: false,
   animationStatus: 0, // 0(stopped), 1(spinning), 2(going to stopped)
   hasError: false,
   betSize: Big(20),
@@ -20,11 +19,19 @@ export const WATCH_SLOT_INITIAL_STATE = fromJS({
   initQueue: [],
   confirmQueue: [],
   chainIndex: 0,
-  player: '',
+  playerAddress: '',
+  setIntervalTimerId: null,
 });
 
 export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
   switch (action.type) {
+    case '@@router/LOCATION_CHANGE': {
+      const setIntervalTimerId = state.get('setIntervalTimerId');
+      if (setIntervalTimerId !== null) {
+        clearInterval(setIntervalTimerId);
+        return state.set('setIntervalTimerId', null);
+      }
+    }
     case ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT:
     case ACTION_TYPES.START_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
@@ -38,8 +45,8 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
       });
     }
 
-    case ACTION_TYPES.SET_OCCUPIED_STATE: {
-      return state.set('isOccupied', action.payload.occupied);
+    case ACTION_TYPES.SET_PLAYER_ADDRESS: {
+      return state.set('playerAddress', action.payload.playerAddress);
     }
 
     case ACTION_TYPES.SET_DEPOSIT: {
@@ -59,7 +66,7 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
           .set('deposit', action.payload.deposit) // Big Number
           .set('slotMachineContract', action.slotMachineContract)
           .set('slotName', action.payload.slotName)
-          .set('player', action.payload.mPlayer);
+          .set('playerAddress', action.payload.mPlayer);
       });
     }
 
@@ -127,6 +134,22 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SUCCEEDED_TO_KICK_PLAYER: {
       return state.withMutations(currentState => {
         return currentState.set('isLoading', false).set('player', '');
+      });
+    }
+
+    case ACTION_TYPES.START_TO_WATCH_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', true).set('hasError', false);
+      });
+    }
+    case ACTION_TYPES.SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('setIntervalTimerId', action.payload.timerId);
+      });
+    }
+    case ACTION_TYPES.FAILED_TO_WATCH_MY_SLOT_MACHINES: {
+      return state.withMutations(currentState => {
+        return currentState.set('isLoading', false).set('hasError', true);
       });
     }
 

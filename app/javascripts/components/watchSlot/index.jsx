@@ -152,7 +152,7 @@ class WatchSlot extends React.PureComponent {
 
   kickPlayer() {
     const { dispatch, watchSlotState, root } = this.props;
-    const playerAddress = watchSlotState.get('player');
+    const playerAddress = watchSlotState.get('playerAddress');
     const bankerAddress = root.get('account');
 
     if (playerAddress !== '') {
@@ -243,8 +243,10 @@ class WatchSlot extends React.PureComponent {
           Toast.notie.alert({
             text: 'Your SlotMachine is occupied.',
           });
-          dispatch(Actions.setDeposit(result));
-          dispatch(Actions.setOccupiedState(true));
+          const inputEther = Web3Service.makeEthFromWei(result.value);
+          const playerAddress = result.from;
+          dispatch(Actions.setDeposit(inputEther));
+          dispatch(Actions.setPlayerAddress(playerAddress));
         }
         break;
       // animationStatus

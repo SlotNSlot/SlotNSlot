@@ -34,7 +34,7 @@ class Web3Service {
     this.storageAddr = null;
     this.myInitializedGameInitWatchers = {};
 
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 === 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
       const SlotManagerContract = this.web3.eth.contract(managerABI);
@@ -237,17 +237,25 @@ class Web3Service {
   // 0 [player], 1 [maker]
   async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     const slotInfo = await this.getInfo(slotMachineContract);
+    let isAlreadyOccupiedGameExist = false;
+
     if (userType === USER_TYPES.PLAYER) {
-      if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
+      if (slotInfo.mPlayer === myAddress) {
+        isAlreadyOccupiedGameExist = true;
+      } else if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
         throw new Error('This slot is already occupied');
-      }
-      if (slotInfo.owner === myAddress) {
+      } else if (slotInfo.owner === myAddress) {
         throw new Error('This slot is mine');
       }
     }
 
     const playerBalance = await this.getPlayerBalance(slotMachineContract);
     const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
+
+    // save isAlreadyOccupiedState to payload if it exist
+    if (isAlreadyOccupiedGameExist) {
+      payload.isAlreadyOccupiedByMe = true;
+    }
     return payload;
   }
   getInfo(slotMachineContract) {
@@ -329,9 +337,8 @@ class Web3Service {
                   Store.update(slotMachineContractAddress, slotGenesisInfo => {
                     slotGenesisInfo.isOccuWatchedAtWatcherPage = true;
                   });
-                  const inputEther = this.makeEthFromWei(this.web3.eth.getTransaction(result.transactionHash).value);
-                  console.log('inputEther is ', inputEther);
-                  handleWeb3EventsFunc('gameOccupied', inputEther);
+                  const transaction = this.web3.eth.getTransaction(result.transactionHash);
+                  handleWeb3EventsFunc('gameOccupied', transaction);
                 }
                 console.log('occupiedTopic is ', result);
                 break;
@@ -647,65 +654,68 @@ class Web3Service {
   }
 
   makerPendingWatcher(slotMachineContracts, bankerAddress) {
-    const contractFilter = this.web3.eth.filter({
-      fromBlock: 'pending',
-      toBlock: 'pending',
-    });
+    return new Promise(resolve => {
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'pending',
+        toBlock: 'pending',
+      });
 
-    const addressList = slotMachineContracts.map(slotMachineContract => {
-      const slotMachineContractAddress = slotMachineContract.get('contract').address;
-      this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER);
-      return slotMachineContractAddress;
-    });
+      const addressList = slotMachineContracts.map(slotMachineContract => {
+        const slotMachineContractAddress = slotMachineContract.get('contract').address;
+        this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER);
+        return slotMachineContractAddress;
+      });
 
-    setInterval(() => {
-      addressList.forEach(slotMachineContractAddress => {
-        if (Store.get(slotMachineContractAddress).noRecentActing === true) {
-          const slotMachineContract = slotMachineContracts.find(
-            slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
-          );
-          this.kickPlayer(slotMachineContract, bankerAddress);
+      const timerId = setInterval(() => {
+        addressList.forEach(slotMachineContractAddress => {
+          if (Store.get(slotMachineContractAddress).noRecentActing === true) {
+            const slotMachineContract = slotMachineContracts.find(
+              slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
+            );
+            this.kickPlayer(slotMachineContract, bankerAddress);
+          }
+        });
+      }, 1000 * 60 * 5); // per 5 minute
+
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+        } else if (addressList.includes(result.address)) {
+          if (result.topics) {
+            result.topics.forEach(topic => {
+              const slotMachineContract = slotMachineContracts.find(
+                slotMachine => slotMachine.get('contract').address === result.address,
+              );
+              const slotMachineContractAddress = slotMachineContract.get('contract').address;
+              switch (topic) {
+                case SLOT_TOPICS_ENCODED.gameOccupied:
+                  this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
+                  console.log('occupiedTopic is ', result);
+                  break;
+
+                case SLOT_TOPICS_ENCODED.gameInitialized:
+                  this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
+                  console.log('initializedTopic is ', result);
+                  break;
+
+                // TODO : case SLOT_TOPICS_ENCODED.playerSeedSet: // noRecentActing
+
+                case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
+                  this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
+                  Toast.notie.alert({
+                    text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
+                  });
+                  console.log('playerLeftTopic is ', result);
+                  break;
+
+                default:
+                  break;
+              }
+            });
+          }
         }
       });
-    }, 1000 * 60 * 5); // per 5 minute
-
-    contractFilter.watch((err, result) => {
-      if (err) {
-        console.error(err);
-      } else if (addressList.includes(result.address)) {
-        if (result.topics) {
-          result.topics.forEach(topic => {
-            const slotMachineContract = slotMachineContracts.find(
-              slotMachine => slotMachine.get('contract').address === result.address,
-            );
-            const slotMachineContractAddress = slotMachineContract.get('contract').address;
-            switch (topic) {
-              case SLOT_TOPICS_ENCODED.gameOccupied:
-                this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
-                console.log('occupiedTopic is ', result);
-                break;
-
-              case SLOT_TOPICS_ENCODED.gameInitialized:
-                this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
-                console.log('initializedTopic is ', result);
-                break;
-
-              // TODO : case SLOT_TOPICS_ENCODED.playerSeedSet: // noRecentActing
-
-              case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
-                this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
-                Toast.notie.alert({
-                  text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
-                });
-                console.log('playerLeftTopic is ', result);
-                break;
-
-              default:
-                break;
-            }
-          });
-        }
-      }
+      resolve(timerId);
     });
   }
 

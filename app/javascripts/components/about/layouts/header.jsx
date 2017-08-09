@@ -70,16 +70,16 @@ class Header extends React.PureComponent {
                 GitHub
               </a>
             </li>
-            <li className={styles.rightNavItem}>
-              <a
-                className={styles.item}
-                onClick={() => {
-                  this.openLinkWithTrack('https://discord.gg/f97RkQf');
-                }}
-              >
-                Chat
-              </a>
-            </li>
+            {/* <li className={styles.rightNavItem}>
+            <a
+              className={styles.item}
+              onClick={() => {
+                this.openLinkWithTrack('https://discord.gg/f97RkQf');
+              }}
+            >
+              Chat
+            </a>
+          </li>  */}
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
@@ -90,10 +90,21 @@ class Header extends React.PureComponent {
                 Blog
               </a>
             </li>
+            <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
+              <Link
+                className={styles.item}
+                onClick={() => {
+                  this.trackWordsOnly('/slot/play');
+                }}
+                to="/slot/play"
+              >
+                Prototype
+              </Link>
+            </li>
             <li className={styles.rightNavItem}>
               <Link
                 onClick={() => {
-                  this.trackWordsOnly();
+                  this.trackWordsOnly('/contribute');
                 }}
                 className={styles.crowdsaleBtn}
                 to="/contribute"
@@ -107,11 +118,11 @@ class Header extends React.PureComponent {
     );
   }
 
-  trackWordsOnly() {
+  trackWordsOnly(url) {
     ReactGA.event({
       category: 'link-click',
       action: 'click-from-Header',
-      label: '/contribute',
+      label: url,
     });
     handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
   }

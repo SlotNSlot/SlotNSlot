@@ -1,29 +1,44 @@
 import React from 'react';
 import ReactGA from 'react-ga';
+import { Link } from 'react-router-dom';
 import styles from './makeAndPlayContainer.scss';
 import Icon from '../../../icons';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 
-function trackAction(url) {
+function trackWordsOnly() {
   ReactGA.event({
     category: 'link-click',
     action: 'click-from-MakeAndPlayContainer',
-    label: url,
+    label: '/slot/play',
   });
-
   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
 }
 
-const handleWatchDemoClick = () => {
-  trackAction('https://youtu.be/9TtOFJ2InH8');
-  window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
-};
+// function trackAction(url) {
+//   ReactGA.event({
+//     category: 'link-click',
+//     action: 'click-from-MakeAndPlayContainer',
+//     label: url,
+//   });
+
+//   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+// }
+
+// const handleWatchDemoClick = () => {
+//   trackAction('https://youtu.be/9TtOFJ2InH8');
+//   window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
+// };
 
 const MakeAndPlayContainer = () =>
   <div className={styles.makeAndPlayContainer}>
     <div className={styles.innerContainer}>
       <div className={styles.makeAndPlayTitle}>
         Tired of just <span>PLAY</span>ing? Now <span>MAKE</span> your own with SlotNSlot !
+      </div>
+      <div className={styles.betaBtnWrapper}>
+        <Link onClick={() => trackWordsOnly()} to="/slot/play" className={styles.playBetaBtn}>
+          Play Beta
+        </Link>
       </div>
       <div className={styles.makeAndPlayContext}>
         <img src="https://d1qh7kd1bid312.cloudfront.net/about/Browser_content.png" alt="browser" />
@@ -48,10 +63,10 @@ const MakeAndPlayContainer = () =>
           </div>
         </div>
       </div>
-      <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>
+      {/* <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>
         <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
         Watch Demo
-      </a>
+      </a> */}
     </div>
   </div>;
 export default MakeAndPlayContainer;

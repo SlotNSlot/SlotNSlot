@@ -67,25 +67,40 @@ class EmailContainer extends React.PureComponent {
             </form>
 
             <div className={styles.linkBlock}>
-              <a className={styles.btnContainer} href="https://t.me/slotnslot_ico" target="_blank">
+              <a className={styles.btnContainer} onClick={() => this.openLinkWithTrack('https://t.me/slotnslot_ico')}>
                 <Icon className={styles.snsBtn} icon="TELEGRAM" />
               </a>
-              <a className={styles.btnContainer} href="https://www.facebook.com/slotnslot.eth" target="_blank">
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://www.facebook.com/slotnslot.eth')}
+              >
                 <Icon className={styles.snsBtn} icon="FACEBOOK" />
               </a>
-              <a className={styles.btnContainer} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot')}
+              >
                 <Icon className={styles.snsBtn} icon="GITHUB" />
               </a>
-              <a className={styles.btnContainer} href="https://www.reddit.com/r/slotnslot" target="_blank">
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://www.reddit.com/r/slotnslot')}
+              >
                 <Icon className={styles.snsBtn} icon="REDDIT" />
               </a>
-              <a className={styles.btnContainer} href="https://discord.gg/f97RkQf" target="_blank">
+              <a className={styles.btnContainer} onClick={() => this.openLinkWithTrack('https://discord.gg/f97RkQf')}>
                 <Icon className={styles.snsBtn} icon="DISCORD" />
               </a>
-              <a className={styles.btnContainer} href="https://twitter.com/slotnslot" target="_blank">
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://twitter.com/slotnslot')}
+              >
                 <Icon className={styles.snsBtn} icon="TWITTER" />
               </a>
-              <a className={styles.btnContainer} href="https://medium.com/@kkenji1024" target="_blank">
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://medium.com/@kkenji1024')}
+              >
                 <Icon className={styles.snsBtn} icon="MEDIUM" />
               </a>
             </div>
@@ -94,6 +109,16 @@ class EmailContainer extends React.PureComponent {
         <CrowdSaleContainer />
       </div>
     );
+  }
+
+  openLinkWithTrack(linkUrl) {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: linkUrl,
+    });
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+    window.open(linkUrl, '_blank');
   }
 }
 export default EmailContainer;

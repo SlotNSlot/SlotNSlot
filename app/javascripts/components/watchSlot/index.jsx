@@ -218,11 +218,10 @@ class WatchSlot extends React.PureComponent {
     switch (eventName) {
       case 'gameOccupied':
         if (!watchSlotState.get('isOccupied')) {
-          // TODO : notie
           Toast.notie.alert({
             text: 'Your SlotMachine is occupied.',
           });
-          this.getSlotMachine(this.slotAddress, root.get('account'));
+          dispatch(Actions.setDeposit(result));
           dispatch(Actions.setOccupiedState(true));
         }
         break;

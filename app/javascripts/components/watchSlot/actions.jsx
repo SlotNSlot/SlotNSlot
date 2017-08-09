@@ -2,11 +2,11 @@ import { push } from 'react-router-redux';
 import { fromJS } from 'immutable';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
-import Store from 'store';
 import { USER_TYPES } from '../slotList/actions';
 
 export const ACTION_TYPES = {
   SET_OCCUPIED_STATE: 'watch_slot.SET_OCCUPIED_STATE',
+  SET_DEPOSIT: 'watch_slot.SET_DEPOSIT',
   SPIN_START: 'watch_slot.SPIN_START',
   STOP_START: 'watch_slot.STOP_START',
   STOP_END: 'watch_slot.STOP_END',
@@ -21,6 +21,15 @@ export const ACTION_TYPES = {
   SHIFT_CONFIRM_EVENT: 'watch_slot.SHIFT_CONFIRM_EVENT',
 };
 
+export function setDeposit(deposit) {
+  return {
+    type: ACTION_TYPES.SET_DEPOSIT,
+    payload: {
+      deposit,
+    },
+  };
+}
+
 export function setOccupiedState(isOccupied) {
   return {
     type: ACTION_TYPES.SET_OCCUPIED_STATE,
@@ -32,7 +41,6 @@ export function setOccupiedState(isOccupied) {
 
 async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
   const contract = Web3Service.getSlotMachineContract(slotMachineContractAddress);
-  console.log('contract is ', contract);
   try {
     const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
     return {

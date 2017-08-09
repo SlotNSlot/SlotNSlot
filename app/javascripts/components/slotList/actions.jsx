@@ -24,7 +24,6 @@ export const ACTION_TYPES = {
 
 async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
   const contract = Web3Service.getSlotMachineContract(slotMachineContractAddress);
-  console.log('contract is ', contract);
   try {
     const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
     return {

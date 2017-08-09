@@ -41,6 +41,10 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
       return state.set('isOccupied', action.payload.occupied);
     }
 
+    case ACTION_TYPES.SET_DEPOSIT: {
+      return state.set('deposit', action.payload.deposit);
+    }
+
     case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {
         return currentState

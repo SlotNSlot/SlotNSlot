@@ -432,13 +432,14 @@ class Web3Service {
           result.topics.forEach(topic => {
             switch (topic) {
               case SLOT_TOPICS_ENCODED.gameOccupied:
-                console.log('occupied result is ', result);
                 const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatchedAtWatcherPage;
                 if (!isOccuWatched) {
                   Store.update(slotMachineContractAddress, slotGenesisInfo => {
                     slotGenesisInfo.isOccuWatchedAtWatcherPage = true;
                   });
-                  handleWeb3EventsFunc('gameOccupied');
+                  const inputEther = this.makeEthFromWei(this.web3.eth.getTransaction(result.transactionHash).value);
+                  console.log('inputEther is ', inputEther);
+                  handleWeb3EventsFunc('gameOccupied', inputEther);
                 }
                 console.log('occupiedTopic is ', result);
                 break;

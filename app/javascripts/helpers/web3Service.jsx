@@ -32,7 +32,6 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
-    this.myInitializedGameInitWatchers = {};
 
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
@@ -247,6 +246,9 @@ class Web3Service {
       } else if (slotInfo.owner === myAddress) {
         throw new Error('This slot is mine');
       }
+    }
+    if (slotInfo.owener === '0x' || slotInfo.bankRoll.eq(0)) {
+      throw new Error('already bankrupted');
     }
 
     const playerBalance = await this.getPlayerBalance(slotMachineContract);
@@ -672,7 +674,10 @@ class Web3Service {
             const slotMachineContract = slotMachineContracts.find(
               slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
             );
-            this.kickPlayer(slotMachineContract, bankerAddress);
+            Toast.notie.alert({
+              text: `Kick ${slotMachineContract.get('meta').get('slotName')}'s player`,
+            });
+            this.kickPlayer(slotMachineContract.get('contract'), bankerAddress);
           }
         });
       }, 1000 * 60 * 5); // per 5 minute
@@ -702,9 +707,9 @@ class Web3Service {
 
                 case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
                   this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
-                  Toast.notie.alert({
-                    text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
-                  });
+                  // Toast.notie.alert({
+                  //   text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
+                  // });
                   console.log('playerLeftTopic is ', result);
                   break;
 

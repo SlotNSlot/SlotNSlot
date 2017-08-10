@@ -93,7 +93,6 @@ class WatchSlot extends React.PureComponent {
 
       if (root.get('account') !== null && !slotMachineLoaded) {
         this.getSlotMachine(this.slotAddress);
-        console.log('this.props.slotList === undefined is ', this.props.slotList);
         if (this.props.slotList === undefined) {
           this.getMySlotMachines(root.get('account'));
         }

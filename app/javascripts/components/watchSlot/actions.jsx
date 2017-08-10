@@ -92,7 +92,7 @@ async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccoun
 export function getMySlotMachines(myAccount) {
   return async dispatch => {
     dispatch({
-      type: ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES,
+      type: ACTION_TYPES.START_TO_WATCH_MY_SLOT_MACHINES,
     });
 
     try {
@@ -108,7 +108,7 @@ export function getMySlotMachines(myAccount) {
         const slotContracts = fromJS(filteredArr);
         const timerId = await Web3Service.makerPendingWatcher(slotContracts, myAccount);
         dispatch({
-          type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
+          type: ACTION_TYPES.SUCCEEDED_TO_WATCH_MY_SLOT_MACHINES,
           payload: {
             timerId,
           },
@@ -117,7 +117,7 @@ export function getMySlotMachines(myAccount) {
     } catch (err) {
       console.error(err);
       dispatch({
-        type: ACTION_TYPES.FAILED_TO_GET_MY_SLOT_MACHINES,
+        type: ACTION_TYPES.FAILED_TO_WATCH_MY_SLOT_MACHINES,
       });
     }
   };

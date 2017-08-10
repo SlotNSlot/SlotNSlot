@@ -11,7 +11,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   isOccupied: false,
   hasError: false,
   betSize: Big(20),
-  lineNum: 20,
+  lineNum: 1,
   deposit: Big(0),
   bankRoll: 0,
   betUnit: 2,

@@ -21,10 +21,18 @@ export const SLOT_LIST_INITIAL_STATE = fromJS({
   page: 1,
   mySlotPage: 1,
   isMaking: false,
+  setIntervalTimerId: null,
 });
 
 export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
   switch (action.type) {
+    case '@@router/LOCATION_CHANGE': {
+      const setIntervalTimerId = state.get('setIntervalTimerId');
+      if (setIntervalTimerId !== null) {
+        clearInterval(setIntervalTimerId);
+        return state.set('setIntervalTimerId', null);
+      }
+    }
     case ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES:
     case ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES: {
       return state.withMutations(currentState => {
@@ -40,7 +48,10 @@ export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES: {
       return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('mySlotContracts', action.payload.slotContracts);
+        return currentState
+          .set('isLoading', false)
+          .set('mySlotContracts', action.payload.slotContracts)
+          .set('setIntervalTimerId', action.payload.timerId);
       });
     }
 

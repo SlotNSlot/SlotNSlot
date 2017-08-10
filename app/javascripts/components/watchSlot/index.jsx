@@ -33,6 +33,7 @@ class WatchSlot extends React.PureComponent {
     this.shiftInitEvent = this.shiftInitEvent.bind(this);
     this.checkConfirmQueue = this.checkConfirmQueue.bind(this);
     this.shiftConfirmEvent = this.shiftConfirmEvent.bind(this);
+    this.kickPlayer = this.kickPlayer.bind(this);
 
     // Attach event watcher
     this.attachEventWatcher(this.slotAddress, this.handleWeb3Events);
@@ -91,8 +92,7 @@ class WatchSlot extends React.PureComponent {
       }
 
       if (root.get('account') !== null && !slotMachineLoaded) {
-        this.getSlotMachine(this.slotAddress, root.get('account'));
-        console.log('this.props.slotList === undefined is ', this.props.slotList);
+        this.getSlotMachine(this.slotAddress);
         if (this.props.slotList === undefined) {
           this.getMySlotMachines(root.get('account'));
         }
@@ -105,6 +105,7 @@ class WatchSlot extends React.PureComponent {
     if (this.slotGame) {
       this.slotGame.removeCurrentGame();
       gameAlreadyLoaded = false;
+      slotMachineLoaded = false;
     }
   }
 
@@ -127,7 +128,7 @@ class WatchSlot extends React.PureComponent {
               >
                 ?
               </button>
-              <button onClick={this.setDeposit} className={styles.headerBtn}>
+              <button onClick={this.kickPlayer} className={styles.headerBtn}>
                 KICK
               </button>
               <button onClick={this.removeSlotMachine} className={styles.headerBtn}>
@@ -148,10 +149,30 @@ class WatchSlot extends React.PureComponent {
     );
   }
 
-  getSlotMachine(slotAddress, playerAddress) {
+  kickPlayer() {
+    const { dispatch, watchSlotState, root } = this.props;
+    const playerAddress = watchSlotState.get('playerAddress');
+    const bankerAddress = root.get('account');
+
+    if (playerAddress !== '') {
+      Toast.notie.confirm({
+        text: 'Do you really want to kick player?',
+        submitCallback: () => {
+          dispatch(Actions.kickPlayer(this.slotAddress, bankerAddress));
+        },
+      });
+    } else {
+      Toast.notie.alert({
+        type: 'error',
+        text: 'Player does not exist.',
+      });
+    }
+  }
+
+  getSlotMachine(slotAddress) {
     const { dispatch } = this.props;
 
-    dispatch(Actions.getSlotMachine(slotAddress, playerAddress));
+    dispatch(Actions.getSlotMachine(slotAddress));
   }
 
   removeSlotMachine() {
@@ -218,12 +239,13 @@ class WatchSlot extends React.PureComponent {
     switch (eventName) {
       case 'gameOccupied':
         if (!watchSlotState.get('isOccupied')) {
-          // TODO : notie
           Toast.notie.alert({
             text: 'Your SlotMachine is occupied.',
           });
-          this.getSlotMachine(this.slotAddress, root.get('account'));
-          dispatch(Actions.setOccupiedState(true));
+          const inputEther = Web3Service.makeEthFromWei(result.value);
+          const playerAddress = result.from;
+          dispatch(Actions.setDeposit(inputEther));
+          dispatch(Actions.setPlayerAddress(playerAddress));
         }
         break;
       // animationStatus

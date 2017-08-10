@@ -198,14 +198,14 @@ export default class SlotGame {
     if (isEmpty(PIXI.utils.TextureCache)) {
       PIXI.loader
         .add([
-          { url: 'assets/images/symbolsMap.json', crossOrigin: true },
-          { url: 'assets/images/slotMap.json', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/symbolsMap.json', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/slotMap.json', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/big-win-front@2x.png', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png', crossOrigin: true },
           { url: 'https://d1qh7kd1bid312.cloudfront.net/auto-stop@2x.png', crossOrigin: true },
-          { url: 'assets/images/slot/combined-shape@2x.png', crossOrigin: true },
-          { url: 'assets/images/slot/player-stake@2x.png', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/combined-shape@2x.png', crossOrigin: true },
+          { url: 'https://d1qh7kd1bid312.cloudfront.net/player-stake@2x.png', crossOrigin: true },
         ])
         .on('progress', (_loader, _resource) => {
           // TODO: Add loading screen

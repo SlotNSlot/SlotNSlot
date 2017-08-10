@@ -7,6 +7,7 @@ import Web3Service from '../../helpers/web3Service';
 import styles from './playSlot.scss';
 import './react-table.scss';
 import { USER_TYPES } from '../slotList/actions';
+import Toast from '../../helpers/notieHelper';
 
 let gameAlreadyLoaded = false;
 let slotMachineLoaded = false;
@@ -25,6 +26,7 @@ class PlaySlot extends React.PureComponent {
     this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
     this.slotAddress = this.props.match.params.slotAddress;
     Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
+    this.playerKickedWatcher(this.slotAddress);
   }
 
   componentDidMount() {
@@ -210,23 +212,33 @@ class PlaySlot extends React.PureComponent {
 
   setDeposit() {
     const { dispatch, root, playSlotState } = this.props;
-    const ethValue = prompt('Please insert the maximum Ethereum value you want to bet');
-
-    if (root.get('balance') < ethValue) {
-      alert('Your bet amount should be under your balance');
-      return;
-    }
-    const ethValueBigNumber = Web3Service.getWeb3().toBigNumber(ethValue);
-    const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
-    const slotMachineContract = playSlotState.get('slotMachineContract');
-    if (playSlotState.get('isOccupied')) {
-      dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
-    } else {
-      dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
-      dispatch(Actions.setDeposit(ethValueBigNumber));
-    }
+    Toast.notie.input({
+      text: 'Please insert the maximum Ethereum value you want to bet',
+      type: 'number',
+      submitCallback: ethValue => {
+        if (root.get('balance') < ethValue) {
+          Toast.notie.alert({
+            type: 'error',
+            text: 'Your bet amount should be under your balance',
+          });
+          return;
+        }
+        const ethValueBigNumber = Web3Service.getWeb3().toBigNumber(ethValue);
+        const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
+        const slotMachineContract = playSlotState.get('slotMachineContract');
+        if (playSlotState.get('isOccupied')) {
+          dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
+        } else {
+          dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
+          dispatch(Actions.setDeposit(ethValueBigNumber));
+        }
+      },
+    });
   }
-
+  playerKickedWatcher(slotMachineContractAddress) {
+    const { dispatch } = this.props;
+    dispatch(Actions.playerKickedWatcher(slotMachineContractAddress));
+  }
   setBetSize(betSize) {
     const { dispatch } = this.props;
     dispatch(Actions.setBetSize(betSize));

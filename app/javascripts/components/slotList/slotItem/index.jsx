@@ -36,8 +36,7 @@ const SlotListItem = ({ slotContract, isBanker }) => {
           </span>
         </div>
         <div className={styles.footer}>
-          <span className={styles.footerLeft}>Played 28 times</span>
-          <span className={styles.footerRight}>
+          <span className={styles.footerCenter}>
             {`BET Range ${slotContract.get('meta').get('minBet')} - ${slotContract.get('meta').get('maxBet')} ETH`}
           </span>
         </div>

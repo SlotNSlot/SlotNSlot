@@ -13,7 +13,7 @@ const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const INIT_ROUND = ROUND_PER_CHAIN + 1;
 
-const SLOT_MANAGER_ADDRESS = '0x9cb0765d9305b93088c0acc1558395203f535737';
+const SLOT_MANAGER_ADDRESS = '0xdbc3e11e344e7449eb34a35fe8bd9b0902b01d13';
 const SLOT_TOPICS_ENCODED = {
   gameOccupied: '0xa8594317be29e78728fb10fbf57b1f8becff7bc83fa4639b9c3b0a4c965f9629',
   bankerSeedInitialized: '0xa4338f9ae2970a5aa65035a4c9fb88da1cd0940e3df6fd42874bb3d862806972',
@@ -32,7 +32,6 @@ class Web3Service {
     this.slotManagerContract = null;
     this.slotStorageContract = null;
     this.storageAddr = null;
-    this.myInitializedGameInitWatchers = {};
 
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
@@ -223,67 +222,71 @@ class Web3Service {
     });
   }
 
-  async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
-    // 0 [player], 1 [maker]
-    const promiseArr = [
-      this.getSlotMachinePlayer(slotMachineContract, userType),
-      this.getSlotMachineOwner(slotMachineContract, userType, myAddress),
-      this.getSlotMachineAvailable(slotMachineContract, userType),
-      this.getSlotMachineBankrupt(slotMachineContract, userType),
-      this.getSlotMachineMaxBet(slotMachineContract),
-      this.getSlotMachineMinBet(slotMachineContract),
-      this.getSlotMachineBankerBalance(slotMachineContract),
-      this.getSlotMachineMaxPrize(slotMachineContract),
-      this.getPlayerBalance(slotMachineContract),
-      this.getSlotName(slotMachineContract),
-      this.getDecider(slotMachineContract),
-    ];
-    const payload = { address: slotMachineContract.address };
-    await Promise.all(promiseArr).then(infoObjArr => {
-      infoObjArr.forEach(infoObj => {
-        payload[infoObj.infoKey] = infoObj.infoVal;
+  async kickPlayer(slotMachineContract, bankerAddress) {
+    return new Promise((resolve, reject) => {
+      slotMachineContract.leave({ from: bankerAddress, gas: 1000000 }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
+  }
+  // 0 [player], 1 [maker]
+  async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
+    const slotInfo = await this.getInfo(slotMachineContract);
+    let isAlreadyOccupiedGameExist = false;
+
+    if (userType === USER_TYPES.PLAYER) {
+      if (slotInfo.mPlayer === myAddress) {
+        isAlreadyOccupiedGameExist = true;
+      } else if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
+        throw new Error('This slot is already occupied');
+      } else if (slotInfo.owner === myAddress) {
+        throw new Error('This slot is mine');
+      }
+    }
+    if (slotInfo.owener === '0x' || slotInfo.bankRoll.eq(0)) {
+      throw new Error('already bankrupted');
+    }
+
+    const playerBalance = await this.getPlayerBalance(slotMachineContract);
+    const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
+
+    // save isAlreadyOccupiedState to payload if it exist
+    if (isAlreadyOccupiedGameExist) {
+      payload.isAlreadyOccupiedByMe = true;
+    }
     return payload;
   }
-  getDecider(slotMachineContract) {
+  getInfo(slotMachineContract) {
+    // mPlayer, owner, mName, mDecider, mMinBet, mMaxBet, mMaxPrize, bankerBalance
+    // => mPlayer, owner, slotName, decider, minBet, maxBet, maxPrize, bankRoll
     return new Promise((resolve, reject) => {
-      slotMachineContract.mDecider((err, decider) => {
+      slotMachineContract.getInfo((err, result) => {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'decider', infoVal: decider });
-        }
-      });
-    });
-  }
-  getSlotName(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mName((err, slotName) => {
-        if (err) {
-          reject(err);
-        } else {
+          const hexSlotName = result[2];
           let i = 2;
-          for (; i < slotName.length; i += 2) {
-            if (slotName.substr(i, 2) === '00') break;
+          for (; i < hexSlotName.length; i += 2) {
+            if (hexSlotName.substr(i, 2) === '00') break;
           }
-          const partSlotName = slotName.substring(0, i);
+          const partSlotName = hexSlotName.substring(0, i);
           const asciiSlotName = this.web3.toAscii(partSlotName);
-          resolve({ infoKey: 'slotName', infoVal: asciiSlotName });
-        }
-      });
-    });
-  }
-  getSlotMachineOwner(slotMachineContract, userType, myAddress) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.owner((err, ownerAddress) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && ownerAddress === myAddress) {
-            reject();
-          }
-          resolve({ infoKey: 'owner', infoVal: ownerAddress });
+
+          const slotInfo = {
+            mPlayer: result[0],
+            owner: result[1],
+            slotName: asciiSlotName,
+            decider: result[3],
+            minBet: this.makeEthFromWei(result[4]),
+            maxBet: this.makeEthFromWei(result[5]),
+            maxPrize: result[6],
+            bankRoll: this.makeEthFromWei(result[7]),
+          };
+          resolve(slotInfo);
         }
       });
     });
@@ -296,107 +299,6 @@ class Web3Service {
           reject(err);
         } else {
           resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
-        }
-      });
-    });
-  }
-
-  getSlotMachinePlayer(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mPlayer((err, mPlayer) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && mPlayer !== '0x0000000000000000000000000000000000000000') {
-            reject('This slot is already occupied!');
-          }
-          resolve({ infoKey: 'mPlayer', infoVal: mPlayer });
-        }
-      });
-    });
-  }
-
-  getSlotMachineAvailable(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mAvailable((err, mAvailable) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && !mAvailable) reject('This slot is not available!');
-          resolve({ infoKey: 'available', infoVal: mAvailable });
-        }
-      });
-    });
-  }
-
-  getSlotMachineBankrupt(slotMachineContract, userType) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mBankrupt((err, mBankrupt) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (userType === USER_TYPES.PLAYER && mBankrupt) reject('This slot is bankrupted!');
-          resolve({ infoKey: 'bankrupt', infoVal: mBankrupt });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMaxBet(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMaxBet((err, mMaxBet) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'maxBet',
-            infoVal: this.makeEthFromWei(mMaxBet),
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMinBet(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMinBet((err, mMinBet) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'minBet',
-            infoVal: this.makeEthFromWei(mMinBet),
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineMaxPrize(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.mMaxPrize((err, mMaxPrize) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'maxPrize',
-            infoVal: mMaxPrize,
-          });
-        }
-      });
-    });
-  }
-
-  getSlotMachineBankerBalance(slotMachineContract) {
-    return new Promise((resolve, reject) => {
-      slotMachineContract.bankerBalance((err, bankerBalance) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            infoKey: 'bankRoll',
-            infoVal: this.makeEthFromWei(bankerBalance),
-          });
         }
       });
     });
@@ -432,13 +334,13 @@ class Web3Service {
           result.topics.forEach(topic => {
             switch (topic) {
               case SLOT_TOPICS_ENCODED.gameOccupied:
-                console.log('occupied result is ', result);
                 const isOccuWatched = Store.get(slotMachineContractAddress).isOccuWatchedAtWatcherPage;
                 if (!isOccuWatched) {
                   Store.update(slotMachineContractAddress, slotGenesisInfo => {
                     slotGenesisInfo.isOccuWatchedAtWatcherPage = true;
                   });
-                  handleWeb3EventsFunc('gameOccupied');
+                  const transaction = this.web3.eth.getTransaction(result.transactionHash);
+                  handleWeb3EventsFunc('gameOccupied', transaction);
                 }
                 console.log('occupiedTopic is ', result);
                 break;
@@ -505,6 +407,7 @@ class Web3Service {
             round: [], // at BankerSide, this will be asynchronus. So round will be saved each Chain.
             isOccuWatched: false,
             isInitWatched: [],
+            noRecentActing: true,
           };
           for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
             slotGenesisInfo.val.push(Math.random().toString());
@@ -731,53 +634,95 @@ class Web3Service {
     });
   }
 
-  makerPendingWatcher(slotMachineContracts, bankerAddress) {
-    const contractFilter = this.web3.eth.filter({
-      fromBlock: 'pending',
-      toBlock: 'pending',
-    });
+  playerKickedWatcher(slotMachineContractAddress) {
+    return new Promise(resolve => {
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'pending',
+        toBlock: 'pending',
+      });
 
-    const addressList = slotMachineContracts.map(slotMachineContract => {
-      const slotMachineContractAddress = slotMachineContract.get('contract').address;
-      this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER);
-      return slotMachineContractAddress;
-    });
-
-    contractFilter.watch((err, result) => {
-      if (err) {
-        console.error(err);
-      } else if (addressList.includes(result.address)) {
-        if (result.topics) {
-          result.topics.forEach(topic => {
-            const slotMachineContract = slotMachineContracts.find(
-              slotMachine => slotMachine.get('contract').address === result.address,
-            );
-            const slotMachineContractAddress = slotMachineContract.get('contract').address;
-            switch (topic) {
-              case SLOT_TOPICS_ENCODED.gameOccupied:
-                this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
-                console.log('occupiedTopic is ', result);
-                break;
-
-              case SLOT_TOPICS_ENCODED.gameInitialized:
-                this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
-                console.log('initializedTopic is ', result);
-                break;
-
-              case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
-                this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
-                Toast.notie.alert({
-                  text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
-                });
-                console.log('playerLeftTopic is ', result);
-                break;
-
-              default:
-                break;
-            }
-          });
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+        } else if (slotMachineContractAddress === result.address) {
+          if (result.topics) {
+            result.topics.forEach(topic => {
+              if (topic === SLOT_TOPICS_ENCODED.playerLeft) {
+                resolve('you are kicked');
+              }
+            });
+          }
         }
-      }
+      });
+    });
+  }
+
+  makerPendingWatcher(slotMachineContracts, bankerAddress) {
+    return new Promise(resolve => {
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'pending',
+        toBlock: 'pending',
+      });
+
+      const addressList = slotMachineContracts.map(slotMachineContract => {
+        const slotMachineContractAddress = slotMachineContract.get('contract').address;
+        this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER);
+        return slotMachineContractAddress;
+      });
+
+      const timerId = setInterval(() => {
+        addressList.forEach(slotMachineContractAddress => {
+          if (Store.get(slotMachineContractAddress).noRecentActing === true) {
+            const slotMachineContract = slotMachineContracts.find(
+              slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
+            );
+            Toast.notie.alert({
+              text: `Kick ${slotMachineContract.get('meta').get('slotName')}'s player`,
+            });
+            this.kickPlayer(slotMachineContract.get('contract'), bankerAddress);
+          }
+        });
+      }, 1000 * 60 * 5); // per 5 minute
+
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+        } else if (addressList.includes(result.address)) {
+          if (result.topics) {
+            result.topics.forEach(topic => {
+              const slotMachineContract = slotMachineContracts.find(
+                slotMachine => slotMachine.get('contract').address === result.address,
+              );
+              const slotMachineContractAddress = slotMachineContract.get('contract').address;
+              switch (topic) {
+                case SLOT_TOPICS_ENCODED.gameOccupied:
+                  this.watchGameOccupied(slotMachineContract.get('contract'), bankerAddress, result);
+                  console.log('occupiedTopic is ', result);
+                  break;
+
+                case SLOT_TOPICS_ENCODED.gameInitialized:
+                  this.watchGameInitialized(slotMachineContract.get('contract'), bankerAddress, result);
+                  console.log('initializedTopic is ', result);
+                  break;
+
+                // TODO : case SLOT_TOPICS_ENCODED.playerSeedSet: // noRecentActing
+
+                case SLOT_TOPICS_ENCODED.playerLeft: // reset Genesis Number
+                  this.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.MAKER, true);
+                  // Toast.notie.alert({
+                  //   text: `Your Slotmachine ${slotMachineContractAddress} player is left.`,
+                  // });
+                  console.log('playerLeftTopic is ', result);
+                  break;
+
+                default:
+                  break;
+              }
+            });
+          }
+        }
+      });
+      resolve(timerId);
     });
   }
 
@@ -802,6 +747,7 @@ class Web3Service {
           shaArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
         }
         slotGenesisInfo.isOccuWatched = true;
+        slotGenesisInfo.noRecentActing = false; // for DEMO kicking
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
 
@@ -834,6 +780,7 @@ class Web3Service {
         console.log(`chainIndex is ${eventResultIndex}, shaCount is ${shaCount}, sha is ${sha}`);
         slotGenesisInfo.round[eventResultIndex] -= 1;
         slotGenesisInfo.isInitWatched.push(eventResult.transactionHash);
+        slotGenesisInfo.noRecentActing = false; // for DEMO kicking
       });
       slotMachineContract.setBankerSeed(sha, eventResultIndex, { from: bankerAddress, gas: 2200000 }, err => {
         if (err) {

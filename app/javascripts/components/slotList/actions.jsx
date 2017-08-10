@@ -1,5 +1,7 @@
 import { List, fromJS } from 'immutable';
+import { push } from 'react-router-redux';
 import Web3Service from '../../helpers/web3Service';
+import Toast from '../../helpers/notieHelper';
 
 export const USER_TYPES = {
   PLAYER: 0,
@@ -24,7 +26,6 @@ export const ACTION_TYPES = {
 
 async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
   const contract = Web3Service.getSlotMachineContract(slotMachineContractAddress);
-  console.log('contract is ', contract);
   try {
     const slotInfo = await Web3Service.getSlotMachineInfo(contract, userType, myAccount);
     return {
@@ -48,18 +49,19 @@ export function getMySlotMachines(myAccount) {
       slotMachineAddressesArray.forEach(slotMachineContractAddress => {
         promiseArr.push(getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.MAKER, myAccount));
       });
-      await Promise.all(promiseArr).then(resultArr => {
+      await Promise.all(promiseArr).then(async resultArr => {
         const filteredArr = resultArr.filter(slotContractInfo => {
           return slotContractInfo !== null;
         });
         const slotContracts = fromJS(filteredArr);
+        const timerId = await Web3Service.makerPendingWatcher(slotContracts, myAccount);
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_GET_MY_SLOT_MACHINES,
           payload: {
             slotContracts,
+            timerId,
           },
         });
-        Web3Service.makerPendingWatcher(slotContracts, myAccount);
       });
     } catch (err) {
       console.error(err);
@@ -77,23 +79,33 @@ export function getAllSlotMachines(myAccount) {
     });
     try {
       const allSlotMachineAddressesArray = await Web3Service.getAllSlotMachineAddressesArray();
-      const promiseArr = [];
-      allSlotMachineAddressesArray.forEach(slotMachineContractAddress => {
-        promiseArr.push(getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.PLAYER, myAccount));
-      });
-      await Promise.all(promiseArr).then(resultArr => {
-        const filteredArr = resultArr.filter(slotContractInfo => {
-          return slotContractInfo !== null;
-        });
-        const slotContracts = fromJS(filteredArr);
-        dispatch({
-          type: ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
-          payload: {
-            slotContracts,
-          },
-        });
+      const slotInformationArr = [];
+
+      for (const slotMachineContractAddress of allSlotMachineAddressesArray) {
+        const slotInformation = await getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.PLAYER, myAccount);
+
+        if (slotInformation && slotInformation.meta) {
+          if (slotInformation.meta.isAlreadyOccupiedByMe) {
+            Toast.notie.alert({
+              text: 'You alerady had playing slot Game. Move to that slotMachine.',
+            });
+            dispatch(push(`/slot/play/${slotInformation.meta.address}`));
+          }
+
+          slotInformationArr.push(slotInformation);
+        }
+      }
+
+      const slotContracts = fromJS(slotInformationArr);
+
+      dispatch({
+        type: ACTION_TYPES.SUCCEEDED_TO_GET_ALL_SLOT_MACHINES,
+        payload: {
+          slotContracts,
+        },
       });
     } catch (err) {
+      console.error(err);
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,
       });

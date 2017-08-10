@@ -26,13 +26,15 @@ const SlotList = ({ slotContracts, isMaking = false, showMakeItem = false }) => 
         {newSlotNode}
         {slotItemsNode}
       </ul>
-      <div className={styles.paginationWrapper}>
-        <span>1</span>
-        <span>2</span>
-        <span>3</span>
-        <span>4</span>
-        <span>5</span>
-      </div>
+      {/*
+        <div className={styles.paginationWrapper}>
+          <span>1</span>
+          <span>2</span>
+          <span>3</span>
+          <span>4</span>
+          <span>5</span>
+        </div>
+        */}
     </div>
   );
 };

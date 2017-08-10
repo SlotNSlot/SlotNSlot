@@ -70,16 +70,16 @@ class Header extends React.PureComponent {
                 GitHub
               </a>
             </li>
-            {/* <li className={styles.rightNavItem}>
-            <a
-              className={styles.item}
-              onClick={() => {
-                this.openLinkWithTrack('https://discord.gg/f97RkQf');
-              }}
-            >
-              Chat
-            </a>
-          </li>  */}
+            <li className={styles.rightNavItem}>
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://discord.gg/f97RkQf');
+                }}
+              >
+                Chat
+              </a>
+            </li>
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
@@ -90,7 +90,7 @@ class Header extends React.PureComponent {
                 Blog
               </a>
             </li>
-            <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
+            {/* <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
               <Link
                 className={styles.item}
                 onClick={() => {
@@ -100,7 +100,7 @@ class Header extends React.PureComponent {
               >
                 Prototype
               </Link>
-            </li>
+            </li> */}
             <li className={styles.rightNavItem}>
               <Link
                 onClick={() => {

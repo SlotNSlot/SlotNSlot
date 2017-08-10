@@ -156,7 +156,7 @@ $header-height: 80px;
   left: 70px;
   z-index: 20;
 
-  span {
+  .tipMessage {
     position: absolute;
     display: inline-block;
     width: 200px;
@@ -164,8 +164,9 @@ $header-height: 80px;
     top: 20px;
     left: 0;
     padding: 20px;
-    color: #2d2c44;
+    color: #f7485f;
     font-size: 18px;
+    font-weight: 500;
     line-height: 1.33;
     text-align: left;
   }

@@ -42,7 +42,7 @@ brew install ethereum
 2. Paste and execute below code
 
 ```bash
- geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=full --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*"
+ geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*"
  ```
 
 Then, it starts syncing job.
@@ -80,9 +80,9 @@ Then restart your Geth client with --unlock option to unlock your account.
 # Paste your account address to [account] part
 # Insert 0 to [account] means 1st account
 
-# Ex) geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=full --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
+# Ex) geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
 
-geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=full --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
+geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
 ```
 
 After executing command, you should insert your passphrase to unlock account.

@@ -21,12 +21,6 @@ const Header = ({ rootState, location }) =>
         <div className={styles.walletStatus}>
           Your balance : {parseFloat(rootState.get('balance'), 10).toFixed(3)} ETH
         </div>
-        <div className={styles.buttonWrapper}>
-          <button className={styles.accountBtn}>
-            Your Account
-            <Icon className={styles.triangle} icon="TRIANGLE_DOWN" />
-          </button>
-        </div>
       </div>
     </div>
   </div>;

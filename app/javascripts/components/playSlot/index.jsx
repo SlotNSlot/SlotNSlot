@@ -27,7 +27,6 @@ class PlaySlot extends React.PureComponent {
     this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
     this.slotAddress = this.props.match.params.slotAddress;
     Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
-    this.playerKickedWatcher(this.slotAddress);
   }
 
   componentDidMount() {
@@ -40,6 +39,7 @@ class PlaySlot extends React.PureComponent {
     gameAlreadyLoaded = true;
     if (root.get('account') !== null && !slotMachineLoaded) {
       this.getSlotMachine(this.slotAddress, root.get('account'));
+      this.playerKickedWatcher(this.slotAddress, root.get('account'));
       slotMachineLoaded = true;
     }
 
@@ -79,9 +79,9 @@ class PlaySlot extends React.PureComponent {
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
       }
-
       if (root.get('account') !== null && !slotMachineLoaded) {
         this.getSlotMachine(this.slotAddress, root.get('account'));
+        this.playerKickedWatcher(this.slotAddress, root.get('account'));
         slotMachineLoaded = true;
       }
     }
@@ -206,7 +206,7 @@ class PlaySlot extends React.PureComponent {
   setDeposit() {
     const { dispatch, root, playSlotState } = this.props;
     Toast.notie.input({
-      text: 'Please insert the maximum Ethereum value you want to bet',
+      text: 'Please write down the amount of ETH to put in this slot.',
       type: 'number',
       submitCallback: ethValue => {
         if (root.get('balance') < ethValue) {
@@ -228,9 +228,9 @@ class PlaySlot extends React.PureComponent {
       },
     });
   }
-  playerKickedWatcher(slotMachineContractAddress) {
+  playerKickedWatcher(slotMachineContractAddress, playerAddress) {
     const { dispatch } = this.props;
-    dispatch(Actions.playerKickedWatcher(slotMachineContractAddress));
+    dispatch(Actions.playerKickedWatcher(slotMachineContractAddress, playerAddress));
   }
   setBetSize(betSize) {
     const { dispatch } = this.props;

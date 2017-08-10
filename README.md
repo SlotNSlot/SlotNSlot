@@ -3,6 +3,12 @@
 ## WARNING
 **If you run SlotNSlot with Metamask, it's way slower than Geth client**
 
+**If you Metamask on your browser, SlotNSlot always try to connect to the Metamask first even if you are turning on Geth Client**
+
+Because Metamask is way slower than Geth client, we expect most of the users want to use Geth.
+
+**If you want to use Geth client, please use browser's incognito mode or remove Metamask**
+
 ## Requirements
 - Geth client or MetaMask (Metamask transaction is extremely slower than Geth)
 - Rinkeby(Testnet) Account & Ether balance

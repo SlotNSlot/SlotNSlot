@@ -635,23 +635,25 @@ class Web3Service {
   }
 
   playerKickedWatcher(slotMachineContractAddress) {
-    const contractFilter = this.web3.eth.filter({
-      fromBlock: 'pending',
-      toBlock: 'pending',
-    });
+    return new Promise(resolve => {
+      const contractFilter = this.web3.eth.filter({
+        fromBlock: 'pending',
+        toBlock: 'pending',
+      });
 
-    contractFilter.watch((err, result) => {
-      if (err) {
-        console.error(err);
-      } else if (slotMachineContractAddress === result.address) {
-        if (result.topics) {
-          result.topics.forEach(topic => {
-            if (topic === SLOT_TOPICS_ENCODED.playerLeft) {
-              console.log('you are kicked');
-            }
-          });
+      contractFilter.watch((err, result) => {
+        if (err) {
+          console.error(err);
+        } else if (slotMachineContractAddress === result.address) {
+          if (result.topics) {
+            result.topics.forEach(topic => {
+              if (topic === SLOT_TOPICS_ENCODED.playerLeft) {
+                resolve('you are kicked');
+              }
+            });
+          }
         }
-      }
+      });
     });
   }
 

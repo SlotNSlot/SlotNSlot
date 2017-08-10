@@ -29,7 +29,21 @@ export const ACTION_TYPES = {
   SEND_ETHER_TO_SLOT_CONTRACT: 'play_slot.SEND_ETHER_TO_SLOT_CONTRACT',
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 };
-
+export function playerKickedWatcher(slotMachineContractAddress) {
+  return async dispatch => {
+    try {
+      await Web3Service.playerKickedWatcher(slotMachineContractAddress);
+      Toast.notie.alert({
+        type: 'error',
+        text: 'You are kicked by banker.',
+        stay: true,
+      });
+      dispatch(push('/slot/play'));
+    } catch (err) {
+      console.err('playerKickedWatcher ', err);
+    }
+  };
+}
 export function setDeposit(ethValue) {
   return {
     type: ACTION_TYPES.SET_DEPOSIT,

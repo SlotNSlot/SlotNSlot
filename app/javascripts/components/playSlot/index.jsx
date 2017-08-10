@@ -26,6 +26,7 @@ class PlaySlot extends React.PureComponent {
     this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
     this.slotAddress = this.props.match.params.slotAddress;
     Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
+    this.playerKickedWatcher(this.slotAddress);
   }
 
   componentDidMount() {
@@ -234,7 +235,10 @@ class PlaySlot extends React.PureComponent {
       },
     });
   }
-
+  playerKickedWatcher(slotMachineContractAddress) {
+    const { dispatch } = this.props;
+    dispatch(Actions.playerKickedWatcher(slotMachineContractAddress));
+  }
   setBetSize(betSize) {
     const { dispatch } = this.props;
     dispatch(Actions.setBetSize(betSize));

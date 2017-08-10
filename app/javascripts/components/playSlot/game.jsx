@@ -1045,7 +1045,7 @@ export default class SlotGame {
 
     let mergedBackground = null;
     if (this.isWatcherPage) {
-      mergedBackground = new Sprite.fromImage('assets/images/slot/combined-shape@2x.png');
+      mergedBackground = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/combined-shape@2x.png']);
     } else {
       mergedBackground = new Sprite(TextureCache['mergedImage.png']);
     }
@@ -1074,7 +1074,7 @@ export default class SlotGame {
 
     let yourStake = null;
     if (this.isWatcherPage) {
-      yourStake = new Sprite.fromImage('assets/images/slot/player-stake@2x.png');
+      yourStake = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/player-stake@2x.png']);
     } else {
       yourStake = new Sprite(TextureCache['your-stake.png']);
     }
@@ -1196,7 +1196,7 @@ export default class SlotGame {
     this.autoBtn.width = 93;
     this.autoBtn.height = 65;
 
-    this.autoStopBtn = new Sprite.fromImage('assets/images/slot/auto-stop@2x.png');
+    this.autoStopBtn = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/auto-stop@2x.png']);
     this.autoStopBtn.interactive = true;
     this.autoStopBtn.buttonMode = !this.isWatcherPage;
     this.autoStopBtn.position.set(804, 580);
@@ -1278,12 +1278,13 @@ export default class SlotGame {
     // Add Big Win & Big Win Text Element as invisible.
     // BigWinContainer contains bigWin & bigWinBackGround
     this.bigWinContainer = new PIXI.Container();
-    const bigWin = new Sprite.fromImage('assets/images/slot/circle-big-win-15-x@2x.png');
+
+    const bigWin = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/circle-big-win-15-x@2x.png']);
     bigWin.anchor.set(0.5, 0.5);
     bigWin.position.set(2, 11);
     bigWin.blendMode = PIXI.BLEND_MODES.SCREEN;
 
-    const bigWinBackGround = new Sprite.fromImage('assets/images/slot/big-win-front@2x.png');
+    const bigWinBackGround = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/big-win-front@2x.png']);
     bigWinBackGround.anchor.set(0.5, 0.5);
     bigWinBackGround.alpha = 1;
     this.bigWinContainer.addChild(bigWin);
@@ -1292,7 +1293,7 @@ export default class SlotGame {
     this.bigWinContainer.visible = false;
     this.UIContainer.addChild(this.bigWinContainer);
 
-    this.ovalBackground = new Sprite.fromImage('assets/images/slot/oval-14@2x.png');
+    this.ovalBackground = new Sprite(TextureCache['https://d1qh7kd1bid312.cloudfront.net/oval-14@2x.png']);
     this.ovalBackground.anchor.set(0.5, 0.5);
     this.ovalBackground.position.set(470, 470);
     this.ovalBackground.visible = false;

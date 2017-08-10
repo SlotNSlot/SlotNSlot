@@ -20,7 +20,6 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   emotionClicked: 0,
   emotionList: emotionTypes,
   betsData: [],
-  tableCategory: 0,
   slotMachineContract: null,
   slotName: '',
 });
@@ -145,10 +144,6 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.TOGGLE_EMOTION: {
       return state.set('emotionClicked', state.get('emotionClicked') ^ 1);
-    }
-
-    case ACTION_TYPES.SET_CATEGORY: {
-      return state.set('tableCategory', action.payload.tableNum);
     }
 
     default:

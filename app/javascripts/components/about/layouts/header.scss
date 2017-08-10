@@ -32,7 +32,11 @@ $top-navbar-height: 75px;
   text-align: center;
   color: #fff;
   font-weight: 300;
-  margin-right: 24px;
+  margin-right: 16px;
+
+  &.prototypeLink {
+    color: #f85866;
+  }
 
   .item {
     display: inline-block;
@@ -44,6 +48,7 @@ $top-navbar-height: 75px;
 
     &:hover {
       color: inherit;
+      text-decoration: inherit;
     }
   }
 

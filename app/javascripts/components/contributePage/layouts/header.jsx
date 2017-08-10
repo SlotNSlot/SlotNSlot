@@ -1,6 +1,10 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactGA from 'react-ga';
+
+// helpers
+import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 // components
 import Icon from '../../../icons';
 // styles
@@ -26,29 +30,62 @@ class Header extends React.PureComponent {
             <li className={styles.rightNavItem}>
               <a
                 className={styles.item}
-                href="https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md"
-                target="_blank"
+                onClick={() => {
+                  this.openLinkWithTrack('https://github.com/SlotNSlot/whitepaper/blob/master/whitepaper.md');
+                }}
               >
                 White Paper
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://github.com/SlotNSlot/SlotNSlot" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot');
+                }}
+              >
                 GitHub
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://discord.gg/f97RkQf" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://discord.gg/f97RkQf');
+                }}
+              >
                 Chat
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <a className={styles.item} href="https://medium.com/@kkenji1024" target="_blank">
+              <a
+                className={styles.item}
+                onClick={() => {
+                  this.openLinkWithTrack('https://medium.com/@kkenji1024');
+                }}
+              >
                 Blog
               </a>
             </li>
+            {/* <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
+              <Link
+                className={styles.item}
+                onClick={() => {
+                  this.trackWordsOnly();
+                }}
+                to="/slot/play"
+              >
+                Prototype
+              </Link>
+            </li> */}
             <li className={styles.rightNavItem}>
-              <Link className={styles.crowdsaleBtn} to="/contribute">
+              <Link
+                onClick={() => {
+                  this.trackWordsOnly();
+                }}
+                className={styles.crowdsaleBtn}
+                to="/contribute"
+              >
                 Contribution
               </Link>
             </li>
@@ -56,6 +93,25 @@ class Header extends React.PureComponent {
         </div>
       </div>
     );
+  }
+
+  trackWordsOnly() {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: '/contribute',
+    });
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+  }
+
+  openLinkWithTrack(linkUrl) {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: linkUrl,
+    });
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+    window.open(linkUrl, '_blank');
   }
 }
 

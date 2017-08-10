@@ -36,6 +36,13 @@ const ICONS = {
   SLOT_PLUS_BUTTON: require('./slot-plus-button.svg'),
   PLAY_BUTTON: require('./play-button.svg'),
   SLOT_COIN: require('./slot-coin.svg'),
+  FACEBOOK: require('./facebook.svg'),
+  FACEBOOK_FOR_FOOTER: require('./facebook-for-footer.svg'),
+  DISCORD: require('./discord.svg'),
+  DISCORD_FOR_FOOTER: require('./discord-for-footer.svg'),
+  TELEGRAM: require('./telegram.svg'),
+  TELEGRAM_FOR_FOOTER: require('./telegram-for-footer.svg'),
+  DEPOSIT_TOOL_TIP: require('./deposit-tool-tip.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

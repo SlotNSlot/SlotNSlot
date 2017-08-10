@@ -12,7 +12,7 @@ const Status404 = () =>
       <div className={styles.content}>The page you were looking for doesn`t exist.</div>
       <div className={styles.btnContainer}>
         <div className={styles.homeBtn}>
-          <Link exact to="/" className={styles.btnContent}>
+          <Link to="/" className={styles.btnContent}>
             Go Home
           </Link>
         </div>

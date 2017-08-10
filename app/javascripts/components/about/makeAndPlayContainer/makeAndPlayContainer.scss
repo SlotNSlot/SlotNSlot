@@ -35,7 +35,7 @@
   span {
     font-weight: bold;
   }
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .makeAndPlayContext {
@@ -95,6 +95,26 @@
         color: #00e9dd;
       }
     }
+  }
+}
+
+.playBetaBtn {
+  display: block;
+  margin: 0 auto;
+  font-weight: 500;
+  width: 187.7px;
+  height: 50.5px;
+  vertical-align: middle;
+  text-align: center;
+  color: #fff;
+  line-height: 50.5px;
+  font-size: 18px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(105deg, #ffb88d, #f7485f);
+
+  &:hover {
+    color: inherit;
+    text-decoration: inherit;
   }
 }
 

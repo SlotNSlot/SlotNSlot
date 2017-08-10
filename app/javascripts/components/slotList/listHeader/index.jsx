@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import styles from '../slotList.scss';
 
@@ -28,7 +29,9 @@ class ListHeader extends React.PureComponent {
                 <br />
                 <strong>Platform</strong>, running on <strong>Ethereum</strong>
               </div>
-              <button className={styles.infoButton}>More Information</button>
+              <Link to="/" className={styles.infoButton}>
+                More Information
+              </Link>
             </div>
           </div>
         </div>

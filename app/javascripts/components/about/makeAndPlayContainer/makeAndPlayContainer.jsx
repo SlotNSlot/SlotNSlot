@@ -1,8 +1,18 @@
 import React from 'react';
 import ReactGA from 'react-ga';
+import { Link } from 'react-router-dom';
 import styles from './makeAndPlayContainer.scss';
 import Icon from '../../../icons';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
+
+function trackWordsOnly() {
+  ReactGA.event({
+    category: 'link-click',
+    action: 'click-from-MakeAndPlayContainer',
+    label: '/slot/play',
+  });
+  handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+}
 
 function trackAction(url) {
   ReactGA.event({
@@ -25,6 +35,11 @@ const MakeAndPlayContainer = () =>
       <div className={styles.makeAndPlayTitle}>
         Tired of just <span>PLAY</span>ing? Now <span>MAKE</span> your own with SlotNSlot !
       </div>
+      {/* <div className={styles.betaBtnWrapper}>
+        <Link onClick={() => trackWordsOnly()} to="/slot/play" className={styles.playBetaBtn}>
+          Play Beta
+        </Link>
+      </div> */}
       <div className={styles.makeAndPlayContext}>
         <img src="https://d1qh7kd1bid312.cloudfront.net/about/Browser_content.png" alt="browser" />
         <div className={`${styles.bubble} ${styles.left}`}>

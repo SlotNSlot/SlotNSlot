@@ -12,7 +12,6 @@ const openLinkWithTrack = linkUrl => {
     label: linkUrl,
   });
   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
-
   window.open(linkUrl, '_blank');
 };
 
@@ -24,45 +23,25 @@ const Footer = () =>
         team@slotnslot.com
       </div>
       <div className={styles.rightBtns}>
-        <a
-          onClick={() => {
-            openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot');
-          }}
-        >
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://t.me/slotnslot_ico')}>
+          <Icon className={styles.snsBtn} icon="TELEGRAM_FOR_FOOTER" />
+        </a>
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://www.facebook.com/slotnslot.eth')}>
+          <Icon className={styles.snsBtn} icon="FACEBOOK_FOR_FOOTER" />
+        </a>
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot')}>
           <Icon className={styles.snsBtn} icon="GITHUB_FOR_FOOTER" />
         </a>
-        <a
-          className={styles.btnContainer}
-          onClick={() => {
-            openLinkWithTrack(
-              'https://www.reddit.com/r/ethereum/comments/6m6eu0/slotnslot_make_and_play_slots_on_ethereum_needs/?st=j4wgacux&sh=9bfabdf4',
-            );
-          }}
-        >
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://www.reddit.com/r/slotnslot')}>
           <Icon className={styles.snsBtn} icon="REDDIT_FOR_FOOTER" />
         </a>
-        <a
-          className={styles.btnContainer}
-          onClick={() => {
-            openLinkWithTrack('https://discord.gg/f97RkQf');
-          }}
-        >
-          <Icon className={styles.snsBtn} icon="HIPCHAT_FOR_FOOTER" />
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://discord.gg/f97RkQf')}>
+          <Icon className={styles.snsBtn} icon="DISCORD_FOR_FOOTER" />
         </a>
-        <a
-          className={styles.btnContainer}
-          onClick={() => {
-            openLinkWithTrack('https://twitter.com/slotnslot');
-          }}
-        >
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://twitter.com/slotnslot')}>
           <Icon className={styles.snsBtn} icon="TWITTER_FOR_FOOTER" />
         </a>
-        <a
-          className={styles.btnContainer}
-          onClick={() => {
-            openLinkWithTrack('https://medium.com/@kkenji1024');
-          }}
-        >
+        <a className={styles.btnContainer} onClick={() => openLinkWithTrack('https://medium.com/@kkenji1024')}>
           <Icon className={styles.snsBtn} icon="MEDIUM_FOR_FOOTER" />
         </a>
       </div>

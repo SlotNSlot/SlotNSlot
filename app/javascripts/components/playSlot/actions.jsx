@@ -10,7 +10,6 @@ export const ACTION_TYPES = {
   SPIN_START: 'play_slot.SPIN_START',
   SPIN_END: 'play_slot.SPIN_END',
   TOGGLE_EMOTION: 'play_slot.TOGGLE_EMOTION',
-  SET_CATEGORY: 'play_slot.SET_CATEGORY',
   SET_OCCUPIED_STATE: 'play_slot.SET_OCCUPIED_STATE',
 
   START_TO_GET_SLOT_MACHINE: 'play_slot.START_TO_GET_SLOT_MACHINE',
@@ -252,14 +251,5 @@ export function setBankRoll(bankRoll) {
 export function toggleEmotion() {
   return {
     type: ACTION_TYPES.TOGGLE_EMOTION,
-  };
-}
-
-export function setCategory(tableNum) {
-  return {
-    type: ACTION_TYPES.SET_CATEGORY,
-    payload: {
-      tableNum,
-    },
   };
 }

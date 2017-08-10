@@ -4,6 +4,7 @@ import ReactGA from 'react-ga';
 import styles from './emailContainer.scss';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
+import Icon from '../../../icons';
 
 class EmailContainer extends React.PureComponent {
   async subscribeEmail(e) {
@@ -64,11 +65,60 @@ class EmailContainer extends React.PureComponent {
                 </button>
               </div>
             </form>
+
+            <div className={styles.linkBlock}>
+              <a className={styles.btnContainer} onClick={() => this.openLinkWithTrack('https://t.me/slotnslot_ico')}>
+                <Icon className={styles.snsBtn} icon="TELEGRAM" />
+              </a>
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://www.facebook.com/slotnslot.eth')}
+              >
+                <Icon className={styles.snsBtn} icon="FACEBOOK" />
+              </a>
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://github.com/SlotNSlot/SlotNSlot')}
+              >
+                <Icon className={styles.snsBtn} icon="GITHUB" />
+              </a>
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://www.reddit.com/r/slotnslot')}
+              >
+                <Icon className={styles.snsBtn} icon="REDDIT" />
+              </a>
+              <a className={styles.btnContainer} onClick={() => this.openLinkWithTrack('https://discord.gg/f97RkQf')}>
+                <Icon className={styles.snsBtn} icon="DISCORD" />
+              </a>
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://twitter.com/slotnslot')}
+              >
+                <Icon className={styles.snsBtn} icon="TWITTER" />
+              </a>
+              <a
+                className={styles.btnContainer}
+                onClick={() => this.openLinkWithTrack('https://medium.com/@kkenji1024')}
+              >
+                <Icon className={styles.snsBtn} icon="MEDIUM" />
+              </a>
+            </div>
           </div>
         </div>
         <CrowdSaleContainer />
       </div>
     );
+  }
+
+  openLinkWithTrack(linkUrl) {
+    ReactGA.event({
+      category: 'link-click',
+      action: 'click-from-Header',
+      label: linkUrl,
+    });
+    handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+    window.open(linkUrl, '_blank');
   }
 }
 export default EmailContainer;

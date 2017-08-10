@@ -7,6 +7,7 @@ import Web3Service from '../../helpers/web3Service';
 import styles from './playSlot.scss';
 import './react-table.scss';
 import { USER_TYPES } from '../slotList/actions';
+import Icon from '../../icons';
 import Toast from '../../helpers/notieHelper';
 
 let gameAlreadyLoaded = false;
@@ -97,11 +98,17 @@ class PlaySlot extends React.PureComponent {
   render() {
     const { playSlotState } = this.props;
     const betsData = playSlotState.get('betsData').toJS();
-    const tableCategory = playSlotState.get('tableCategory');
 
     let loader = null;
+    let depositTip = null;
     if (playSlotState.get('isLoading') || !playSlotState.get('isOccupied')) {
       loader = <div className={styles.loadingBlocker} />;
+      depositTip = (
+        <div className={styles.depositTip}>
+          <Icon icon="DEPOSIT_TOOL_TIP" />
+          <span className={styles.tipMessage}>Please deposit first!</span>
+        </div>
+      );
     }
 
     const columns = [
@@ -160,8 +167,9 @@ class PlaySlot extends React.PureComponent {
               >
                 ?
               </button>
-              <button onClick={this.setDeposit} className={styles.headerBtn}>
+              <button onClick={this.setDeposit} className={`${styles.depositBtn} ${styles.headerBtn}`}>
                 DEPOSIT
+                {depositTip}
               </button>
               <button onClick={this.leaveSlotMachine} className={styles.headerBtn}>
                 CASH OUT
@@ -179,22 +187,7 @@ class PlaySlot extends React.PureComponent {
         </div>
         <div className={styles.bottomSection}>
           <div className={styles.bottomContainer}>
-            <div
-              onClick={() => {
-                this.props.dispatch(Actions.setCategory(0));
-              }}
-              className={`${styles.sectionMenu} ${tableCategory === 0 ? styles.active : ''}`}
-            >
-              YOUR BETS
-            </div>
-            <div
-              onClick={() => {
-                this.props.dispatch(Actions.setCategory(1));
-              }}
-              className={`${styles.sectionMenu} ${tableCategory === 1 ? styles.active : ''}`}
-            >
-              ALL BETS
-            </div>
+            <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>
           </div>
           <div className={styles.tableWrapper}>
             <ReactTable

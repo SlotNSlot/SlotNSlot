@@ -58,6 +58,10 @@ $header-height: 80px;
       cursor: pointer;
       position: relative;
 
+      &.depositBtn {
+        z-index: 3;
+      }
+
       &:last-child {
         background-color: #41bed5;
       }
@@ -140,7 +144,7 @@ $header-height: 80px;
 }
 
 .loadingBlocker {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -152,19 +156,20 @@ $header-height: 80px;
 
 .depositTip {
   position: absolute;
-  top: 50px;
-  left: 70px;
-  z-index: 20;
+  top: 60px;
+  left: -75px;
+  z-index: 3;
 
   .tipMessage {
     position: absolute;
     display: inline-block;
     width: 200px;
     height: 120px;
-    top: 20px;
+    top: 15px;
     left: 0;
-    padding: 20px;
-    color: #f7485f;
+    padding-top: 13px;
+    padding-left: 17px;
+    color: #6257da;
     font-size: 18px;
     font-weight: 500;
     line-height: 1.33;
@@ -172,8 +177,7 @@ $header-height: 80px;
   }
 
   svg {
-    width: 200px;
-    height: 120px;
-    transform: rotate(180deg);
+    width: 191.5px;
+    height: 62px;
   }
 }

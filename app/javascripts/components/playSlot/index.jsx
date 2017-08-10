@@ -96,7 +96,6 @@ class PlaySlot extends React.PureComponent {
   render() {
     const { playSlotState } = this.props;
     const betsData = playSlotState.get('betsData').toJS();
-    const tableCategory = playSlotState.get('tableCategory');
 
     let loader = null;
     let depositTip = null;
@@ -104,8 +103,8 @@ class PlaySlot extends React.PureComponent {
       loader = <div className={styles.loadingBlocker} />;
       depositTip = (
         <div className={styles.depositTip}>
-          <Icon icon="TIP_BUBBLE" />
-          <span className={styles.tipMessage}>Please set your deposit for playing!</span>
+          <Icon icon="DEPOSIT_TOOL_TIP" />
+          <span className={styles.tipMessage}>Please deposit first!</span>
         </div>
       );
     }
@@ -166,7 +165,7 @@ class PlaySlot extends React.PureComponent {
               >
                 ?
               </button>
-              <button onClick={this.setDeposit} className={styles.headerBtn}>
+              <button onClick={this.setDeposit} className={`${styles.depositBtn} ${styles.headerBtn}`}>
                 DEPOSIT
                 {depositTip}
               </button>

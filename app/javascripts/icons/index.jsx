@@ -42,6 +42,7 @@ const ICONS = {
   DISCORD_FOR_FOOTER: require('./discord-for-footer.svg'),
   TELEGRAM: require('./telegram.svg'),
   TELEGRAM_FOR_FOOTER: require('./telegram-for-footer.svg'),
+  DEPOSIT_TOOL_TIP: require('./deposit-tool-tip.svg'),
   '404_IMAGE': require('./404-image.svg'),
 };
 

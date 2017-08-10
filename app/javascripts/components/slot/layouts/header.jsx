@@ -7,7 +7,7 @@ const Header = ({ rootState, location }) =>
   <div className={styles.header}>
     <div className={styles.headerContainer}>
       <Link to="/" className={styles.logo}>
-        <Icon className={styles.logo} icon="SLOT_N_SLOT_LOGO" />
+        <Icon className={styles.logo} icon="SLOT_N_SLOT_BETA_LOGO" />
       </Link>
       <div className={styles.leftItems}>
         <NavLink to="/slot/play" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>

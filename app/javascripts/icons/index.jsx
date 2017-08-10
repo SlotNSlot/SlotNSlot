@@ -23,6 +23,7 @@ const ICONS = {
   TWITTER: require('./twitter.svg'),
   SLOT_N_SLOT_LOGO_NON_SHADOW: require('./slot-n-slot-logo-non-shadow.svg'),
   SLOT_N_SLOT_LOGO: require('./slot-n-slot-logo.svg'),
+  SLOT_N_SLOT_BETA_LOGO: require('./slot-n-slot-beta-logo.svg'),
   SUBSCRIBE_BUTTON: require('./subscribe-button.svg'),
   TRIANGLE_DOWN: require('./triangle-down.svg'),
   TRIANGLE_RIGHT: require('./triangle-right.svg'),

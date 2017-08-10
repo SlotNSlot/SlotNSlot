@@ -35,6 +35,30 @@ class ListHeader extends React.PureComponent {
             </div>
           </div>
         </div>
+        <div>
+          <div className={styles.background3}>
+            <div className={styles.innerContainer}>
+              <div className={styles.leftBlock}>
+                <div className={styles.title}>Play & Make Slots from Everywhere</div>
+                <div className={styles.subTitle}>
+                  SlotNSlot provides World`s First Ethereum Slot Game Mobile App. <br />
+                  Enjoy SlotNSlot anytime, anywhere!
+                </div>
+                <a
+                  className={styles.googlePlayLink}
+                  onClick={() => {
+                    alert('SlotNSlot application will be available soon!');
+                  }}
+                >
+                  <img
+                    src="https://d1qh7kd1bid312.cloudfront.net/about/google-play-download.png"
+                    alt="google-play-download"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </Slider>
     );
   }

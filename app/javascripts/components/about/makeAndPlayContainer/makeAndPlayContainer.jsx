@@ -14,20 +14,20 @@ function trackWordsOnly() {
   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
 }
 
-// function trackAction(url) {
-//   ReactGA.event({
-//     category: 'link-click',
-//     action: 'click-from-MakeAndPlayContainer',
-//     label: url,
-//   });
+function trackAction(url) {
+  ReactGA.event({
+    category: 'link-click',
+    action: 'click-from-MakeAndPlayContainer',
+    label: url,
+  });
 
-//   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
-// }
+  handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+}
 
-// const handleWatchDemoClick = () => {
-//   trackAction('https://youtu.be/9TtOFJ2InH8');
-//   window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
-// };
+const handleWatchDemoClick = () => {
+  trackAction('https://youtu.be/9TtOFJ2InH8');
+  window.open('https://youtu.be/9TtOFJ2InH8', '_blank');
+};
 
 const MakeAndPlayContainer = () =>
   <div className={styles.makeAndPlayContainer}>

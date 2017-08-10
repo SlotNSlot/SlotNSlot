@@ -39,14 +39,14 @@ class Web3Service {
       const SlotManagerContract = this.web3.eth.contract(managerABI);
       this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
     } else {
-      console.warn(
-        "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
-      );
-      if (EnvChecker.isDev()) {
-        this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-        const SlotManagerContract = this.web3.eth.contract(managerABI);
-        this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
-      }
+      // console.warn(
+      //   "No web3 detected. Falling back to https://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask",
+      // );
+      // if (EnvChecker.isDev()) {
+      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      const SlotManagerContract = this.web3.eth.contract(managerABI);
+      this.slotManagerContract = SlotManagerContract.at(SLOT_MANAGER_ADDRESS);
+      // }
     }
   }
 
@@ -236,11 +236,11 @@ class Web3Service {
   // 0 [player], 1 [maker]
   async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     const slotInfo = await this.getInfo(slotMachineContract);
-    let isAlreadyOccupiedGameExist = false;
+    // let isAlreadyOccupiedGameExist = false;
 
     if (userType === USER_TYPES.PLAYER) {
       if (slotInfo.mPlayer === myAddress) {
-        isAlreadyOccupiedGameExist = true;
+        // isAlreadyOccupiedGameExist = true; there is lot of error.
       } else if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
         throw new Error('This slot is already occupied');
       } else if (slotInfo.owner === myAddress) {
@@ -255,9 +255,9 @@ class Web3Service {
     const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
 
     // save isAlreadyOccupiedState to payload if it exist
-    if (isAlreadyOccupiedGameExist) {
-      payload.isAlreadyOccupiedByMe = true;
-    }
+    // if (isAlreadyOccupiedGameExist) {
+    //   payload.isAlreadyOccupiedByMe = true;
+    // }
     return payload;
   }
   getInfo(slotMachineContract) {

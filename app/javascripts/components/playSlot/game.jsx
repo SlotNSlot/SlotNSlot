@@ -526,6 +526,7 @@ export default class SlotGame {
         return;
       }
       this.gameState = STATE_STOPPING;
+      await this.stopBuffering();
       for (let i = 0; i < ENTIRE_REEL_COUNT; i += 1) {
         await this.stopReel(i);
       }
@@ -569,7 +570,13 @@ export default class SlotGame {
     this.drawingPercentageList = new Array(this.drawingLines.length).fill(0);
     this.drawingLineIndex = 0;
   }
-
+  stopBuffering() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 5000);
+    });
+  }
   stopReel(reelNum) {
     return new Promise(resolve => {
       this.spinStatus[reelNum] = false;

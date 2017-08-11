@@ -106,7 +106,9 @@ class PlaySlot extends React.PureComponent {
       depositTip = (
         <div className={styles.depositTip}>
           <Icon icon="DEPOSIT_TOOL_TIP" />
-          <span className={styles.tipMessage}>Please deposit first!</span>
+          <span className={styles.tipMessage}>
+            {playSlotState.get('waitOccupy') ? 'Wait deposit...' : 'Please deposit first!'}
+          </span>
         </div>
       );
     }
@@ -225,6 +227,7 @@ class PlaySlot extends React.PureComponent {
         } else {
           dispatch(Actions.occupySlotMachine(slotMachineContract, root.get('account'), weiValue));
           dispatch(Actions.setDeposit(ethValueBigNumber));
+          dispatch(Actions.setWaitOccupy(true));
         }
       },
     });

@@ -22,6 +22,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   betsData: [],
   slotMachineContract: null,
   slotName: '',
+  waitOccupy: false,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -144,6 +145,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.TOGGLE_EMOTION: {
       return state.set('emotionClicked', state.get('emotionClicked') ^ 1);
+    }
+
+    case ACTION_TYPES.SET_WAIT_OCCUPY: {
+      return state.set('waitOccupy', action.payload.waitOccupy);
     }
 
     default:

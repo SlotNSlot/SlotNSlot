@@ -32,6 +32,7 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
         return state.set('setIntervalTimerId', null);
       }
     }
+
     case ACTION_TYPES.START_TO_SEND_ETHER_TO_CONTRACT:
     case ACTION_TYPES.START_TO_GET_SLOT_MACHINE: {
       return state.withMutations(currentState => {

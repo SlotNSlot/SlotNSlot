@@ -122,12 +122,9 @@ export default class SlotGame {
     if (!params.canvas) {
       return;
     }
-    // constructor params has properties like below.
-    // canvas, betSize, lineNum, bankRoll, betUnit, minBet, maxBet,
-    // setBetSizeFunc, setLineNumFunc, spinStartFunc, yourStake
-    for (const prop in params) {
-      this[prop] = params[prop];
-    }
+
+    this.updateGameInformation(params);
+
     // Function List
     this.gameLoop = this.gameLoop.bind(this);
     this.startSpin = this.startSpin.bind(this);
@@ -216,6 +213,15 @@ export default class SlotGame {
         });
     } else {
       this.initGame();
+    }
+  }
+
+  updateGameInformation(params) {
+    // constructor params has properties like below.
+    // canvas, betSize, lineNum, bankRoll, betUnit, minBet, maxBet,
+    // setBetSizeFunc, setLineNumFunc, spinStartFunc, yourStake
+    for (const prop in params) {
+      this[prop] = params[prop];
     }
   }
 

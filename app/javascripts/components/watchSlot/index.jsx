@@ -226,15 +226,17 @@ class WatchSlot extends React.PureComponent {
 
     dispatch(Actions.getMySlotMachines(playerAddress));
   }
+
   stopEnd() {
     const { dispatch, watchSlotState } = this.props;
-    console.log('stopEdn Function!!');
+    console.log('stopEnd Function!!');
     dispatch(Actions.stopEnd());
     if (watchSlotState.get('initQueue').size > 0) {
     }
   }
+
   handleWeb3Events(eventName, result) {
-    const { dispatch, watchSlotState, root } = this.props;
+    const { dispatch, watchSlotState } = this.props;
     console.log(`${eventName} handleWeb3Events is`, result);
     switch (eventName) {
       case 'gameOccupied':

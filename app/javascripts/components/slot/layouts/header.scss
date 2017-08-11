@@ -43,14 +43,14 @@ $top-navbar-height: 75px;
 .logo {
   display: flex;
   align-items: center;
-  width: 135px;
+  width: 165px;
   height: $top-navbar-height;
   line-height: $top-navbar-height;
 
   svg {
     display: inline-block;
     vertical-align: top;
-    width: 135px;
+    width: 165px;
   }
 }
 
@@ -75,29 +75,4 @@ $top-navbar-height: 75px;
   font-weight: 300;
   color: #fff;
   margin-right: 33px;
-}
-
-.buttonWrapper {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.accountBtn {
-  display: flex;
-  align-items: center;
-  height: 39px;
-  line-height: 39px;
-  border-radius: 81.1px;
-  border: 1.5px solid #7b45c9;
-  padding: 0 17px;
-  margin-top: 18px;
-  font-size: 15px;
-  font-weight: 500;
-  text-align: center;
-  color: #ffffff;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-  }
 }

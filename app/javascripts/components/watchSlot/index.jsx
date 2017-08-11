@@ -123,7 +123,7 @@ class WatchSlot extends React.PureComponent {
               <button
                 className={styles.helpBtn}
                 onClick={() => {
-                  alert('help');
+                  window.open(`https://rinkeby.etherscan.io/address/${this.slotAddress}`, '_blank');
                 }}
               >
                 ?

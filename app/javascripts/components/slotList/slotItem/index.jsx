@@ -6,16 +6,21 @@ import styles from './slotItem.scss';
 const SlotListItem = ({ slotContract, isBanker }) => {
   const mPlayer = slotContract.get('meta').get('mPlayer');
   const nullPlayer = '0x0000000000000000000000000000000000000000';
+  const isOccupied = mPlayer !== nullPlayer;
+
+  const occupySignal = (
+    <span
+      title={isOccupied ? 'This slot is already occupied.' : 'This slot is empty.'}
+      className={`${styles.occupySignal} ${isOccupied ? styles.isOccupied : ''}`}
+    />
+  );
+
   return (
     <Link
       to={`/slot/${isBanker ? 'make' : 'play'}/${slotContract.get('contract').address}`}
       className={`${slotContract.get('meta').get('mPlayer')}`}
     >
-      <li
-        className={`${styles.slotListItem} ${isBanker
-          ? mPlayer === nullPlayer ? styles.isBlank : styles.isOccupied
-          : ''}`}
-      >
+      <li className={styles.slotListItem}>
         <h2 className={styles.itemTitle}>
           ✨<span>{slotContract.get('meta').get('slotName')}</span>✨
         </h2>
@@ -44,6 +49,7 @@ const SlotListItem = ({ slotContract, isBanker }) => {
             {`BET Range ${slotContract.get('meta').get('minBet')} - ${slotContract.get('meta').get('maxBet')} ETH`}
           </span>
         </div>
+        {isBanker ? occupySignal : ''}
       </li>
     </Link>
   );

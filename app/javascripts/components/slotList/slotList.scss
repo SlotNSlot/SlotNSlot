@@ -39,6 +39,7 @@
   background-position: center top;
   background-size: auto 300px;
   background-repeat: no-repeat;
+  background-color: #eef0f6;
 }
 
 .headerContainer {
@@ -165,5 +166,53 @@
   }
   .dropdown-toggle.active:after {
     transform: rotate(180deg);
+  }
+}
+
+.background3 {
+  background-image: url("https://d1qh7kd1bid312.cloudfront.net/back-ground@2x.png");
+  width: 100%;
+  height: 300px;
+  background-color: #d9f8fe;
+  background-position: center top;
+  background-size: auto 300px;
+  background-repeat: no-repeat;
+
+  .innerContainer {
+    width: 940px;
+    height: 300px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    .leftBlock {
+      width: 100%;
+
+      .title {
+        font-size: 29.5px;
+        font-weight: 500;
+        line-height: 1.29;
+        color: #15143a;
+        text-align: left;
+        margin-bottom: 12px;
+      }
+
+      .subTitle {
+        font-size: 18px;
+        color: #15143a;
+        line-height: 1.5;
+        text-align: left;
+        margin-bottom: 27px;
+      }
+
+      .googlePlayLink {
+        cursor: pointer;
+        img {
+          width: 176px;
+        }
+      }
+    }
   }
 }

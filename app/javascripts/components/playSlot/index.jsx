@@ -160,9 +160,10 @@ class PlaySlot extends React.PureComponent {
             </div>
             <div className={styles.rightBtns}>
               <button
+                title="Go to Etherscan"
                 className={styles.helpBtn}
                 onClick={() => {
-                  alert('help');
+                  window.open(`https://rinkeby.etherscan.io/address/${this.slotAddress}`, '_blank');
                 }}
               >
                 ?

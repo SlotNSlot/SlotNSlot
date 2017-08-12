@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import Store from 'store';
 import updatePlugin from 'store/plugins/update';
-import EnvChecker from './envChecker';
 import { USER_TYPES } from '../components/slotList/actions';
 import Toast from './notieHelper';
 
@@ -210,7 +209,7 @@ class Web3Service {
     });
   }
 
-  async leaveSlotMachine(slotMachineContract, playerAddress) {
+  async cashOutSlotMachine(slotMachineContract, playerAddress) {
     return new Promise((resolve, reject) => {
       slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
         if (err) {
@@ -634,7 +633,7 @@ class Web3Service {
     });
   }
 
-  playerKickedWatcher(slotMachineContractAddress) {
+  setPlayerKickedByWatcher(slotMachineContractAddress) {
     return new Promise(resolve => {
       const kickFilter = this.web3.eth.filter({
         fromBlock: 'pending',

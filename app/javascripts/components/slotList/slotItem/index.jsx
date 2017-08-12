@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import weiToEther from '../../../helpers/weiToEther';
 import styles from './slotItem.scss';
 
 const SlotListItem = ({ slotContract, isBanker }) => {

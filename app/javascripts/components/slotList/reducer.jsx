@@ -33,6 +33,7 @@ export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
         return state.set('setIntervalTimerId', null);
       }
     }
+
     case ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES:
     case ACTION_TYPES.START_TO_GET_MY_SLOT_MACHINES: {
       return state.withMutations(currentState => {

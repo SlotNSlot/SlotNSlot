@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactTable from 'react-table';
+import { Prompt } from 'react-router-dom';
 import SlotGame from './game';
 import * as Actions from './actions';
 import Web3Service from '../../helpers/web3Service';
@@ -23,23 +24,33 @@ function mapStateToProps(appState) {
 class PlaySlot extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.setDeposit = this.setDeposit.bind(this);
-    this.leaveSlotMachine = this.leaveSlotMachine.bind(this);
+
     this.slotAddress = this.props.match.params.slotAddress;
-    Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
+
+    this.setDeposit = this.setDeposit.bind(this);
+    this.cashOutSlotMachine = this.cashOutSlotMachine.bind(this);
+    this.getReactTable = this.getReactTable.bind(this);
+    this.getLoadingBlocker = this.getLoadingBlocker.bind(this);
+    this.getDepositTipLabel = this.getDepositTipLabel.bind(this);
+    this.setBetSize = this.setBetSize.bind(this);
+    this.setLineNum = this.setLineNum.bind(this);
+    this.playGame = this.playGame.bind(this);
   }
 
   componentDidMount() {
+    const { root, playSlotState } = this.props;
+
     if (!this.canvas || gameAlreadyLoaded) {
       return;
     }
 
-    const { root, playSlotState } = this.props;
+    Web3Service.createGenesisRandomNumber(this.slotAddress, USER_TYPES.PLAYER);
 
     gameAlreadyLoaded = true;
+
     if (root.get('account') !== null && !slotMachineLoaded) {
       this.getSlotMachine(this.slotAddress, root.get('account'));
-      this.playerKickedWatcher(this.slotAddress, root.get('account'));
+      this.setPlayerKickedByWatcher(this.slotAddress, root.get('account'));
       slotMachineLoaded = true;
     }
 
@@ -55,9 +66,9 @@ class PlaySlot extends React.PureComponent {
       bankRoll: playSlotState.get('bankRoll'),
       yourStake: playSlotState.get('deposit'),
       slotName: playSlotState.get('slotName'),
-      setBetSize: this.setBetSize.bind(this),
-      setLineNum: this.setLineNum.bind(this),
-      playGame: this.playGame.bind(this),
+      setBetSize: this.setBetSize,
+      setLineNum: this.setLineNum,
+      playGame: this.playGame,
     });
   }
 
@@ -65,23 +76,16 @@ class PlaySlot extends React.PureComponent {
     const { root, playSlotState } = nextProps;
 
     if (this.props.playSlotState !== playSlotState || this.props.root !== root) {
-      this.slotGame.isLoading = playSlotState.get('isLoading');
-      this.slotGame.lineNum = playSlotState.get('lineNum');
-      this.slotGame.betSize = playSlotState.get('betSize');
-      this.slotGame.betUnit = playSlotState.get('betUnit');
-      this.slotGame.maxBet = playSlotState.get('maxBet');
-      this.slotGame.minBet = playSlotState.get('minBet');
-      this.slotGame.hasError = playSlotState.get('hasError');
-      this.slotGame.bankRoll = playSlotState.get('bankRoll');
-      this.slotGame.yourStake = playSlotState.get('deposit');
-      this.slotGame.slotName = playSlotState.get('slotName');
+      this.updateGameInformation();
 
       if (playSlotState.get('hasError')) {
         this.slotGame.errorOccur();
       }
+
       if (root.get('account') !== null && !slotMachineLoaded) {
         this.getSlotMachine(this.slotAddress, root.get('account'));
-        this.playerKickedWatcher(this.slotAddress, root.get('account'));
+        this.setPlayerKickedByWatcher(this.slotAddress, root.get('account'));
+
         slotMachineLoaded = true;
       }
     }
@@ -89,6 +93,7 @@ class PlaySlot extends React.PureComponent {
 
   componentWillUnmount() {
     if (this.slotGame) {
+      this.cashOutSlotMachine();
       this.slotGame.removeCurrentGame();
       gameAlreadyLoaded = false;
       slotMachineLoaded = false;
@@ -97,13 +102,76 @@ class PlaySlot extends React.PureComponent {
 
   render() {
     const { playSlotState } = this.props;
-    const betsData = playSlotState.get('betsData').toJS();
 
-    let loader = null;
-    let depositTip = null;
+    return (
+      <div className={styles.playSlotSection}>
+        <Prompt message={() => 'Are you sure to cash out your deposit and leave this game?'} />
+        <div className={styles.playSlotContainer}>
+          <div className={styles.innerHeader}>
+            <div className={styles.slotName}>
+              ✨{playSlotState.get('slotName')}✨
+            </div>
+            <div className={styles.rightBtns}>
+              <button
+                title="Go to Etherscan"
+                className={styles.helpBtn}
+                onClick={() => {
+                  window.open(`https://rinkeby.etherscan.io/address/${this.slotAddress}`, '_blank');
+                }}
+              >
+                ?
+              </button>
+              <button onClick={this.setDeposit} className={`${styles.depositBtn} ${styles.headerBtn}`}>
+                DEPOSIT
+                {this.getDepositTipLabel()}
+              </button>
+              <button onClick={this.cashOutSlotMachine} className={styles.headerBtn}>
+                CASH OUT
+              </button>
+            </div>
+          </div>
+          <div className={styles.gameContainer}>
+            <canvas
+              ref={canvas => {
+                this.canvas = canvas;
+              }}
+            />
+            {this.getLoadingBlocker()}
+          </div>
+        </div>
+
+        <div className={styles.bottomSection}>
+          <div className={styles.bottomContainer}>
+            <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>
+          </div>
+          {this.getReactTable()}
+        </div>
+      </div>
+    );
+  }
+
+  updateGameInformation() {
+    const { playSlotState } = this.props;
+
+    this.slotGame.updateGameInformation({
+      isLoading: playSlotState.get('isLoading'),
+      lineNum: playSlotState.get('lineNum'),
+      betSize: playSlotState.get('betSize'),
+      betUnit: playSlotState.get('betUnit'),
+      maxBet: playSlotState.get('maxBet'),
+      minBet: playSlotState.get('minBet'),
+      hasError: playSlotState.get('hasError'),
+      bankRoll: playSlotState.get('bankRoll'),
+      yourStake: playSlotState.get('deposit'),
+      slotName: playSlotState.get('slotName'),
+    });
+  }
+
+  getDepositTipLabel() {
+    const { playSlotState } = this.props;
+
     if (playSlotState.get('isLoading') || !playSlotState.get('isOccupied')) {
-      loader = <div className={styles.loadingBlocker} />;
-      depositTip = (
+      return (
         <div className={styles.depositTip}>
           <Icon icon="DEPOSIT_TOOL_TIP" />
           <span className={styles.tipMessage}>
@@ -111,7 +179,24 @@ class PlaySlot extends React.PureComponent {
           </span>
         </div>
       );
+    } else {
+      return null;
     }
+  }
+
+  getLoadingBlocker() {
+    const { playSlotState } = this.props;
+
+    if (playSlotState.get('isLoading') || !playSlotState.get('isOccupied')) {
+      return <div className={styles.loadingBlocker} />;
+    } else {
+      return null;
+    }
+  }
+
+  getReactTable() {
+    const { playSlotState } = this.props;
+    const betsData = playSlotState.get('betsData').toJS();
 
     const columns = [
       {
@@ -131,17 +216,19 @@ class PlaySlot extends React.PureComponent {
         accessor: 'result',
       },
       {
-        getProps: (state, rowInfo) => {
+        getProps(state, rowInfo) {
           let cellFontColor = null;
+
           if (rowInfo !== undefined) {
-            if (parseFloat(rowInfo.row.profit) > 0) {
+            if (parseFloat(rowInfo.row.profit) >= 0) {
               cellFontColor = '#00CDAC';
               rowInfo.row.profit = `+${rowInfo.row.profit}`;
-            } else if (parseFloat(rowInfo.row.profit) < 0) {
+            } else {
               cellFontColor = '#FF2A48';
               rowInfo.row.profit = `-${rowInfo.row.profit}`;
             }
           }
+
           return {
             style: {
               color: cellFontColor,
@@ -154,60 +241,15 @@ class PlaySlot extends React.PureComponent {
     ];
 
     return (
-      <div className={styles.playSlotSection}>
-        <div className={styles.playSlotContainer}>
-          <div className={styles.innerHeader}>
-            <div className={styles.slotName}>
-              ✨{playSlotState.get('slotName')}✨
-            </div>
-            <div className={styles.rightBtns}>
-              <button
-                title="Go to Etherscan"
-                className={styles.helpBtn}
-                onClick={() => {
-                  window.open(`https://rinkeby.etherscan.io/address/${this.slotAddress}`, '_blank');
-                }}
-              >
-                ?
-              </button>
-              <button onClick={this.setDeposit} className={`${styles.depositBtn} ${styles.headerBtn}`}>
-                DEPOSIT
-                {depositTip}
-              </button>
-              <button onClick={this.leaveSlotMachine} className={styles.headerBtn}>
-                CASH OUT
-              </button>
-            </div>
-          </div>
-          <div className={styles.gameContainer}>
-            <canvas
-              ref={canvas => {
-                this.canvas = canvas;
-              }}
-            />
-            {loader}
-          </div>
-        </div>
-        <div className={styles.bottomSection}>
-          <div className={styles.bottomContainer}>
-            <div className={`${styles.sectionMenu} ${styles.active}`}>YOUR BETS</div>
-          </div>
-          <div className={styles.tableWrapper}>
-            <ReactTable
-              className=""
-              data={betsData}
-              columns={columns}
-              defaultPageSize={10}
-              showPageSizeOptions={false}
-            />
-          </div>
-        </div>
+      <div className={styles.tableWrapper}>
+        <ReactTable className="" data={betsData} columns={columns} defaultPageSize={10} showPageSizeOptions={false} />
       </div>
     );
   }
 
   setDeposit() {
     const { dispatch, root, playSlotState } = this.props;
+
     Toast.notie.input({
       text: 'Please write down the amount of ETH to put in this slot.',
       type: 'number',
@@ -219,9 +261,11 @@ class PlaySlot extends React.PureComponent {
           });
           return;
         }
+
         const ethValueBigNumber = Web3Service.getWeb3().toBigNumber(ethValue);
         const weiValue = Web3Service.makeWeiFromEther(parseFloat(ethValue, 10));
         const slotMachineContract = playSlotState.get('slotMachineContract');
+
         if (playSlotState.get('isOccupied')) {
           dispatch(Actions.sendEtherToSlotContract(slotMachineContract, root.get('account'), weiValue));
         } else {
@@ -232,10 +276,12 @@ class PlaySlot extends React.PureComponent {
       },
     });
   }
-  playerKickedWatcher(slotMachineContractAddress, playerAddress) {
+
+  setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
     const { dispatch } = this.props;
-    dispatch(Actions.playerKickedWatcher(slotMachineContractAddress, playerAddress));
+    dispatch(Actions.setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress));
   }
+
   setBetSize(betSize) {
     const { dispatch } = this.props;
     dispatch(Actions.setBetSize(betSize));
@@ -248,23 +294,29 @@ class PlaySlot extends React.PureComponent {
 
   playGame() {
     const { dispatch, root, playSlotState } = this.props;
+
     const gameInfo = {
       slotMachineContract: playSlotState.get('slotMachineContract'),
       playerAddress: root.get('account'),
       betSize: playSlotState.get('betSize'),
       lineNum: playSlotState.get('lineNum'),
     };
+
     dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
   }
 
   getSlotMachine(slotAddress, playerAddress) {
     const { dispatch } = this.props;
+
     dispatch(Actions.getSlotMachine(slotAddress, playerAddress));
   }
 
-  leaveSlotMachine() {
+  cashOutSlotMachine() {
     const { dispatch, root, playSlotState } = this.props;
-    dispatch(Actions.leaveSlotMachine(playSlotState.get('slotMachineContract'), root.get('account')));
+
+    if (playSlotState.get('isOccupied')) {
+      dispatch(Actions.cashOutSlotMachine(playSlotState.get('slotMachineContract'), root.get('account')));
+    }
   }
 }
 

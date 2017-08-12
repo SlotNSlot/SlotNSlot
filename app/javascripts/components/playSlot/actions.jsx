@@ -29,10 +29,10 @@ export const ACTION_TYPES = {
   SEND_ETHER_TO_SLOT_CONTRACT: 'play_slot.SEND_ETHER_TO_SLOT_CONTRACT',
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 };
-export function playerKickedWatcher(slotMachineContractAddress, playerAddress) {
+export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
     try {
-      const transaction = await Web3Service.playerKickedWatcher(slotMachineContractAddress);
+      const transaction = await Web3Service.setPlayerKickedByWatcher(slotMachineContractAddress);
       if (transaction.from !== playerAddress) {
         Toast.notie.alert({
           type: 'error',
@@ -42,7 +42,7 @@ export function playerKickedWatcher(slotMachineContractAddress, playerAddress) {
         dispatch(push('/slot/play'));
       }
     } catch (err) {
-      console.err('playerKickedWatcher ', err);
+      console.err('setPlayerKickedByWatcher ', err);
     }
   };
 }
@@ -163,10 +163,10 @@ export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) 
   };
 }
 
-export function leaveSlotMachine(slotContract, playerAddress) {
+export function cashOutSlotMachine(slotContract, playerAddress) {
   return async dispatch => {
     try {
-      await Web3Service.leaveSlotMachine(slotContract, playerAddress);
+      await Web3Service.cashOutSlotMachine(slotContract, playerAddress);
       dispatch(push('/slot/play'));
     } catch (err) {
       console.error(err);

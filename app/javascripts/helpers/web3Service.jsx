@@ -19,7 +19,7 @@ const SLOT_TOPICS_ENCODED = {
   gameInitialized: '0xb7f32217976898f350090cced7da439b6a1de2d176c3895f4cf388c6a9388190',
   bankerSeedSet: '0x05157405ea453181cba290132a142d488a688a03f0b08869ca47c88a0cbba8b5',
   playerSeedSet: '0xee65ec46c8744067af9955308ee9958ab02a5882e505b3b06e3e4e50cada6014',
-  gameConfirmed: '0x1368b5893c84709f55237ada3ba22400bf115786939fd504096b5c8ad20d5d63',
+  gameConfirmed: '0xf77a3f60313a25f9aeff0bdd6f243b0b6f7cae52522d7b99f8c92d7ffcdbf17d',
   playerLeft: '0x471055d6adcbcece6a26aaf208fc1e5e978d9ebd07c0293ea1ac2a00dab7ec98',
 };
 

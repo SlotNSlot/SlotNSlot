@@ -22,8 +22,11 @@ function mapStateToProps(appState) {
 
 class Root extends React.PureComponent {
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(setAccount());
+    const { dispatch, match } = this.props;
+
+    if (!(match.path === '/' && match.isExact)) {
+      dispatch(setAccount());
+    }
   }
 
   render() {

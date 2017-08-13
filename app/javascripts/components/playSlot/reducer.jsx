@@ -13,10 +13,10 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   betSize: Big(20),
   lineNum: 1,
   deposit: Big(0),
-  bankRoll: 0,
-  betUnit: 2,
-  minBet: 2,
-  maxBet: 20,
+  bankRoll: Big(0),
+  betUnit: Big(2),
+  minBet: Big(2),
+  maxBet: Big(20),
   emotionClicked: 0,
   emotionList: emotionTypes,
   betsData: [],
@@ -58,7 +58,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
           .set('maxBet', action.payload.maxBet) // Big Number
           .set('betUnit', action.payload.minBet) // Big Number
           .set('bankRoll', action.payload.bankRoll) // Big Number
-          .set('deposit', action.payload.deposit) // Big Number
+          .set('deposit', action.payload.playerBalance) // Big Number
           .set('slotMachineContract', action.slotMachineContract)
           .set('slotName', action.payload.slotName);
       });

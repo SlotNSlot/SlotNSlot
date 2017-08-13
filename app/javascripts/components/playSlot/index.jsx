@@ -217,23 +217,15 @@ class PlaySlot extends React.PureComponent {
       },
       {
         getProps(state, rowInfo) {
-          let cellFontColor = null;
-
           if (rowInfo !== undefined) {
             if (parseFloat(rowInfo.row.profit) >= 0) {
-              cellFontColor = '#00CDAC';
               rowInfo.row.profit = `+${rowInfo.row.profit}`;
             } else {
-              cellFontColor = '#FF2A48';
               rowInfo.row.profit = `-${rowInfo.row.profit}`;
             }
           }
 
-          return {
-            style: {
-              color: cellFontColor,
-            },
-          };
+          return {};
         },
         Header: 'PROFIT',
         accessor: 'profit',

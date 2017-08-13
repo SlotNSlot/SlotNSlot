@@ -297,7 +297,7 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
+          resolve(this.makeEthFromWei(result));
         }
       });
     });

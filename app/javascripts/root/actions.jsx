@@ -49,7 +49,7 @@ export function setAccount() {
         text: 'You have to set Ethereum Client Configuration. Do you want to move set up page?',
         cancelText: 'Reload',
         submitCallback: () => {
-          dispatch(push('/slot/help/'));
+          dispatch(push('/instruction'));
         },
         cancelCallback: () => {
           window.location.reload();
@@ -65,7 +65,7 @@ export function setAccount() {
           text: 'You have some error for connecting Ethereum Network. Do you want to move set up page?',
           cancelText: 'Reload',
           submitCallback: () => {
-            dispatch(push('/slot/help/'));
+            dispatch(push('/instruction'));
           },
           cancelCallback: () => {
             window.location.reload();

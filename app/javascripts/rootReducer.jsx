@@ -7,6 +7,7 @@ import * as AboutCrowdSaleReducer from './components/about/crowdSaleContainer/re
 import * as PlaySlotReducer from './components/playSlot/reducer';
 import * as WatchSlotReducer from './components/watchSlot/reducer';
 import * as SlotListReducer from './components/slotList/reducer';
+import * as ContributePageReducer from './components/contributePage/welcomeContainer/reducer';
 
 export const initialState = {
   root: RootReducer.initialState,
@@ -16,6 +17,7 @@ export const initialState = {
   aboutLayout: AboutLayoutReducer.initialState,
   aboutCrowdSale: AboutCrowdSaleReducer.initialState,
   slotList: SlotListReducer.initialState,
+  contributePage: ContributePageReducer.initialState,
 };
 
 export const rootReducer = Redux.combineReducers({
@@ -26,5 +28,6 @@ export const rootReducer = Redux.combineReducers({
   aboutLayout: AboutLayoutReducer.reducer,
   aboutCrowdSale: AboutCrowdSaleReducer.reducer,
   slotList: SlotListReducer.reducer,
+  contributePage: ContributePageReducer.reducer,
   router: routerReducer,
 });

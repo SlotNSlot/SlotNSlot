@@ -1,9 +1,35 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Icon from '../../../icons';
 import styles from './welcomeContainer.scss';
+import { updateCountdown, updateCurrentEther } from './actions';
+
+function mapStateToProps(appState) {
+  return {
+    contributePage: appState.contributePage,
+  };
+}
 
 class WelcomeContainer extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.updateTimer = this.updateTimer.bind(this);
+  }
+
+  componentDidMount() {
+    this.counterInterval = setInterval(this.updateTimer, 1000 * 30);
+    this.props.dispatch(updateCurrentEther(12000));
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.counterInterval);
+  }
+
   render() {
+    const { contributePage } = this.props;
+    const curEther = contributePage.get('currentEther');
+    const curRatio = curEther / 40000 * 100;
     return (
       <div className={styles.welcomeContainer}>
         <div className={styles.innerContainer}>
@@ -19,9 +45,9 @@ class WelcomeContainer extends React.PureComponent {
 
           <div className={styles.remainTime}>
             <span className={styles.underline}>
-              <span className={styles.bold}>08</span> Days
-              <span className={styles.bold}> 12</span> Hours
-              <span className={styles.bold}> 05</span> Minutes
+              <span className={styles.bold}>{contributePage.get('days')}</span> Days
+              <span className={styles.bold}> {contributePage.get('hours')}</span> Hours
+              <span className={styles.bold}> {contributePage.get('minutes')}</span> Minutes
             </span>
             &nbsp;left for <span className={styles.bold}>Crowdsale</span>
           </div>
@@ -30,8 +56,10 @@ class WelcomeContainer extends React.PureComponent {
             <div className={styles.title}>Current Crowdfunding Status</div>
             <div className={styles.progressContainer}>
               <div className={styles.progressBar}>
-                <div className={styles.filledBar}>
-                  <div className={styles.currentEther}>72,000 ETH</div>
+                <div className={styles.filledBar} style={{ width: `${curRatio}%` }}>
+                  <div className={styles.currentEther}>
+                    {curEther.toLocaleString()} ETH
+                  </div>
                 </div>
                 <span className={styles.minCap}>0 ETH</span>
                 <span className={styles.maxCap}>40,000 ETH</span>
@@ -45,6 +73,11 @@ class WelcomeContainer extends React.PureComponent {
       </div>
     );
   }
+
+  updateTimer() {
+    const { dispatch } = this.props;
+    dispatch(updateCountdown());
+  }
 }
 
-export default WelcomeContainer;
+export default connect(mapStateToProps)(WelcomeContainer);

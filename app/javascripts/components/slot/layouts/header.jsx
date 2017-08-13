@@ -13,9 +13,9 @@ const Header = ({ rootState, location }) =>
         <NavLink to="/slot/play" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>
           PLAY
         </NavLink>
-        <NavLink to="/slot/make" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>
+        {/* <NavLink to="/slot/make" className={styles.navItem} activeClassName={styles.navItemActive} location={location}>
           MAKE
-        </NavLink>
+        </NavLink> */}
       </div>
       <div className={styles.rightItems}>
         <div className={styles.walletStatus}>

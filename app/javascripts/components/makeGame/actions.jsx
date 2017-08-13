@@ -48,6 +48,7 @@ export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, 
       });
       dispatch(refreshBalance(account));
       dispatch(getMySlotMachines(account));
+      // TODO : must not to reload. change to add new machine.
     } catch (err) {
       console.error(err);
       Toast.notie.alert({

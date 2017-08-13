@@ -36,6 +36,10 @@ export function reducer(state = ROOT_INITIAL_STATE, action) {
       return state.set('balance', action.payload.balance);
     }
 
+    case ACTION_TYPES.UPDATE_BALANCE: {
+      return state.set('balance', state.get('balance').plus(action.payload.diffMoney));
+    }
+
     default:
       return state;
   }

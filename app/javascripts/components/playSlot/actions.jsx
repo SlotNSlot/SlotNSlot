@@ -2,6 +2,8 @@ import { push } from 'react-router-redux';
 import moment from 'moment';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
+import { USER_TYPES, updateJustLeavedSlotAddress } from '../slotList/actions';
+import { updateBalance } from '../../root/actions';
 
 export const ACTION_TYPES = {
   SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
@@ -32,7 +34,13 @@ export const ACTION_TYPES = {
 export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
     try {
-      const transaction = await Web3Service.setPlayerKickedByWatcher(slotMachineContractAddress);
+      const leavedEvent = await Web3Service.setPlayerKickedByWatcher(slotMachineContractAddress);
+      const transaction = Web3Service.web3.eth.getTransaction(leavedEvent.transactionHash);
+      const data = leavedEvent.data.substr(2);
+      const leavedEther = Web3Service.makeEthFromWei(`0x${data.substr(64, 64)}`);
+      Web3Service.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.PLAYER, true);
+      dispatch(updateJustLeavedSlotAddress(slotMachineContractAddress));
+      dispatch(updateBalance(leavedEther));
       if (transaction.from !== playerAddress) {
         Toast.notie.alert({
           type: 'error',
@@ -40,6 +48,11 @@ export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddre
           stay: true,
         });
         dispatch(push('/slot/play'));
+      } else {
+        Toast.notie.alert({
+          text: `Your balance ${leavedEther} ETH in the slot has been withdrawn and put into your wallet.`,
+          stay: true,
+        });
       }
     } catch (err) {
       console.err('setPlayerKickedByWatcher ', err);
@@ -147,9 +160,13 @@ export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) 
 
     try {
       await Web3Service.occupySlotMachine(slotMachineContract, playerAddress, weiValue);
-      dispatch({
-        type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
-      });
+      setTimeout(() => {
+        const ethValue = Web3Service.makeEthFromWei(weiValue);
+        dispatch(updateBalance(ethValue.times(-1)));
+        dispatch({
+          type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
+        });
+      }, 5000);
     } catch (err) {
       Toast.notie.alert({
         type: 'error',
@@ -193,6 +210,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
           profit: `${diffMoney.valueOf()} ETH`,
         };
         stopSpinFunc(ethReward);
+        dispatch(updateBalance(diffMoney));
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
           payload: {

@@ -7,6 +7,7 @@ export const ACTION_TYPES = {
   FETCH_ACCOUNT: 'ROOT.FETCH_ACCOUNT',
   FAILED_TO_GET_ACCOUNT: 'ROOT.FAILED_TO_GET_ACCOUNT',
   SET_TOTAL_COIN_BALANCE: 'ROOT.SET_COIN_BALANCE',
+  UPDATE_BALANCE: 'ROOT.UPDATE_BALANCE',
 };
 
 export function setCoinBalance(balance) {
@@ -27,6 +28,15 @@ export function refreshBalance(account) {
         dispatch(setCoinBalance(Web3Service.makeEthFromWei(parseFloat(balance, 10))));
       }
     });
+  };
+}
+
+export function updateBalance(diffMoney) {
+  return {
+    type: ACTION_TYPES.UPDATE_BALANCE,
+    payload: {
+      diffMoney,
+    },
   };
 }
 

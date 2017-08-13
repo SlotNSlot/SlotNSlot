@@ -58,13 +58,13 @@ export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddre
           text: 'You are kicked by banker.',
           stay: true,
         });
-        dispatch(push('/slot/play'));
       } else {
         Toast.notie.alert({
           text: `Your balance ${leavedEther} ETH in the slot has been withdrawn and put into your wallet.`,
           stay: true,
         });
       }
+      dispatch(push('/slot/play'));
     } catch (err) {
       console.err('setPlayerKickedByWatcher ', err);
     }
@@ -89,13 +89,13 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
       await Web3Service.sendEtherToAccount({
         from: playerAccount,
         to: slotMachineContract.address,
-        etherValue: Web3Service.makeEthFromWei(weiValue),
+        value: weiValue,
       });
 
       dispatch({
         type: ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT,
         payload: {
-          weiValue,
+          ethValue: Web3Service.makeEthFromWei(weiValue),
         },
       });
     } catch (err) {
@@ -129,7 +129,9 @@ export function getSlotMachine(slotAddress, playerAddress) {
       // Set occupied state
       if (slotInfo.mPlayer === playerAddress) {
         dispatch(setOccupiedState(true));
-      } else if (slotInfo.mPlayer !== NULL_PLAYER_ADDRESS) {
+      } else if (slotInfo.mPlayer === NULL_PLAYER_ADDRESS) {
+        dispatch(setOccupiedState(false));
+      } else {
         throw new Error('Already user exists.');
       }
       dispatch({
@@ -208,7 +210,6 @@ export function cashOutSlotMachine(slotContract, playerAddress) {
           isBreakAway: false,
         },
       });
-      dispatch(push('/slot/play'));
     } catch (err) {
       console.error(err);
     }

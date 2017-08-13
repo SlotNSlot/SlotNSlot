@@ -116,13 +116,13 @@ class Web3Service {
     });
   }
 
-  async sendEtherToAccount({ from, to, etherValue }) {
+  async sendEtherToAccount({ from, to, value }) {
     return new Promise((resolve, reject) => {
       this.web3.eth.sendTransaction(
         {
           from,
           to,
-          value: this.makeWeiFromEther(parseFloat(etherValue, 10)),
+          value, // weiValue
         },
         (err, result) => {
           if (err) {

@@ -68,7 +68,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT: {
       return state.withMutations(currentState => {
         const bigNumber = Web3Service.getWeb3().toBigNumber(
-          parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10),
+          parseFloat(action.payload.ethValue, 10) + parseFloat(currentState.get('deposit'), 10),
         );
         return currentState.set('deposit', bigNumber).set('isLoading', false).set('hasError', false);
       });

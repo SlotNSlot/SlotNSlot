@@ -12,6 +12,7 @@ import Root from './root';
 // Bootstrap styles
 import 'bootstrap/dist/css/bootstrap.css';
 
+const RAVEN_KEY = 'https://1c0693f3ef3e4aa5bcc6895c3848b2e4@sentry.io/190512';
 const history = getHistoryObject();
 
 history.listen(location => {
@@ -35,7 +36,7 @@ if (!EnvChecker.isDev()) {
   });
   ReactGA.set({ page: window.location.pathname + window.location.search });
   ReactGA.pageview(window.location.pathname + window.location.search);
-  Raven.config(process.env['RAVEN_KEY']).install();
+  Raven.config(RAVEN_KEY).install();
 }
 
 Web3Service.initializeStorageContract()

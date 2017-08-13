@@ -22,7 +22,7 @@ export const SLOT_LIST_INITIAL_STATE = fromJS({
   mySlotPage: 1,
   isMaking: false,
   setIntervalTimerId: null,
-  justLeavedSlotAddress: '',
+  justLeavedSlotAddress: null,
 });
 
 export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {

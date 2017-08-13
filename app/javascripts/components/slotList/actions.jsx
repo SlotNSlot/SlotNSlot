@@ -101,7 +101,7 @@ export function getAllSlotMachines(myAccount, justLeavedSlotAddress) {
             if (slotInformation.meta.isAlreadyOccupiedByMe) {
               console.log(slotInformation.meta.slotName);
               Toast.notie.confirm({
-                text: 'You already had playing slot Game. Do you want to move to that slotMachine?',
+                text: 'Your last game is still alive. Do you want to move to the last game?',
                 submitCallback: () => {
                   dispatch(push(`/slot/play/${slotInformation.meta.address}`));
                 },
@@ -111,7 +111,7 @@ export function getAllSlotMachines(myAccount, justLeavedSlotAddress) {
           }
         }
       }
-      dispatch(updateJustLeavedSlotAddress(''));
+      dispatch(updateJustLeavedSlotAddress(null));
       const slotContracts = fromJS(slotInformationArr);
 
       dispatch({

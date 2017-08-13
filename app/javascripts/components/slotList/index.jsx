@@ -41,7 +41,7 @@ class SlotListContainer extends React.PureComponent {
     const { dispatch, rootState, slotListState } = this.props;
     if (rootState.get('account') && !this.slotListLoaded) {
       dispatch(getAllSlotMachines(rootState.get('account'), slotListState.get('justLeavedSlotAddress')));
-      if (slotListState.get('justLeavedSlotAddress') !== '') {
+      if (slotListState.get('justLeavedSlotAddress') !== null) {
         this.slotListLoaded = true;
       }
     }

@@ -5,6 +5,8 @@ import Toast from '../../helpers/notieHelper';
 import { USER_TYPES, updateJustLeavedSlotAddress } from '../slotList/actions';
 import { updateBalance } from '../../root/actions';
 
+const WAIT_TIME_TO_OCCUPY_SLOT_MACHINE = 5000;
+
 export const ACTION_TYPES = {
   SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
   SET_LINE_NUM: 'play_slot.SET_LINE_NUM',
@@ -34,14 +36,14 @@ export const ACTION_TYPES = {
 export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
     try {
-      const leavedEvent = await Web3Service.setPlayerKickedByWatcher(slotMachineContractAddress);
-      const transaction = Web3Service.web3.eth.getTransaction(leavedEvent.transactionHash);
-      const data = leavedEvent.data.substr(2);
-      const leavedEther = Web3Service.makeEthFromWei(`0x${data.substr(64, 64)}`);
+      const playerLeavedEventResult = await Web3Service.setPlayerKickedByWatcher(slotMachineContractAddress);
+      const playerLeavedTransaction = Web3Service.web3.eth.getTransaction(playerLeavedEventResult.transactionHash);
+      const playerLeavedEventData = playerLeavedEventResult.data.substr(2);
+      const leavedEther = Web3Service.makeEthFromWei(`0x${playerLeavedEventData.substr(64, 64)}`);
       Web3Service.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.PLAYER, true);
       dispatch(updateJustLeavedSlotAddress(slotMachineContractAddress));
       dispatch(updateBalance(leavedEther));
-      if (transaction.from !== playerAddress) {
+      if (playerLeavedTransaction.from !== playerAddress) {
         Toast.notie.alert({
           type: 'error',
           text: 'You are kicked by banker.',
@@ -166,7 +168,7 @@ export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) 
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE,
         });
-      }, 5000);
+      }, WAIT_TIME_TO_OCCUPY_SLOT_MACHINE);
     } catch (err) {
       Toast.notie.alert({
         type: 'error',

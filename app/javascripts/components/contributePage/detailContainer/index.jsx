@@ -19,7 +19,7 @@ const DetailContainer = () =>
           <div className={styles.content}>
             <div className={styles.periodTitle}>END TIME</div>
             <div className={styles.periodTime}>
-              <span>September 3rd, 2017</span>
+              <span>September 17th, 2017</span>
               <br />
               08:00AM UTC+0
             </div>
@@ -29,7 +29,7 @@ const DetailContainer = () =>
 
       <div className={styles.itemBox}>
         <div className={styles.title}>CONTRIBUTION HARD CAP</div>
-        <div className={`${styles.content} ${styles.hardCap}`}>100,000 ETH</div>
+        <div className={`${styles.content} ${styles.hardCap}`}>40,000 ETH</div>
       </div>
 
       <div className={styles.itemBox}>
@@ -43,14 +43,11 @@ const DetailContainer = () =>
       <div className={styles.itemBox}>
         <div className={styles.title}>INVESTOR PROTECTIONS</div>
         <div className={`${styles.content} ${styles.protection}`}>
-          <p>i) Funds will have Yearly Upper bounds on use</p>
+          <p>i) Funds will have Quarterly Upper bounds on use</p>
           <p>
             ii) Financial reports on use of fund will be updated every month on all SlotNSlot communication channels
           </p>
-          <p>
-            iii) Foundation stake will be locked up to the day 1 year after the first platform profit distribution is
-            witnessed
-          </p>
+          <p>iii) Foundation stake will be locked up for 1 year after the end of crowdsale period.</p>
           <p>
             iv) On suspention, completion, or transition to an autonomous mode of the project, remaining fund will be
             decided to a) refund b) buyback tokens, or c) reward bounty programs.

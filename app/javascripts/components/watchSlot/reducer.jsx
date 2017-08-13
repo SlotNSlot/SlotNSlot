@@ -64,7 +64,7 @@ export function reducer(state = WATCH_SLOT_INITIAL_STATE, action) {
           .set('maxBet', action.payload.maxBet)
           .set('betUnit', action.payload.minBet)
           .set('bankRoll', action.payload.bankRoll) // Big Number
-          .set('deposit', action.payload.deposit) // Big Number
+          .set('deposit', action.payload.playerBalance) // Big Number
           .set('slotMachineContract', action.slotMachineContract)
           .set('slotName', action.payload.slotName)
           .set('playerAddress', action.payload.mPlayer);

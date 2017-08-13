@@ -235,11 +235,11 @@ class Web3Service {
   // 0 [player], 1 [maker]
   async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
     const slotInfo = await this.getInfo(slotMachineContract);
-    // let isAlreadyOccupiedGameExist = false;
+    let isAlreadyOccupiedGameExist = false;
 
     if (userType === USER_TYPES.PLAYER) {
       if (slotInfo.mPlayer === myAddress) {
-        // isAlreadyOccupiedGameExist = true; there is lot of error.
+        isAlreadyOccupiedGameExist = true;
       } else if (slotInfo.mPlayer !== myAddress && slotInfo.mPlayer !== '0x0000000000000000000000000000000000000000') {
         throw new Error('This slot is already occupied');
       } else if (slotInfo.owner === myAddress) {
@@ -254,9 +254,9 @@ class Web3Service {
     const payload = { address: slotMachineContract.address, ...slotInfo, playerBalance };
 
     // save isAlreadyOccupiedState to payload if it exist
-    // if (isAlreadyOccupiedGameExist) {
-    //   payload.isAlreadyOccupiedByMe = true;
-    // }
+    if (isAlreadyOccupiedGameExist) {
+      payload.isAlreadyOccupiedByMe = true;
+    }
     return payload;
   }
   getInfo(slotMachineContract) {
@@ -297,7 +297,7 @@ class Web3Service {
         if (err) {
           reject(err);
         } else {
-          resolve({ infoKey: 'deposit', infoVal: this.makeEthFromWei(result) });
+          resolve(this.makeEthFromWei(result));
         }
       });
     });
@@ -646,9 +646,8 @@ class Web3Service {
           if (result.topics) {
             result.topics.forEach(topic => {
               if (topic === SLOT_TOPICS_ENCODED.playerLeft) {
-                const transaction = this.web3.eth.getTransaction(result.transactionHash);
                 kickFilter.stopWatching();
-                resolve(transaction);
+                resolve(result);
               }
             });
           }

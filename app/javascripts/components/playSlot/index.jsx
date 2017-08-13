@@ -72,8 +72,8 @@ class PlaySlot extends React.PureComponent {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { root, playSlotState } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { root, playSlotState } = prevProps;
 
     if (this.props.playSlotState !== playSlotState || this.props.root !== root) {
       this.updateGameInformation();
@@ -105,7 +105,10 @@ class PlaySlot extends React.PureComponent {
 
     return (
       <div className={styles.playSlotSection}>
-        <Prompt message={() => 'Are you sure to cash out your deposit and leave this game?'} />
+        <Prompt
+          message={() =>
+            'Do you really want to leave this slot? When you leave, your balance in the current slot is automatically cashed out to your wallet'}
+        />
         <div className={styles.playSlotContainer}>
           <div className={styles.innerHeader}>
             <div className={styles.slotName}>
@@ -217,23 +220,15 @@ class PlaySlot extends React.PureComponent {
       },
       {
         getProps(state, rowInfo) {
-          let cellFontColor = null;
-
           if (rowInfo !== undefined) {
             if (parseFloat(rowInfo.row.profit) >= 0) {
-              cellFontColor = '#00CDAC';
               rowInfo.row.profit = `+${rowInfo.row.profit}`;
             } else {
-              cellFontColor = '#FF2A48';
               rowInfo.row.profit = `-${rowInfo.row.profit}`;
             }
           }
 
-          return {
-            style: {
-              color: cellFontColor,
-            },
-          };
+          return {};
         },
         Header: 'PROFIT',
         accessor: 'profit',

@@ -22,6 +22,7 @@ export const SLOT_LIST_INITIAL_STATE = fromJS({
   mySlotPage: 1,
   isMaking: false,
   setIntervalTimerId: null,
+  justLeavedSlotAddress: null,
 });
 
 export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
@@ -32,6 +33,11 @@ export function reducer(state = SLOT_LIST_INITIAL_STATE, action) {
         clearInterval(setIntervalTimerId);
         return state.set('setIntervalTimerId', null);
       }
+      return state;
+    }
+
+    case ACTION_TYPES.UPDATE_JUST_LEAVED_SLOT_ADDRESS: {
+      return state.set('justLeavedSlotAddress', action.payload.slotMachineContractAddress);
     }
 
     case ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES:

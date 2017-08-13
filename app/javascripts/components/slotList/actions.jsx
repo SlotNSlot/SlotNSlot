@@ -22,6 +22,8 @@ export const ACTION_TYPES = {
 
   TOGGLE_SORTING_DROPDOWN: 'slot_list.TOGGLE_SORTING_DROPDOWN',
   CHANGE_SORTING_OPTION: 'slot_list.CHANGE_SORTING_OPTION',
+
+  UPDATE_JUST_LEAVED_SLOT_ADDRESS: 'slot_list.UPDATE_JUST_LEAVED_SLOT_ADDRESS',
 };
 
 async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccount = null) {
@@ -35,6 +37,17 @@ async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccoun
   } catch (err) {
     return null;
   }
+}
+
+export function updateJustLeavedSlotAddress(slotMachineContractAddress) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.UPDATE_JUST_LEAVED_SLOT_ADDRESS,
+      payload: {
+        slotMachineContractAddress,
+      },
+    });
+  };
 }
 
 export function getMySlotMachines(myAccount) {
@@ -72,7 +85,7 @@ export function getMySlotMachines(myAccount) {
   };
 }
 
-export function getAllSlotMachines(myAccount) {
+export function getAllSlotMachines(myAccount, justLeavedSlotAddress) {
   return async dispatch => {
     dispatch({
       type: ACTION_TYPES.START_TO_GET_ALL_SLOT_MACHINES,
@@ -82,20 +95,23 @@ export function getAllSlotMachines(myAccount) {
       const slotInformationArr = [];
 
       for (const slotMachineContractAddress of allSlotMachineAddressesArray) {
-        const slotInformation = await getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.PLAYER, myAccount);
-
-        if (slotInformation && slotInformation.meta) {
-          if (slotInformation.meta.isAlreadyOccupiedByMe) {
-            Toast.notie.alert({
-              text: 'You alerady had playing slot Game. Move to that slotMachine.',
-            });
-            dispatch(push(`/slot/play/${slotInformation.meta.address}`));
+        if (slotMachineContractAddress !== justLeavedSlotAddress) {
+          const slotInformation = await getSlotMachineInfo(slotMachineContractAddress, USER_TYPES.PLAYER, myAccount);
+          if (slotInformation && slotInformation.meta) {
+            if (slotInformation.meta.isAlreadyOccupiedByMe) {
+              console.log(slotInformation.meta.slotName);
+              Toast.notie.confirm({
+                text: 'Your last game is still alive. Do you want to move to the last game?',
+                submitCallback: () => {
+                  dispatch(push(`/slot/play/${slotInformation.meta.address}`));
+                },
+              });
+            }
+            slotInformationArr.push(slotInformation);
           }
-
-          slotInformationArr.push(slotInformation);
         }
       }
-
+      dispatch(updateJustLeavedSlotAddress(null));
       const slotContracts = fromJS(slotInformationArr);
 
       dispatch({

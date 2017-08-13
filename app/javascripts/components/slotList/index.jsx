@@ -21,6 +21,7 @@ class SlotListContainer extends React.PureComponent {
 
     this.handleToggleDropdown = this.handleToggleDropdown.bind(this);
     this.handleClickSortingOption = this.handleClickSortingOption.bind(this);
+    this.slotListLoaded = false;
   }
 
   componentDidMount() {
@@ -28,15 +29,21 @@ class SlotListContainer extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.rootState.get('account') !== this.props.rootState.get('account')) {
+    if (
+      prevProps.rootState.get('account') !== this.props.rootState.get('account') ||
+      prevProps.slotListState.get('justLeavedSlotAddress') !== this.props.slotListState.get('justLeavedSlotAddress')
+    ) {
       this.getSlotMachines();
     }
   }
 
   getSlotMachines() {
-    const { dispatch, rootState } = this.props;
-    if (rootState.get('account')) {
-      dispatch(getAllSlotMachines(rootState.get('account')));
+    const { dispatch, rootState, slotListState } = this.props;
+    if (rootState.get('account') && !this.slotListLoaded) {
+      dispatch(getAllSlotMachines(rootState.get('account'), slotListState.get('justLeavedSlotAddress')));
+      if (slotListState.get('justLeavedSlotAddress') !== null) {
+        this.slotListLoaded = true;
+      }
     }
   }
 

@@ -249,7 +249,7 @@ class PlaySlot extends React.PureComponent {
       text: 'Please write down the amount of ETH to put in this slot.',
       type: 'number',
       submitCallback: ethValue => {
-        if (root.get('balance') < ethValue) {
+        if (root.get('balance') < Number(ethValue)) {
           Toast.notie.alert({
             type: 'error',
             text: 'Your bet amount should be under your balance',

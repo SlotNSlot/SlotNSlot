@@ -6,6 +6,7 @@ import { USER_TYPES, updateJustLeavedSlotAddress } from '../slotList/actions';
 import { updateBalance } from '../../root/actions';
 
 const WAIT_TIME_TO_OCCUPY_SLOT_MACHINE = 5000;
+const NULL_PLAYER_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const ACTION_TYPES = {
   SET_BET_SIZE: 'play_slot.SET_BET_SIZE',
@@ -32,6 +33,8 @@ export const ACTION_TYPES = {
   START_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.START_TO_SEND_ETHER_TO_CONTRACT',
   SEND_ETHER_TO_SLOT_CONTRACT: 'play_slot.SEND_ETHER_TO_SLOT_CONTRACT',
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
+
+  UPDATE_BREAK_AWAY_TRY: 'play_slot.UPDATE_BREAK_AWAY_TRY',
 };
 export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
@@ -43,6 +46,12 @@ export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddre
       Web3Service.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.PLAYER, true);
       dispatch(updateJustLeavedSlotAddress(slotMachineContractAddress));
       dispatch(updateBalance(leavedEther));
+      await dispatch({
+        type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
+        payload: {
+          isBreakAway: false,
+        },
+      });
       if (playerLeavedTransaction.from !== playerAddress) {
         Toast.notie.alert({
           type: 'error',
@@ -120,14 +129,21 @@ export function getSlotMachine(slotAddress, playerAddress) {
       // Set occupied state
       if (slotInfo.mPlayer === playerAddress) {
         dispatch(setOccupiedState(true));
+      } else if (slotInfo.mPlayer !== NULL_PLAYER_ADDRESS) {
+        throw new Error('Already user exists.');
       }
-
       dispatch({
         type: ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE,
         payload: slotInfo,
         slotMachineContract,
       });
     } catch (err) {
+      await dispatch({
+        type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
+        payload: {
+          isBreakAway: false,
+        },
+      });
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_SLOT_MACHINE,
       });
@@ -186,6 +202,12 @@ export function cashOutSlotMachine(slotContract, playerAddress) {
   return async dispatch => {
     try {
       await Web3Service.cashOutSlotMachine(slotContract, playerAddress);
+      await dispatch({
+        type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
+        payload: {
+          isBreakAway: false,
+        },
+      });
       dispatch(push('/slot/play'));
     } catch (err) {
       console.error(err);
@@ -203,7 +225,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
     await Promise.all([rewardPromise, playPromise])
       .then(result => {
         const ethReward = result[0];
-        const betMoney = playInfo.lineNum * playInfo.betSize;
+        const betMoney = playInfo.betSize.times(playInfo.lineNum);
         const diffMoney = ethReward.minus(betMoney);
         const transaction = {
           time: moment().format('YY.MM.DD H:mm:ss'),
@@ -225,7 +247,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
         console.log('err is ', err);
         Toast.notie.alert({
           type: 'error',
-          text: 'There was an error for playing a slot machine',
+          text: `There was an error for playing a slot machine. ${err}`,
           stay: true,
         });
         const transaction = {

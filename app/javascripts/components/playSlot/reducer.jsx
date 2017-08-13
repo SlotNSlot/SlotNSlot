@@ -23,6 +23,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   slotMachineContract: null,
   slotName: '',
   waitOccupy: false,
+  isBreakAway: true,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -142,6 +143,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SET_WAIT_OCCUPY: {
       return state.set('waitOccupy', action.payload.waitOccupy);
+    }
+
+    case ACTION_TYPES.UPDATE_BREAK_AWAY_TRY: {
+      return state.set('isBreakAway', action.payload.isBreakAway);
     }
 
     default:

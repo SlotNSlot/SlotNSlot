@@ -108,6 +108,7 @@ class PlaySlot extends React.PureComponent {
     return (
       <div className={styles.playSlotSection}>
         <Prompt
+          when={playSlotState.get('isBreakAway')}
           message={() =>
             'Do you really want to leave this slot? When you leave, your balance in the current slot is automatically cashed out to your wallet'}
         />

@@ -40,6 +40,8 @@ class PlaySlot extends React.PureComponent {
   componentDidMount() {
     const { root, playSlotState } = this.props;
 
+    window.scrollTo(0, 0);
+
     if (!this.canvas || gameAlreadyLoaded) {
       return;
     }

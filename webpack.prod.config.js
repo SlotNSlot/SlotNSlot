@@ -18,6 +18,18 @@ module.exports = {
         use: ['raw-loader'],
       },
       {
+        test: /\.md$/,
+        use: [
+          {
+            loader: 'html-loader',
+          },
+          {
+            loader: 'markdown-loader',
+            options: {},
+          },
+        ],
+      },
+      {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
@@ -44,12 +56,8 @@ module.exports = {
           {
             loader: 'postcss-loader',
             options: {
-              plugins () {
-                return [
-                  require('precss'),
-                  require('autoprefixer'),
-                  require('postcss-flexbugs-fixes'),
-                ];
+              plugins() {
+                return [require('precss'), require('autoprefixer'), require('postcss-flexbugs-fixes')];
               },
             },
           },

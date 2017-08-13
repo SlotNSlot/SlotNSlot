@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getAllSlotMachines, handleClickSortingOption, handleSortDropdownOpen } from './actions';
 import Spinner from '../common/spinner';
@@ -88,6 +88,11 @@ class SlotListContainer extends React.PureComponent {
             isOpen={slotListState.get('isSortDropdownOpen')}
             handleToggle={this.handleToggleDropdown}
           />
+          <div className="container">
+            <Link to="/instruction" className={`btn btn-info btn-lg btn-block ${styles.instructionButton}`}>
+              HOW TO PLAY
+            </Link>
+          </div>
           {content}
         </div>
       </div>

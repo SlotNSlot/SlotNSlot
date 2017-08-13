@@ -12,10 +12,7 @@ module.exports = {
     extensions: ['.js', '.jsx'],
   },
   devServer: {
-    allowedHosts: [
-      '.lvh.me',
-      'localhost',
-    ],
+    allowedHosts: ['.lvh.me', 'localhost'],
     watchOptions: {
       ignored: /node_modules/,
     },
@@ -27,16 +24,28 @@ module.exports = {
         use: ['raw-loader'],
       },
       {
+        test: /\.md$/,
+        use: [
+          {
+            loader: 'html-loader',
+          },
+          {
+            loader: 'markdown-loader',
+            options: {},
+          },
+        ],
+      },
+      {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.svg$/,
         exclude: /node_modules/,
-        loader: "svg-inline-loader",
+        loader: 'svg-inline-loader',
         options: {
-          classPrefix: true
-        }
+          classPrefix: true,
+        },
       },
       {
         test: /\.scss$/,
@@ -53,12 +62,8 @@ module.exports = {
           {
             loader: 'postcss-loader',
             options: {
-              plugins () {
-                return [
-                  require('precss'),
-                  require('autoprefixer'),
-                  require('postcss-flexbugs-fixes')
-                ];
+              plugins() {
+                return [require('precss'), require('autoprefixer'), require('postcss-flexbugs-fixes')];
               },
             },
           },

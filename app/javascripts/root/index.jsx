@@ -7,6 +7,7 @@ import UpdateBlocker from './updateBlocker';
 import About from '../components/about';
 import Slot from '../components/slot';
 import ContributePage from '../components/contributePage';
+import Readme from '../components/readme';
 // actions
 import { setAccount } from './actions';
 // styles
@@ -35,6 +36,7 @@ class Root extends React.PureComponent {
           <Switch>
             <Route path="/slot" component={Slot} />
             <Route path="/contribute" component={ContributePage} />
+            <Route path="/instruction" component={Readme} />
             <Route component={About} />
           </Switch>
         </UpdateBlocker>

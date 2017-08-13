@@ -63,11 +63,13 @@
     "eslint-plugin-standard": "^2.3.1",
     "fs": "0.0.1-security",
     "fs-extra": "^3.0.1",
+    "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.28.0",
     "husky": "^0.14.1",
     "jest": "^20.0.4",
     "json-loader": "^0.5.4",
     "lint-staged": "^4.0.0",
+    "markdown-loader": "^2.0.1",
     "node-sass": "^4.5.3",
     "postcss-flexbugs-fixes": "^3.0.0",
     "postcss-loader": "^2.0.6",
@@ -135,10 +137,21 @@
     },
     "verbose": true,
     "rootDir": "",
-    "moduleFileExtensions": ["js", "jsx"],
-    "moduleDirectories": ["node_modules"],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
     "testRegex": "__tests__/.*_spec.jsx$",
-    "unmockedModulePathPatterns": ["<rootDir>/node_modules", "<rootDir>/app/javascripts/__tests__", "/.*\\.scss$"],
-    "setupFiles": ["<rootDir>/app/javascripts/__tests__/preload.jsx"]
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules",
+      "<rootDir>/app/javascripts/__tests__",
+      "/.*\\.scss$"
+    ],
+    "setupFiles": [
+      "<rootDir>/app/javascripts/__tests__/preload.jsx"
+    ]
   }
 }

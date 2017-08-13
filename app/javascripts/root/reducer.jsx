@@ -4,7 +4,6 @@ import { ACTION_TYPES } from './actions';
 export const ROOT_INITIAL_STATE = fromJS({
   isLoading: false,
   hasError: false,
-  accounts: null,
   account: null,
   balance: 0,
 });
@@ -19,10 +18,7 @@ export function reducer(state = ROOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.FETCH_ACCOUNT: {
       return state.withMutations(currentState => {
-        return currentState
-          .set('isLoading', false)
-          .set('accounts', action.payload.accounts)
-          .set('account', action.payload.account);
+        return currentState.set('isLoading', false).set('account', action.payload.account);
       });
     }
 

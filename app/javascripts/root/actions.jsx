@@ -1,6 +1,8 @@
 import Raven from 'raven-js';
+import { push } from 'react-router-redux';
 import EnvChecker from '../helpers/envChecker';
 import Web3Service from '../helpers/web3Service';
+import Toast from '../helpers/notieHelper';
 
 export const ACTION_TYPES = {
   START_TO_GET_ACCOUNT: 'ROOT.START_TO_GET_ACCOUNT',
@@ -43,38 +45,50 @@ export function updateBalance(diffMoney) {
 export function setAccount() {
   return dispatch => {
     if (!Web3Service.getWeb3()) {
+      Toast.notie.confirm({
+        text: 'You have to set Ethereum Client Configuration. Do you want to move set up page?',
+        cancelText: 'Reload',
+        submitCallback: () => {
+          dispatch(push('/instruction'));
+        },
+        cancelCallback: () => {
+          window.location.reload();
+        },
+      });
       return;
     }
     dispatch({ type: ACTION_TYPES.START_TO_GET_ACCOUNT });
 
-    Web3Service.getWeb3().eth.getAccounts((err, accs) => {
-      if (err) {
+    Web3Service.getWeb3().eth.getCoinbase((err, coinbase) => {
+      if (err || coinbase === null) {
+        Toast.notie.confirm({
+          text: 'You have some error for connecting Ethereum Network. Do you want to move set up page?',
+          cancelText: 'Reload',
+          submitCallback: () => {
+            dispatch(push('/instruction'));
+          },
+          cancelCallback: () => {
+            window.location.reload();
+          },
+        });
         dispatch({ type: ACTION_TYPES.FAILED_TO_GET_ACCOUNT });
       } else {
-        if (accs.length === 0) {
-          dispatch({ type: ACTION_TYPES.FAILED_TO_GET_ACCOUNT });
-          console.log("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-          return;
-        }
-
         dispatch({
           type: ACTION_TYPES.FETCH_ACCOUNT,
           payload: {
-            accounts: accs,
-            account: accs[0],
+            account: coinbase,
           },
         });
 
         if (!EnvChecker.isDev()) {
           Raven.setUserContext({
-            accounts: accs,
-            account: accs[0],
+            account: coinbase,
             provider: Web3Service.getWeb3().currentProvider,
             web3Version: Web3Service.getWeb3().version.api,
           });
         }
 
-        dispatch(refreshBalance(accs[0]));
+        dispatch(refreshBalance(coinbase));
       }
     });
   };

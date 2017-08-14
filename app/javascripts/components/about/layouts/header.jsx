@@ -3,6 +3,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import ReactGA from 'react-ga';
+import UAParser from 'ua-parser-js';
 // helpers
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
 // actions
@@ -94,10 +95,8 @@ class Header extends React.PureComponent {
               <a
                 className={styles.item}
                 onClick={() => {
-                  this.trackWordsOnly('http://beta.slotnslot.com/slot/play/');
+                  this.openLinkWithTrack('http://beta.slotnslot.com/slot/play/');
                 }}
-                href="http://beta.slotnslot.com/slot/play/"
-                target="_blank"
               >
                 Prototype
               </a>
@@ -134,6 +133,17 @@ class Header extends React.PureComponent {
       action: 'click-from-Header',
       label: linkUrl,
     });
+
+    if (typeof navigator !== undefined && linkUrl === 'http://beta.slotnslot.com/slot/play/') {
+      const parser = new UAParser(navigator.userAgent);
+      const deviceInformation = parser.getDevice();
+
+      if (deviceInformation.type === 'mobile') {
+        alert('SlotNSlot Web client is playable only on Desktop, You can download and play SlotNSlot Mobile App Soon!');
+        return;
+      }
+    }
+
     handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
     window.open(linkUrl, '_blank');
   }

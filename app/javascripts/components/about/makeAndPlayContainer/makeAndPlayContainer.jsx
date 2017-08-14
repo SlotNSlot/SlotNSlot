@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactGA from 'react-ga';
-import { Link } from 'react-router-dom';
+import UAParser from 'ua-parser-js';
 import styles from './makeAndPlayContainer.scss';
 import Icon from '../../../icons';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
@@ -12,6 +12,27 @@ function trackWordsOnly() {
     label: '/slot/play',
   });
   handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+}
+
+function trackAndOpenLink(url) {
+  ReactGA.event({
+    category: 'link-click',
+    action: 'click-from-MakeAndPlayContainer',
+    label: url,
+  });
+
+  if (typeof navigator !== undefined && url === 'http://beta.slotnslot.com/slot/play/') {
+    const parser = new UAParser(navigator.userAgent);
+    const deviceInformation = parser.getDevice();
+
+    if (deviceInformation.type === 'mobile') {
+      alert('SlotNSlot Web client is playable only on Desktop, You can download and play SlotNSlot Mobile App Soon!');
+      return;
+    }
+  }
+
+  handleAdwordsAction(AVAILABLE_ADWORDS_TYPE.NORMAL_LINK_CLICK);
+  window.open(url, '_blank');
 }
 
 function trackAction(url) {
@@ -36,12 +57,7 @@ const MakeAndPlayContainer = () =>
         Tired of just <span>PLAY</span>ing? Now <span>MAKE</span> your own with SlotNSlot !
       </div>
       <div className={styles.betaBtnWrapper}>
-        <a
-          href="http://beta.slotnslot.com/slot/play/"
-          target="_blank"
-          onClick={() => trackWordsOnly()}
-          className={styles.playBetaBtn}
-        >
+        <a onClick={() => trackAndOpenLink('http://beta.slotnslot.com/slot/play/')} className={styles.playBetaBtn}>
           Play Beta
         </a>
         <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>

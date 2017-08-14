@@ -1,4 +1,5 @@
 import { List, fromJS } from 'immutable';
+import { logException } from '../../helpers/errorLogger';
 import { push } from 'react-router-redux';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
@@ -35,6 +36,7 @@ async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccoun
       meta: slotInfo,
     };
   } catch (err) {
+    logException(err);
     return null;
   }
 }
@@ -77,6 +79,8 @@ export function getMySlotMachines(myAccount) {
         });
       });
     } catch (err) {
+      logException(err);
+
       console.error(err);
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_MY_SLOT_MACHINES,
@@ -121,6 +125,8 @@ export function getAllSlotMachines(myAccount, justLeavedSlotAddress) {
         },
       });
     } catch (err) {
+      logException(err);
+
       console.error(err);
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_ALL_SLOT_MACHINES,

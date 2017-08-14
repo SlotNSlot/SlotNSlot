@@ -1,5 +1,6 @@
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
+import { logException } from '../../helpers/errorLogger';
 import { refreshBalance } from '../../root/actions';
 import { getMySlotMachines } from '../slotList/actions';
 
@@ -52,6 +53,7 @@ export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, 
       // TODO : must not to reload. change to add new machine.
     } catch (err) {
       console.error(err);
+      logException(err);
       Toast.notie.alert({
         type: 'error',
         text: 'There was an error for making a slot machine',

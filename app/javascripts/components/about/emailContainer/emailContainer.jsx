@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import ReactGA from 'react-ga';
+import { logException } from '../../../helpers/errorLogger';
 import styles from './emailContainer.scss';
 import CrowdSaleContainer from '../crowdSaleContainer/crowdSaleContainer';
 import { AVAILABLE_ADWORDS_TYPE, handleAdwordsAction } from '../../../helpers/handleAdwordsAction';
@@ -29,6 +30,7 @@ class EmailContainer extends React.PureComponent {
         alert('You are on the subscribe list now');
         this.emailInput.value = '';
       } catch (err) {
+        logException(err);
         alert(`Failed: ${err.response.data.error}`);
       }
     }

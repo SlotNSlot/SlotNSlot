@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import { fromJS } from 'immutable';
+import { logException } from '../../helpers/errorLogger';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
 import { USER_TYPES } from '../slotList/actions';
@@ -45,6 +46,8 @@ export function kickPlayer(slotAddress, bankerAddress) {
         text: 'Player was kicked successfully.',
       });
     } catch (err) {
+      logException(err);
+
       dispatch({
         type: ACTION_TYPES.FAILED_TO_KICK_PLAYER,
       });
@@ -85,6 +88,8 @@ async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccoun
       meta: slotInfo,
     };
   } catch (err) {
+    logException(err);
+
     return null;
   }
 }
@@ -115,6 +120,8 @@ export function getMySlotMachines(myAccount) {
         });
       });
     } catch (err) {
+      logException(err);
+
       console.error(err);
       dispatch({
         type: ACTION_TYPES.FAILED_TO_WATCH_MY_SLOT_MACHINES,
@@ -128,6 +135,8 @@ export function attachEventWatcher(slotAddress, eventHandler) {
     try {
       Web3Service.slotEventMonitor(slotAddress, eventHandler);
     } catch (error) {
+      logException(error);
+
       Toast.notie.alert({
         type: 'error',
         text: `Invalid Error: ${error}`,
@@ -154,6 +163,8 @@ export function getSlotMachine(slotAddress) {
         slotMachineContract,
       });
     } catch (err) {
+      logException(err);
+
       dispatch({
         type: ACTION_TYPES.FAILED_TO_GET_SLOT_MACHINE,
       });
@@ -175,6 +186,8 @@ export function removeSlotMachine(slotContract, playerAddress) {
       await Web3Service.removeSlotMachine(slotContract, playerAddress);
       dispatch(push('/slot/make'));
     } catch (err) {
+      logException(err);
+
       console.error(err);
     }
   };

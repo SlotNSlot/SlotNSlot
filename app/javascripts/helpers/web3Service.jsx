@@ -125,6 +125,8 @@ class Web3Service {
           from,
           to,
           value, // weiValue
+          gas: 2200000,
+          gasPrice: GAS_PRICE,
         },
         (err, result) => {
           if (err) {
@@ -687,8 +689,7 @@ class Web3Service {
               const slotMachineContract = slotMachineContracts.find(
                 slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
               );
-              const slotInfo = await this.getSlotMachineInfo(slotMachineContract, USER_TYPES.MAKER);
-              console.log('slotInfo is ', slotInfo);
+              const slotInfo = await this.getSlotMachineInfo(slotMachineContract.get('contract'), USER_TYPES.MAKER);
               if (slotInfo.mPlayer !== NULL_PLAYER_ADDRESS) {
                 console.log(`Kick ${slotMachineContract.get('meta').get('slotName')}'s player`);
                 Toast.notie.alert({

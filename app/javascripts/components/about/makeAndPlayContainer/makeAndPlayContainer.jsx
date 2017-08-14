@@ -37,7 +37,7 @@ const MakeAndPlayContainer = () =>
       </div>
       <div className={styles.betaBtnWrapper}>
         <a
-          href="http://dkf6nf5es54ui.cloudfront.net/slot/play/"
+          href="http://beta.slotnslot.com/slot/play/"
           target="_blank"
           onClick={() => trackWordsOnly()}
           className={styles.playBetaBtn}

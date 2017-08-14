@@ -94,9 +94,9 @@ class Header extends React.PureComponent {
               <a
                 className={styles.item}
                 onClick={() => {
-                  this.trackWordsOnly('http://dkf6nf5es54ui.cloudfront.net/slot/play/');
+                  this.trackWordsOnly('http://beta.slotnslot.com/slot/play/');
                 }}
-                href="http://dkf6nf5es54ui.cloudfront.net/slot/play/"
+                href="http://beta.slotnslot.com/slot/play/"
                 target="_blank"
               >
                 Prototype

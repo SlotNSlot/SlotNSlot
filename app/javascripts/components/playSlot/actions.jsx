@@ -2,6 +2,7 @@ import { push } from 'react-router-redux';
 import moment from 'moment';
 import Web3Service from '../../helpers/web3Service';
 import Toast from '../../helpers/notieHelper';
+import { logException } from '../../helpers/errorLogger';
 import { USER_TYPES, updateJustLeavedSlotAddress } from '../slotList/actions';
 import { updateBalance } from '../../root/actions';
 
@@ -68,6 +69,7 @@ export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddre
       }
       dispatch(push('/slot/play'));
     } catch (err) {
+      logException(err);
       console.err('setPlayerKickedByWatcher ', err);
     }
   };
@@ -101,6 +103,7 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
         },
       });
     } catch (err) {
+      logException(err);
       console.error(err);
       dispatch({
         type: ACTION_TYPES.FAILED_TO_SEND_ETHER_TO_CONTRACT,
@@ -144,6 +147,8 @@ export function getSlotMachine(slotAddress, playerAddress) {
         slotMachineContract,
       });
     } catch (err) {
+      logException(err);
+
       dispatch({
         type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
         payload: {
@@ -192,6 +197,8 @@ export function occupySlotMachine(slotMachineContract, playerAddress, weiValue) 
         });
       }, WAIT_TIME_TO_OCCUPY_SLOT_MACHINE);
     } catch (err) {
+      logException(err);
+
       Toast.notie.alert({
         type: 'error',
         text: `There was an error for occupying this slot machine. ${err}`,
@@ -215,6 +222,8 @@ export function cashOutSlotMachine(slotContract, playerAddress) {
         },
       });
     } catch (err) {
+      logException(err);
+
       console.error(err);
     }
   };
@@ -249,6 +258,8 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
       })
       .catch(err => {
         console.log('err is ', err);
+        logException(err);
+
         Toast.notie.alert({
           type: 'error',
           text: `There was an error for playing a slot machine. ${err}`,

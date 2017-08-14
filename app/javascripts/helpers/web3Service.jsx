@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import Store from 'store';
+import { logException } from '../helpers/errorLogger';
 import updatePlugin from 'store/plugins/update';
 import { USER_TYPES } from '../components/slotList/actions';
 import Toast from './notieHelper';
@@ -457,6 +458,7 @@ class Web3Service {
           resolve(result);
         })
         .catch(error => {
+          logException(error);
           reject(error);
         });
       slotMachineContract.occupy(
@@ -561,6 +563,7 @@ class Web3Service {
           }
         })
         .catch(err2 => {
+          logException(err2);
           console.log(err2);
           reject(err2);
         });
@@ -603,6 +606,8 @@ class Web3Service {
           }
         })
         .catch(error => {
+          logException(error);
+
           console.log('getSlotResult error is ', error);
           reject(error);
         });
@@ -619,6 +624,8 @@ class Web3Service {
           resolve(ethResult);
         })
         .catch(error => {
+          logException(error);
+
           console.log('getSlotResult error is ', error);
           reject(error);
         });
@@ -707,6 +714,7 @@ class Web3Service {
             });
           });
         } catch (err) {
+          logException(err);
           console.error('kick Interval err is ', err);
         }
       }, 1000 * 60 * 10); // per 10 minute

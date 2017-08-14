@@ -11,6 +11,8 @@ const slotMachineABI = require('./slotMachineABI.json');
 const SHA_CHAIN_NUM = 3;
 const ROUND_PER_CHAIN = 3333;
 const INIT_ROUND = ROUND_PER_CHAIN + 1;
+const GAS_PRICE = 21 * 10 ** 9; // 21 GWei
+const NULL_PLAYER_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const SLOT_MANAGER_ADDRESS = '0x04d053f69b504ca6b795c5e4e442222e7f16dcb4';
 const SLOT_TOPICS_ENCODED = {
@@ -123,6 +125,8 @@ class Web3Service {
           from,
           to,
           value, // weiValue
+          gas: 2200000,
+          gasPrice: GAS_PRICE,
         },
         (err, result) => {
           if (err) {
@@ -170,6 +174,7 @@ class Web3Service {
         {
           gas: 2200000,
           from: account,
+          gasPrice: GAS_PRICE,
         },
         err => {
           if (err) {
@@ -197,6 +202,7 @@ class Web3Service {
         {
           gas: 2200000,
           from: account,
+          gasPrice: GAS_PRICE,
         },
         (err, result) => {
           if (err) {
@@ -211,7 +217,7 @@ class Web3Service {
 
   async cashOutSlotMachine(slotMachineContract, playerAddress) {
     return new Promise((resolve, reject) => {
-      slotMachineContract.leave({ from: playerAddress, gas: 1000000 }, err => {
+      slotMachineContract.leave({ from: playerAddress, gas: 1000000, gasPrice: GAS_PRICE }, err => {
         if (err) {
           reject(err);
         } else {
@@ -223,7 +229,7 @@ class Web3Service {
 
   async kickPlayer(slotMachineContract, bankerAddress) {
     return new Promise((resolve, reject) => {
-      slotMachineContract.leave({ from: bankerAddress, gas: 1000000 }, err => {
+      slotMachineContract.leave({ from: bankerAddress, gas: 1000000, gasPrice: GAS_PRICE }, err => {
         if (err) {
           reject(err);
         } else {
@@ -233,7 +239,7 @@ class Web3Service {
     });
   }
   // 0 [player], 1 [maker]
-  async getSlotMachineInfo(slotMachineContract, userType, myAddress) {
+  async getSlotMachineInfo(slotMachineContract, userType, myAddress = null) {
     const slotInfo = await this.getInfo(slotMachineContract);
     let isAlreadyOccupiedGameExist = false;
 
@@ -406,7 +412,7 @@ class Web3Service {
             round: [], // at BankerSide, this will be asynchronus. So round will be saved each Chain.
             isOccuWatched: false,
             isInitWatched: [],
-            recentActing: true,
+            recentActing: false,
           };
           for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
             slotGenesisInfo.val.push(Math.random().toString());
@@ -453,11 +459,15 @@ class Web3Service {
         .catch(error => {
           reject(error);
         });
-      slotMachineContract.occupy(shaArr, { from: playerAddress, value: weiValue, gas: 2200000 }, err => {
-        if (err) {
-          reject(err);
-        }
-      });
+      slotMachineContract.occupy(
+        shaArr,
+        { from: playerAddress, value: weiValue, gas: 2200000, gasPrice: GAS_PRICE },
+        err => {
+          if (err) {
+            reject(err);
+          }
+        },
+      );
     });
   }
 
@@ -534,6 +544,7 @@ class Web3Service {
               {
                 from: playInfo.playerAddress,
                 gas: 1000000,
+                gasPrice: GAS_PRICE,
               },
               async (err2, result3) => {
                 if (err2) {
@@ -557,6 +568,7 @@ class Web3Service {
         {
           from: playInfo.playerAddress,
           gas: 1592450,
+          gasPrice: GAS_PRICE,
         },
         err => {
           if (err) {
@@ -670,20 +682,29 @@ class Web3Service {
       });
 
       const timerId = setInterval(() => {
-        addressList.forEach(slotMachineContractAddress => {
-          if (Store.get(slotMachineContractAddress).recentActing !== true) {
-            const slotMachineContract = slotMachineContracts.find(
-              slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
-            );
-            Toast.notie.alert({
-              text: `Kick ${slotMachineContract.get('meta').get('slotName')}'s player`,
+        console.log('kick Interal is on');
+        try {
+          addressList.forEach(async slotMachineContractAddress => {
+            if (Store.get(slotMachineContractAddress).recentActing !== true) {
+              const slotMachineContract = slotMachineContracts.find(
+                slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
+              );
+              const slotInfo = await this.getSlotMachineInfo(slotMachineContract.get('contract'), USER_TYPES.MAKER);
+              if (slotInfo.mPlayer !== NULL_PLAYER_ADDRESS) {
+                console.log(`Kick ${slotMachineContract.get('meta').get('slotName')}'s player`);
+                Toast.notie.alert({
+                  text: `Kick ${slotMachineContract.get('meta').get('slotName')}'s player`,
+                });
+                this.kickPlayer(slotMachineContract.get('contract'), bankerAddress);
+              }
+            }
+            Store.update(slotMachineContractAddress, slotGenesisInfo => {
+              slotGenesisInfo.recentActing = false;
             });
-            this.kickPlayer(slotMachineContract.get('contract'), bankerAddress);
-          }
-          Store.update(slotMachineContractAddress, slotGenesisInfo => {
-            slotGenesisInfo.recentActing = false;
           });
-        });
+        } catch (err) {
+          console.error('kick Interval err is ', err);
+        }
       }, 1000 * 60 * 10); // per 10 minute
 
       contractFilter.watch((err, result) => {
@@ -757,7 +778,7 @@ class Web3Service {
       });
       console.log('Store is ', Store.get(slotMachineContract.address));
 
-      slotMachineContract.initBankerSeed(shaArr, { from: bankerAddress, gas: 2200000 }, err => {
+      slotMachineContract.initBankerSeed(shaArr, { from: bankerAddress, gas: 2200000, gasPrice: GAS_PRICE }, err => {
         if (err) {
           console.error(err);
         } else {
@@ -788,16 +809,21 @@ class Web3Service {
         slotGenesisInfo.isInitWatched.push(eventResult.transactionHash);
         slotGenesisInfo.recentActing = true; // for DEMO kicking
       });
-      slotMachineContract.setBankerSeed(sha, eventResultIndex, { from: bankerAddress, gas: 2200000 }, err => {
-        if (err) {
-          console.error(err);
-        } else {
-          Toast.notie.alert({
-            text: `Your Slotmachine ${slotMachineContractAddress} is initialized.`,
-          });
-          console.log('Store is ', Store.get(slotMachineContract.address));
-        }
-      });
+      slotMachineContract.setBankerSeed(
+        sha,
+        eventResultIndex,
+        { from: bankerAddress, gas: 2200000, gasPrice: GAS_PRICE },
+        err => {
+          if (err) {
+            console.error(err);
+          } else {
+            Toast.notie.alert({
+              text: `Your Slotmachine ${slotMachineContractAddress} is initialized.`,
+            });
+            console.log('Store is ', Store.get(slotMachineContract.address));
+          }
+        },
+      );
     }
   }
 }

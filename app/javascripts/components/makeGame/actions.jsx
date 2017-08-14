@@ -34,10 +34,11 @@ export function requestToMakeGame({ account, decider, minBet, maxBet, maxPrize, 
         slotName,
       });
       const slotAddr = transaction.args._slotaddr;
+      const weiValue = Web3Service.makeWeiFromEther(totalStake);
       await Web3Service.sendEtherToAccount({
         from: account,
         to: slotAddr,
-        etherValue: totalStake,
+        value: weiValue,
       });
       Toast.notie.alert({
         text: 'Finished to making a slot machine',

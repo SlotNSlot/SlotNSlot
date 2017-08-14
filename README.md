@@ -1,28 +1,31 @@
-# Slot-n-Slot
+# SlotNSlot
 
 ## WARNING
-**If you run SlotNSlot with Metamask, it's way slower than Geth client**
+**SlotNSlot Beta supports both Geth and Metamask to interact with Ethereum Network.**
 
-**If you Metamask on your browser, SlotNSlot always try to connect to the Metamask first even if you are turning on Geth Client**
+**We still recommend you to use Geth, since Metamask works far slower than Geth as it doesn't support neither checking pending transactions nor force-generating transactions without pop-up permissions.**
 
-Because Metamask is way slower than Geth client, we expect most of the users want to use Geth.
+**For this reason, this instruction only explains how to use Geth for SlotNSlot Beta.**
 
-**If you want to use Geth client, please use browser's incognito mode or remove Metamask**
+Metamask has announced their plan to support pending transactions. Use of Metamask on SlotNSlot will be available in the future implementation.
+
+**If your browser has Metamast extension and you want to use Geth client, please use browser's incognito mode or unable/remove Metamask**
 
 ## Requirements
-- Geth client or MetaMask (Metamask transaction is extremely slower than Geth)
+- [Chrome browser](https://www.google.co.kr/chrome/browser/)
+- Geth client or MetaMask (We strongly recommend that you use Geth)
 - Rinkeby(Testnet) Account & Ether balance
 
 ## Installation
 **If you already have Geth client, just skip this part**
 
-#### MacOS
+### MacOS
 - Install HomeBrew (If you already have HomeBrew, just skip this step)
 1. Open Terminal
 2. Paste and execute below code
 
 ```bash
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 - Install Geth client
@@ -30,38 +33,42 @@ Because Metamask is way slower than Geth client, we expect most of the users wan
 2. Paste and execute below code
 
 ```bash
-brew tap ethereum/ethereum
-brew install ethereum
+$ brew tap ethereum/ethereum
+$ brew install ethereum
 ```
 
-#### Windows
+### Windows
 
-[Windows GETH Installation Link](https://github.com/ethereum/go-ethereum/wiki/Installation-instructions-for-Windows)
+[GETH official download page](https://geth.ethereum.org/downloads/)
+Download the Windows installation package, and execute. Follow the installation process to finish installing Geth on your PC.
 
+After finishing installation, do NOT turn on the Geth client (geth.exe) directly. You need to open it in the command line terminal with some more options.
 
-## Before Start
-### Geth Client
+## Running the Geth Client
+**If you know how to run Geth client, create and unlock account, and sync it on Rinkeby, you can skip this part.**
 
-#### Sync blocks (Geth Client only)
+### Sync with the Rinkeby blockchain
 
 1. Open Terminal
+ - Run terminal from Spotlight [Command (⌘)-Space bar] if you use Mac
+ - Open up the start menu [⊞ Win] or the run dialog box [⊞ Win+R], and run CMD if you use Windows
 2. Paste and execute below code
 
 ```bash
- geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*"
+ $ geth --rinkeby --syncmode=fast --cache=1024 --rpc --rpccorsdomain "*" --rpcapi personal,eth,net,web3 console
  ```
 
-Then, it starts syncing job.
+Then, Geth client should begin synchronization.
 This work takes at least 40 minutes. If your block number reach the recent mined block number, it's done.
 You can check the destination block number [here](https://www.rinkeby.io/)
 
-#### Create Account
+### Create Account
 At above command, you turned on Geth client with console.
 As the result, you can create your own Ethereum account.
 
 In console, paste and execute below code
 ```
-personal.newAccount()
+> personal.newAccount()
 ```
 
 This command requires `Passphrase`.
@@ -70,64 +77,33 @@ If you don't know about this term, just think it like password.
 after creating account, you can check your account with below command.
 
 ```
-eth.accounts
+> eth.accounts
 ```
 
-Copy your account address and save it somewhere else.
+Copy your account address (it's a 40-digits hexadecimal number attached to 0x) and save it somewhere else.
 
-Then restart your Geth client with --unlock option to unlock your account.
-
-```
-# Geth console
-> exit
-```
-
-```bash
-# Paste your account address to [account] part
-# Insert 0 to [account] means 1st account
-
-# Ex) geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
-
-geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock 0 console
-```
-
-After executing command, you should insert your passphrase to unlock account.
-When Geth client ask you passphrase, just type it.
+Then execute the command written below to unlock your account.
 
 ```
-# Geth console
-# It's normal nothing happens on your screen even you type key
-# Don't worry it's working
-
-passphrase:
+# Paste your account address and passphrase to [account], [pass] part.
+> personal.unlockAccount([account], [pass])
 ```
 
-If you can see `Welcome to the Geth JavaScript console!` message,
-You are ready to play SlotNSlot!
+you're all ready with your Geth console, and all you need is some Ether.
 
-### MetaMask
-# Select Rinkeby (MetaMask Only)
-- Click Metamask Icon on the browser menu bar
-- Click Ethereum Main Net on top left corner
-- Select Rinkeby Test Network
+## Get Rinkeby(testnet) Ether
+**Skip this part if you already have some Ether on your Rinkeby account or you know how to get some from the faucet.**
 
-Create an account or unlock your account. then You are ready to play SlotNSlot!
-
-## Get Rinkeby(testnet) Ethereum
-
-Before start, if you don't have Github Gist account, make an account at [here](https://github.com/join)
-
-- Visit [https://www.rinkeby.io/](https://www.rinkeby.io/)
-- Click Crypto Faucet
+- If you don't have Github account, make an account [here](https://github.com/join)
 - Click [Github Gist Link](https://gist.github.com/)
-- Write down your account address to content. You can leave blank at Gist description and Filename input
+- Copy&paste your Rinkeby account address to content. You can leave all other inputs blank.
 - Click `Create public gist`
 - After making Gist, copy your gist URL address
-- Paste your Gist URL address to `Rinkeby GitHub Authenticated Faucet` input field
+- Paste your Gist URL address to input field in [Faucet Page](https://faucet.rinkeby.io/)
 - Click Give me Ether
 - Select options you want
 
-Wait for 30s~1m. Then You can find that you have new Ether at Geth console.
+Wait for 30s~1m. Then you can find that you have new Ether at Geth console.
 
 ```
 # Geth console
@@ -136,8 +112,10 @@ Wait for 30s~1m. Then You can find that you have new Ether at Geth console.
 eth.getBalance("[address]")
 ```
 
+If you find it complicated to get the free Rinkeby Ether yourself, visit [Discord](https://discord.gg/f97RkQf) and ask the team for some. Note that you must provide your account address to get Ether.
+
 ## License
 Licensed under the GNU GENERAL PUBLIC LICENSE (Version 3, 29th June 2007)
 
 ## Contact
-The team is open to any debates in any channel for improving the service. If you have any concerns and suggestions about the service, please contact the team with [Github](https://github.com/SlotNSlot/SlotNSlot), [Twitter](https://twitter.com/slotnslot), [Hipchat](https://discord.gg/f97RkQf) or any other communication channels.
+The team is open to any debates in any channel for improving the service. If you have any concerns and suggestions about the service, please contact the team with [Github](https://github.com/SlotNSlot/SlotNSlot), [Twitter](https://twitter.com/slotnslot), [Discord](https://discord.gg/f97RkQf), [Telegram](https://t.me/slotnslot_ico), [Facebook](https://www.facebook.com/slotnslot.eth), [Reddit](https://www.reddit.com/r/SlotNSlot/), or any other communication channels.

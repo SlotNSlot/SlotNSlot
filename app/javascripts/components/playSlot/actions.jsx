@@ -46,7 +46,7 @@ export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddre
       Web3Service.createGenesisRandomNumber(slotMachineContractAddress, USER_TYPES.PLAYER, true);
       dispatch(updateJustLeavedSlotAddress(slotMachineContractAddress));
       dispatch(updateBalance(leavedEther));
-      await dispatch({
+      dispatch({
         type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
         payload: {
           isBreakAway: false,
@@ -140,7 +140,7 @@ export function getSlotMachine(slotAddress, playerAddress) {
         slotMachineContract,
       });
     } catch (err) {
-      await dispatch({
+      dispatch({
         type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
         payload: {
           isBreakAway: false,
@@ -204,7 +204,7 @@ export function cashOutSlotMachine(slotContract, playerAddress) {
   return async dispatch => {
     try {
       await Web3Service.cashOutSlotMachine(slotContract, playerAddress);
-      await dispatch({
+      dispatch({
         type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
         payload: {
           isBreakAway: false,

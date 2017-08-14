@@ -109,10 +109,12 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
 }
 
 export function setOccupiedState(isOccupied) {
+  const isBreakAway = isOccupied === true;
   return {
     type: ACTION_TYPES.SET_OCCUPIED_STATE,
     payload: {
       occupied: isOccupied,
+      isBreakAway,
     },
   };
 }

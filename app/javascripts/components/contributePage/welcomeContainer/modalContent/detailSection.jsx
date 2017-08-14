@@ -13,9 +13,13 @@ class DetailSection extends React.PureComponent {
         <div className={styles.title}>Crowdsale Detail</div>
 
         <div className={styles.warningMsg}>
+          <span className={styles.bold}>SlotNSlot Crowdsale</span> is not started yet. The crowdsale will{' '}
+          <span className={styles.bold}>start at August 20th, 2017</span>.
+        </div>
+        {/* <div className={styles.warningMsg}>
           WARNING: <span className={styles.bold}>Do NOT attempt to transfer</span> Ether(ETH) from wallets controlled by
           any type of <span className={styles.bold}>currency exchange</span>.
-        </div>
+        </div> */}
 
         <div className={styles.smallTitle}>Crowdsale Address</div>
         <input

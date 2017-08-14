@@ -5,7 +5,6 @@ const _second = 1000;
 const _minute = _second * 60;
 const _hour = _minute * 60;
 const _day = _hour * 24;
-// const dueDate = new Date('2017-08-20T08:00:00.000Z');
 const dueDate = new Date('2017-09-17T08:00:00.000Z'); // Crowdsale End date
 const initDate = new Date();
 

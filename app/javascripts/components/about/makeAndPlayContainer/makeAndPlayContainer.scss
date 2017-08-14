@@ -99,7 +99,7 @@
 }
 
 .playBetaBtn {
-  display: block;
+  display: inline-block;
   margin: 0 auto;
   font-weight: 500;
   width: 187.7px;
@@ -111,6 +111,7 @@
   font-size: 18px;
   border-radius: 100.2px;
   background-image: linear-gradient(105deg, #ffb88d, #f7485f);
+  margin-right: 20.3px;
 
   &:hover {
     color: inherit;
@@ -118,8 +119,12 @@
   }
 }
 
+.betaBtnWrapper {
+  text-align: center;
+}
+
 .watchDemoBtn {
-  display: block;
+  display: inline-block;
   margin: 0 auto;
   font-weight: 300;
   width: 187.7px;
@@ -131,12 +136,7 @@
   line-height: 50.5px;
   border-radius: 100.2px;
   background-image: linear-gradient(125deg, #7a48ca, #60aedc);
-  box-shadow: 2px 3px 24px 0 #2b1c45;
-  position: relative;
-  left: 0;
-  right: 0;
   bottom: 30px;
-  z-index: 2;
   cursor: pointer;
 
   svg {

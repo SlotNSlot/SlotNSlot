@@ -44,6 +44,10 @@ const MakeAndPlayContainer = () =>
         >
           Play Beta
         </a>
+        <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>
+          <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
+          Watch Demo
+        </a>
       </div>
       <div className={styles.makeAndPlayContext}>
         <img src="https://d1qh7kd1bid312.cloudfront.net/about/Browser_content.png" alt="browser" />
@@ -68,10 +72,6 @@ const MakeAndPlayContainer = () =>
           </div>
         </div>
       </div>
-      <a onClick={handleWatchDemoClick} className={styles.watchDemoBtn}>
-        <Icon className={styles.triangle} icon="TRIANGLE_RIGHT" />
-        Watch Demo
-      </a>
     </div>
   </div>;
 export default MakeAndPlayContainer;

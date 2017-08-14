@@ -50,8 +50,8 @@ After finishing installation, do NOT turn on the Geth client (geth.exe) directly
 ### Sync with the Rinkeby blockchain
 
 1. Open Terminal
- - Turn terminal from Spotlight if you use Mac
- - Hit window key and run CMD if you use Windows]
+ - Run terminal from Spotlight [Command (⌘)-Space bar] if you use Mac
+ - Open up the start menu [⊞ Win] or the run dialog box [⊞ Win+R], and run CMD if you use Windows]
 2. Paste and execute below code
 
 ```bash

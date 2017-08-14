@@ -35,11 +35,16 @@ const MakeAndPlayContainer = () =>
       <div className={styles.makeAndPlayTitle}>
         Tired of just <span>PLAY</span>ing? Now <span>MAKE</span> your own with SlotNSlot !
       </div>
-      {/* <div className={styles.betaBtnWrapper}>
-        <Link onClick={() => trackWordsOnly()} to="/slot/play" className={styles.playBetaBtn}>
+      <div className={styles.betaBtnWrapper}>
+        <a
+          href="http://beta.slotnslot.com/slot/play/"
+          target="_blank"
+          onClick={() => trackWordsOnly()}
+          className={styles.playBetaBtn}
+        >
           Play Beta
-        </Link>
-      </div> */}
+        </a>
+      </div>
       <div className={styles.makeAndPlayContext}>
         <img src="https://d1qh7kd1bid312.cloudfront.net/about/Browser_content.png" alt="browser" />
         <div className={`${styles.bubble} ${styles.left}`}>

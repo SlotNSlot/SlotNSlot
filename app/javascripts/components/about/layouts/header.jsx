@@ -90,17 +90,18 @@ class Header extends React.PureComponent {
                 Blog
               </a>
             </li>
-            {/* <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
-              <Link
+            <li className={`${styles.rightNavItem} ${styles.prototypeLink}`}>
+              <a
                 className={styles.item}
                 onClick={() => {
-                  this.trackWordsOnly('/slot/play');
+                  this.trackWordsOnly('http://beta.slotnslot.com/slot/play/');
                 }}
-                to="/slot/play"
+                href="http://beta.slotnslot.com/slot/play/"
+                target="_blank"
               >
                 Prototype
-              </Link>
-            </li> */}
+              </a>
+            </li>
             <li className={styles.rightNavItem}>
               <Link
                 onClick={() => {

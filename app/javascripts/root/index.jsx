@@ -24,7 +24,7 @@ class Root extends React.PureComponent {
   componentDidMount() {
     const { dispatch, match } = this.props;
 
-    if (!(match.path === '/' && match.isExact)) {
+    if (!(match.path === '/' && match.isExact) && !(match.path === '/contribute' && match.isExact)) {
       dispatch(setAccount());
     }
   }

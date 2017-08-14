@@ -102,7 +102,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.FAILED_TO_PLAY_GAME: {
       return state.withMutations(currentState => {
         action.payload.transaction.id = currentState.get('betsData').size + 1;
-        return currentState.set('hasError', true).update('betsData', list => list.push(action.payload.transaction));
+        return currentState.set('hasError', true).update('betsData', list => list.unshift(action.payload.transaction));
       });
     }
 
@@ -113,7 +113,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
           .set('isPlaying', false)
           .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
           .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)))
-          .update('betsData', list => list.push(action.payload.transaction));
+          .update('betsData', list => list.unshift(action.payload.transaction));
       });
     }
 

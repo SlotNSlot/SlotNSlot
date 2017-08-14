@@ -4,6 +4,12 @@ import styles from './termsSection.scss';
 import { toggleAgreeTerms, toggleLegalResident } from '../actions';
 import Icon from '../../../../icons';
 
+const termsHTML = require('./terms.html');
+
+function createMarkup() {
+  return { __html: termsHTML };
+}
+
 function mapStateToProps(appState) {
   return {
     contributePage: appState.contributePage,
@@ -27,57 +33,7 @@ class TermsSection extends React.PureComponent {
           <Icon icon="CANCEL" />
         </button>
         <div className={styles.termsBox}>
-          <p className={styles.title}>SlotNSlot Token(SLOT) Creation Terms & Conditions</p>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
-
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum ipsa, minima deserunt consequatur adipisci
-            eius? Ut, quidem quibusdam, ratione deleniti inventore ea accusantium minus, dolore quos voluptates iusto
-            laudantium commodi!
-          </p>
+          <div dangerouslySetInnerHTML={createMarkup()} />
         </div>
         <div className={styles.checkboxWrapper}>
           <input

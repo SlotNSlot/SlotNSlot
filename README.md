@@ -118,4 +118,4 @@ If you find it complicated to get the free Rinkeby Ether yourself, visit [Discor
 Licensed under the GNU GENERAL PUBLIC LICENSE (Version 3, 29th June 2007)
 
 ## Contact
-The team is open to any debates in any channel for improving the service. If you have any concerns and suggestions about the service, please contact the team with [Github](https://github.com/SlotNSlot/SlotNSlot), [Twitter](https://twitter.com/slotnslot), [Discord](https://discord.gg/f97RkQf) or any other communication channels.
+The team is open to any debates in any channel for improving the service. If you have any concerns and suggestions about the service, please contact the team with [Github](https://github.com/SlotNSlot/SlotNSlot), [Twitter](https://twitter.com/slotnslot), [Discord](https://discord.gg/f97RkQf), [Telegram](https://t.me/slotnslot_ico), [Facebook](https://www.facebook.com/slotnslot.eth), [Reddit](https://www.reddit.com/r/SlotNSlot/), or any other communication channels.

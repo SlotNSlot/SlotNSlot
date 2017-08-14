@@ -149,6 +149,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
       return state.set('isBreakAway', action.payload.isBreakAway);
     }
 
+    case ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE: {
+      return PLAY_SLOT_INITIAL_STATE;
+    }
+
     default:
       return state;
   }

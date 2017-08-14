@@ -95,6 +95,7 @@ class PlaySlot extends React.PureComponent {
 
   componentWillUnmount() {
     if (this.slotGame) {
+      this.intializePlaySlotState();
       this.cashOutSlotMachine();
       this.slotGame.removeCurrentGame();
       gameAlreadyLoaded = false;
@@ -325,6 +326,12 @@ class PlaySlot extends React.PureComponent {
     if (playSlotState.get('isOccupied')) {
       dispatch(Actions.cashOutSlotMachine(playSlotState.get('slotMachineContract'), root.get('account')));
     }
+  }
+
+  intializePlaySlotState() {
+    const { dispatch } = this.props;
+
+    dispatch(Actions.intializePlaySlotState());
   }
 }
 

@@ -1,11 +1,11 @@
 # SlotNSlot
 
 ## WARNING
-**SlotNSlot Beta supports both Geth and Metamask to interact with Ethereum Network. 
+**SlotNSlot Beta supports both Geth and Metamask to interact with Ethereum Network.**
 
-**We still recommend you to use Geth, since Metamask works far slower than Geth as it doesn't support neither checking pending transactions nor force-generating transactions without pop-up permissions.
+**We still recommend you to use Geth, since Metamask works far slower than Geth as it doesn't support neither checking pending transactions nor force-generating transactions without pop-up permissions.**
 
-**For this reason, this instruction only explains how to use Geth for SlotNSlot Beta.
+**For this reason, this instruction only explains how to use Geth for SlotNSlot Beta.**
 
 Metamask has announced their plan to support pending transactions. Use of Metamask on SlotNSlot will be available in the future implementation.
 
@@ -41,12 +41,10 @@ brew install ethereum
 
 [Windows GETH Installation Link](https://github.com/ethereum/go-ethereum/wiki/Installation-instructions-for-Windows)
 
-## Before Start
-### Geth Client
+## Running the Geth Client
+**If you know how to run Geth client, create and unlock account, and sync it on Rinkeby, you can skip this part.**
 
-**If you know how to run Geth client, create and unlock account, and sync it on Rinkeby, you can skip this part.
-
-#### Sync blocks (Geth Client only)
+### Sync blocks (Geth Client only)
 
 1. Open Terminal [Turn terminal from Spotlight if you use Mac, hit window key and run CMD if you use Windows]
 2. Paste and execute below code
@@ -59,7 +57,7 @@ Then, Geth client should begin synchronization.
 This work takes at least 40 minutes. If your block number reach the recent mined block number, it's done.
 You can check the destination block number [here](https://www.rinkeby.io/)
 
-#### Create Account
+### Create Account
 At above command, you turned on Geth client with console.
 As the result, you can create your own Ethereum account.
 
@@ -107,23 +105,22 @@ passphrase:
 ```
 
 If you can see `Welcome to the Geth JavaScript console!` message,
-You are ready to play SlotNSlot!
+you're all ready with your Geth console, and all you need is some Ether.
 
 ## Get Rinkeby(testnet) Ether
+**Skip this part if you already have some Ether on your Rinkeby account or you know how to get some from the faucet.**
 
-Before start, if you don't have Github Gist account, make an account at [here](https://github.com/join)
+Before start, if you don't have Github account, make an account at [here](https://github.com/join)
 
-- Visit [https://www.rinkeby.io/](https://www.rinkeby.io/)
-- Click Crypto Faucet
 - Click [Github Gist Link](https://gist.github.com/)
-- Write down your account address to content. You can leave blank at Gist description and Filename input
+- Copy&paste your Rinkeby account address to content. You can leave all other inputs blank.
 - Click `Create public gist`
 - After making Gist, copy your gist URL address
-- Paste your Gist URL address to `Rinkeby GitHub Authenticated Faucet` input field
+- Paste your Gist URL address to input field in [Faucet Page](https://faucet.rinkeby.io/)
 - Click Give me Ether
 - Select options you want
 
-Wait for 30s~1m. Then You can find that you have new Ether at Geth console.
+Wait for 30s~1m. Then you can find that you have new Ether at Geth console.
 
 ```
 # Geth console

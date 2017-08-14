@@ -6,7 +6,7 @@ import styles from './header.scss';
 const Header = ({ rootState, location }) =>
   <div className={styles.header}>
     <div className={styles.headerContainer}>
-      <Link to="/" className={styles.logo}>
+      <Link to="/slot/play" className={styles.logo}>
         <Icon className={styles.logo} icon="SLOT_N_SLOT_BETA_LOGO" />
       </Link>
       <div className={styles.leftItems}>

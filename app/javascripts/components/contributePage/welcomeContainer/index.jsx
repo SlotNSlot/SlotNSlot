@@ -27,7 +27,7 @@ class WelcomeContainer extends React.PureComponent {
 
   componentDidMount() {
     this.counterInterval = setInterval(this.updateTimer, 1000 * 30);
-    this.props.dispatch(updateCurrentEther(12000));
+    this.props.dispatch(updateCurrentEther(0));
   }
 
   componentWillUnmount() {

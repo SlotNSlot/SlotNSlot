@@ -22,7 +22,7 @@ class DetailSection extends React.PureComponent {
           className={styles.contributeAddress}
           ref={ref => (this.addressInput = ref)}
           type="text"
-          value="0x8aA33A7899FCC8eA5fBe6A608A109c3893A1B8b2"
+          value="TBD"
           readOnly
         />
         <button

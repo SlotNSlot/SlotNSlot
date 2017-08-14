@@ -20,6 +20,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   emotionClicked: 0,
   emotionList: emotionTypes,
   betsData: [],
+  temporaryBetData: {},
   slotMachineContract: null,
   slotName: '',
   waitOccupy: false,
@@ -114,12 +115,12 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME: {
       return state.withMutations(currentState => {
-        action.payload.transaction.id = currentState.get('betsData').size + 1;
+        action.payload.betData.id = currentState.get('betsData').size + 1;
         return currentState
           .set('isPlaying', false)
           .set('deposit', currentState.get('deposit').plus(parseFloat(action.payload.diffMoney, 10)))
           .set('bankRoll', currentState.get('bankRoll').minus(parseFloat(action.payload.diffMoney, 10)))
-          .update('betsData', list => list.unshift(action.payload.transaction));
+          .set('temporaryBetData', action.payload.betData);
       });
     }
 
@@ -157,6 +158,13 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE: {
       return PLAY_SLOT_INITIAL_STATE;
+    }
+
+    case ACTION_TYPES.UPDATE_BET_DATA_AFTER_STOP_SPIN: {
+      return state.withMutations(currentState => {
+        const betData = currentState.get('temporaryBetData');
+        return currentState.set('temporaryBetData', {}).update('betsData', list => list.unshift(betData));
+      });
     }
 
     default:

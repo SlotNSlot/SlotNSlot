@@ -440,7 +440,7 @@ export default class SlotGame {
       } else {
         this.drawingPercentageList = null;
         this.gameState = STATE_WAITING;
-        if (this.isWatcherPage) this.stopEnd();
+        this.stopEnd();
       }
     } else if (this.gameState === STATE_BIG_WIN) {
       if (this.bigWinPercentage <= 1) {
@@ -492,7 +492,7 @@ export default class SlotGame {
       } else {
         this.reelGroup = this.newReelGroup;
         this.gameState = STATE_WAITING;
-        if (this.isWatcherPage) this.stopEnd();
+        this.stopEnd();
       }
     }
 
@@ -557,7 +557,7 @@ export default class SlotGame {
         this.ovalBackground.alpha = 0;
       } else {
         this.gameState = STATE_WAITING;
-        if (this.isWatcherPage) this.stopEnd();
+        this.stopEnd();
       }
     }
   }

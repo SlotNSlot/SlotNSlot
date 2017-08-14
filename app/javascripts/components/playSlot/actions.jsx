@@ -36,6 +36,7 @@ export const ACTION_TYPES = {
 
   UPDATE_BREAK_AWAY_TRY: 'play_slot.UPDATE_BREAK_AWAY_TRY',
   INITIALIZE_PLAY_SLOT_STATE: 'play_slot.INITIALIZE_PLAY_SLOT_STATE',
+  UPDATE_BET_DATA_AFTER_STOP_SPIN: 'play_slot.UPDATE_BET_DATA_AFTER_STOP_SPIN',
 };
 export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
@@ -231,7 +232,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
         const ethReward = result[0];
         const betMoney = playInfo.betSize.times(playInfo.lineNum);
         const diffMoney = ethReward.minus(betMoney);
-        const transaction = {
+        const betData = {
           time: moment().format('YY.MM.DD H:mm:ss'),
           bet: `${betMoney.valueOf()} ETH`,
           result: 'success',
@@ -241,7 +242,7 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
           payload: {
-            transaction,
+            betData,
             diffMoney,
           },
         });
@@ -314,5 +315,11 @@ export function setWaitOccupy(waitOccupy) {
 export function intializePlaySlotState() {
   return {
     type: ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE,
+  };
+}
+
+export function updateBetDataAfterStopSpin() {
+  return {
+    type: ACTION_TYPES.UPDATE_BET_DATA_AFTER_STOP_SPIN,
   };
 }

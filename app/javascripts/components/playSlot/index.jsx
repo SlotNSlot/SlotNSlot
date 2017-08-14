@@ -35,6 +35,7 @@ class PlaySlot extends React.PureComponent {
     this.setBetSize = this.setBetSize.bind(this);
     this.setLineNum = this.setLineNum.bind(this);
     this.playGame = this.playGame.bind(this);
+    this.stopEnd = this.stopEnd.bind(this);
   }
 
   componentDidMount() {
@@ -71,6 +72,7 @@ class PlaySlot extends React.PureComponent {
       setBetSize: this.setBetSize,
       setLineNum: this.setLineNum,
       playGame: this.playGame,
+      stopEnd: this.stopEnd,
     });
   }
 
@@ -312,6 +314,10 @@ class PlaySlot extends React.PureComponent {
     } else {
       dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
     }
+  }
+  stopEnd() {
+    const { dispatch } = this.props;
+    dispatch(Actions.updateBetDataAfterStopSpin());
   }
 
   getSlotMachine(slotAddress, playerAddress) {

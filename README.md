@@ -25,7 +25,7 @@ Metamask has announced their plan to support pending transactions. Use of Metama
 2. Paste and execute below code
 
 ```bash
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 - Install Geth client
@@ -33,8 +33,8 @@ Metamask has announced their plan to support pending transactions. Use of Metama
 2. Paste and execute below code
 
 ```bash
-brew tap ethereum/ethereum
-brew install ethereum
+$ brew tap ethereum/ethereum
+$ brew install ethereum
 ```
 
 ### Windows
@@ -55,7 +55,7 @@ After finishing installation, do NOT turn on the Geth client (geth.exe) directly
 2. Paste and execute below code
 
 ```bash
- geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" console
+ $ geth --rinkeby --syncmode=fast --cache=1024 --rpc --rpccorsdomain "*" --rpcapi personal,eth,net,web3 console
  ```
 
 Then, Geth client should begin synchronization.
@@ -68,7 +68,7 @@ As the result, you can create your own Ethereum account.
 
 In console, paste and execute below code
 ```
-personal.newAccount()
+> personal.newAccount()
 ```
 
 This command requires `Passphrase`.
@@ -77,39 +77,18 @@ If you don't know about this term, just think it like password.
 after creating account, you can check your account with below command.
 
 ```
-eth.accounts
+> eth.accounts
 ```
 
 Copy your account address (it's a 40-digits hexadecimal number attached to 0x) and save it somewhere else.
 
-Then restart your Geth client with --unlock option to unlock your account.
+Then execute the command written below to unlock your account.
 
 ```
-# Geth console
-> exit
+# Paste your account address and passphrase to [account], [pass] part.
+> personal.unlockAccount([account], [pass])
 ```
 
-```bash
-# Paste your account address to [account] part
-# If you created just a single account, insert 0 to [account] to refer to the 1st account
-
-# Ex) geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock=[account] console
-
-geth --networkid=4 --datadir=$HOME/.rinkeby --syncmode=fast --ethstats=geth --cache=512 --ethstats='pepsi:Respect my authoritah!@stats.rinkeby.io' --bootnodes=enode://fda3f6273a0f2da4ac5858d1f52e5afaf9def281121be3d37558c67d4d9ca26c6ad7a0520b2cd7454120fb770e86d5760487c9924b2166e65485f606e56d60fc@51.15.69.144:30303 --rpcapi personal,db,eth,net,web3 --rpc --rpccorsdomain "*" --unlock=0 console
-```
-
-After executing command, you should insert your passphrase to unlock account.
-When Geth client ask you passphrase, just type it.
-
-```
-# Geth console
-# It's normal nothing happens on your screen even you type key
-# Don't worry it's working
-
-passphrase:
-```
-
-If you can see `Welcome to the Geth JavaScript console!` message,
 you're all ready with your Geth console, and all you need is some Ether.
 
 ## Get Rinkeby(testnet) Ether

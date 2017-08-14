@@ -36,7 +36,6 @@ async function getSlotMachineInfo(slotMachineContractAddress, userType, myAccoun
       meta: slotInfo,
     };
   } catch (err) {
-    logException(err);
     return null;
   }
 }

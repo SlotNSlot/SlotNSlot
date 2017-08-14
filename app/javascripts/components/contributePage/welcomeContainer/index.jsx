@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import ReactModal from 'react-modal';
 import Icon from '../../../icons';
 import styles from './welcomeContainer.scss';
-import { updateCountdown, updateCurrentEther } from './actions';
+import { updateCountdown, updateCurrentEther, setNextModal } from './actions';
+import { TermsSection, DetailSection } from './modalContent';
 
 function mapStateToProps(appState) {
   return {
@@ -15,6 +17,12 @@ class WelcomeContainer extends React.PureComponent {
     super(props);
 
     this.updateTimer = this.updateTimer.bind(this);
+    this.state = {
+      showModal: false,
+    };
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.handleDetailSection = this.handleDetailSection.bind(this);
   }
 
   componentDidMount() {
@@ -66,9 +74,22 @@ class WelcomeContainer extends React.PureComponent {
               </div>
             </div>
           </div>
-          <button onClick={() => alert('i')} className={styles.contributeBtn}>
+
+          <button onClick={this.handleOpenModal} className={styles.contributeBtn}>
             Contribute
           </button>
+
+          <ReactModal
+            isOpen={this.state.showModal}
+            contentLabel="Terms and Detail Modal"
+            overlayClassName={styles.termsModalOverlay}
+            className={styles.termsModal}
+            onRequestClose={this.handleCloseModal}
+          >
+            {contributePage.get('allAgree')
+              ? <DetailSection handleClose={this.handleCloseModal} />
+              : <TermsSection handleClose={this.handleCloseModal} handleNext={this.handleDetailSection} />}
+          </ReactModal>
         </div>
       </div>
     );
@@ -77,6 +98,19 @@ class WelcomeContainer extends React.PureComponent {
   updateTimer() {
     const { dispatch } = this.props;
     dispatch(updateCountdown());
+  }
+
+  handleOpenModal() {
+    this.setState({ showModal: true });
+  }
+
+  handleCloseModal() {
+    this.setState({ showModal: false });
+  }
+
+  handleDetailSection() {
+    const { dispatch } = this.props;
+    dispatch(setNextModal());
   }
 }
 

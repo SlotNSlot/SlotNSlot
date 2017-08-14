@@ -5,8 +5,8 @@ const _second = 1000;
 const _minute = _second * 60;
 const _hour = _minute * 60;
 const _day = _hour * 24;
-const dueDate = new Date('2017-08-20T08:00:00.000Z');
-// const dueDate = new Date('2017-09-17T08:00:00.000Z'); // Crowdsale End date
+// const dueDate = new Date('2017-08-20T08:00:00.000Z');
+const dueDate = new Date('2017-09-17T08:00:00.000Z'); // Crowdsale End date
 const initDate = new Date();
 
 function timeFormat(time) {
@@ -24,6 +24,9 @@ export const CONTRIBUTE_PAGE_INITIAL_STATE = fromJS({
   seconds: timeFormat((dueDate - initDate) % _minute / _second),
 
   currentEther: 0,
+  checkTerms: false,
+  checkResident: false,
+  allAgreed: false,
 });
 
 export function reducer(state = CONTRIBUTE_PAGE_INITIAL_STATE, action) {
@@ -41,6 +44,20 @@ export function reducer(state = CONTRIBUTE_PAGE_INITIAL_STATE, action) {
 
     case ACTION_TYPES.UPDATE_CURRENT_ETHER: {
       return state.set('currentEther', action.payload.currentEther);
+    }
+
+    case ACTION_TYPES.AGREE_TERMS_CONDITION: {
+      const curState = state.get('checkTerms');
+      return state.set('checkTerms', !curState);
+    }
+
+    case ACTION_TYPES.AGREE_LEGAL_RESIDENT: {
+      const curState = state.get('checkResident');
+      return state.set('checkResident', !curState);
+    }
+
+    case ACTION_TYPES.AGREED_ALL_CHECKBOX: {
+      return state.set('allAgree', true);
     }
 
     default:

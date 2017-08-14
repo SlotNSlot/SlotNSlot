@@ -23,7 +23,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   slotMachineContract: null,
   slotName: '',
   waitOccupy: false,
-  isBreakAway: true,
+  isBreakAway: false,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -46,7 +46,9 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.SET_OCCUPIED_STATE: {
-      return state.set('isOccupied', action.payload.occupied);
+      return state.withMutations(currentState => {
+        return currentState.set('isOccupied', action.payload.occupied).set('isBreakAway', action.payload.isBreakAway);
+      });
     }
 
     case ACTION_TYPES.SUCCEEDED_TO_GET_SLOT_MACHINE: {
@@ -89,7 +91,11 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SUCCEEDED_TO_OCCUPY_SLOT_MACHINE: {
       return state.withMutations(currentState => {
-        return currentState.set('isLoading', false).set('hasError', false).set('isOccupied', true);
+        return currentState
+          .set('isLoading', false)
+          .set('hasError', false)
+          .set('isOccupied', true)
+          .set('isBreakAway', true);
       });
     }
 
@@ -147,6 +153,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.UPDATE_BREAK_AWAY_TRY: {
       return state.set('isBreakAway', action.payload.isBreakAway);
+    }
+
+    case ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE: {
+      return PLAY_SLOT_INITIAL_STATE;
     }
 
     default:

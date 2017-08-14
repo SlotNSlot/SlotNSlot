@@ -35,6 +35,7 @@ export const ACTION_TYPES = {
   FAILED_TO_SEND_ETHER_TO_CONTRACT: 'play_slot.FAILED_TO_SEND_ETHER_TO_CONTRACT',
 
   UPDATE_BREAK_AWAY_TRY: 'play_slot.UPDATE_BREAK_AWAY_TRY',
+  INITIALIZE_PLAY_SLOT_STATE: 'play_slot.INITIALIZE_PLAY_SLOT_STATE',
 };
 export function setPlayerKickedByWatcher(slotMachineContractAddress, playerAddress) {
   return async dispatch => {
@@ -108,10 +109,12 @@ export function sendEtherToSlotContract(slotMachineContract, playerAccount, weiV
 }
 
 export function setOccupiedState(isOccupied) {
+  const isBreakAway = isOccupied === true;
   return {
     type: ACTION_TYPES.SET_OCCUPIED_STATE,
     payload: {
       occupied: isOccupied,
+      isBreakAway,
     },
   };
 }
@@ -306,5 +309,11 @@ export function setWaitOccupy(waitOccupy) {
     payload: {
       waitOccupy,
     },
+  };
+}
+
+export function intializePlaySlotState() {
+  return {
+    type: ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE,
   };
 }

@@ -515,6 +515,10 @@ class Web3Service {
       const chainIndex = (SHA_CHAIN_NUM * ROUND_PER_CHAIN - round) % 3;
       console.log('game Start! round is ', round);
       console.log('chainIndex is ', chainIndex);
+      console.log('store is ', Store.get(slotMachineContractAddress));
+      if (Store.get(slotMachineContractAddress).bankerShaArr === undefined) {
+        throw new Error('Fatal Error. You have to cash out this slotMachine.');
+      }
       this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedSet', chainIndex)
         .then(result => {
           const isBankerSeedSet = Store.get(slotMachineContractAddress).isBankerSeedSet;

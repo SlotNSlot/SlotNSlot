@@ -39,14 +39,19 @@ brew install ethereum
 
 ### Windows
 
-[Windows GETH Installation Link](https://github.com/ethereum/go-ethereum/wiki/Installation-instructions-for-Windows)
+[GETH official download page](https://geth.ethereum.org/downloads/)
+Download the Windows installation package, and execute. Follow the installation process to finish installing Geth on your PC.
+
+After finishing installation, do NOT turn on the Geth client (geth.exe) directly. You need to open it in the command line terminal with some more options.
 
 ## Running the Geth Client
 **If you know how to run Geth client, create and unlock account, and sync it on Rinkeby, you can skip this part.**
 
-### Sync blocks (Geth Client only)
+### Sync with the Rinkeby blockchain
 
-1. Open Terminal [Turn terminal from Spotlight if you use Mac, hit window key and run CMD if you use Windows]
+1. Open Terminal
+ - Turn terminal from Spotlight if you use Mac
+ - Hit window key and run CMD if you use Windows]
 2. Paste and execute below code
 
 ```bash
@@ -110,8 +115,7 @@ you're all ready with your Geth console, and all you need is some Ether.
 ## Get Rinkeby(testnet) Ether
 **Skip this part if you already have some Ether on your Rinkeby account or you know how to get some from the faucet.**
 
-Before start, if you don't have Github account, make an account at [here](https://github.com/join)
-
+- If you don't have Github account, make an account [here](https://github.com/join)
 - Click [Github Gist Link](https://gist.github.com/)
 - Copy&paste your Rinkeby account address to content. You can leave all other inputs blank.
 - Click `Create public gist`

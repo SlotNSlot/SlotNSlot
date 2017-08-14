@@ -23,6 +23,7 @@ export const PLAY_SLOT_INITIAL_STATE = fromJS({
   slotMachineContract: null,
   slotName: '',
   waitOccupy: false,
+  isBreakAway: true,
 });
 
 export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
@@ -67,7 +68,7 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     case ACTION_TYPES.SEND_ETHER_TO_SLOT_CONTRACT: {
       return state.withMutations(currentState => {
         const bigNumber = Web3Service.getWeb3().toBigNumber(
-          parseFloat(action.payload.weiValue, 10) + parseFloat(currentState.get('deposit'), 10),
+          parseFloat(action.payload.ethValue, 10) + parseFloat(currentState.get('deposit'), 10),
         );
         return currentState.set('deposit', bigNumber).set('isLoading', false).set('hasError', false);
       });
@@ -142,6 +143,10 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
 
     case ACTION_TYPES.SET_WAIT_OCCUPY: {
       return state.set('waitOccupy', action.payload.waitOccupy);
+    }
+
+    case ACTION_TYPES.UPDATE_BREAK_AWAY_TRY: {
+      return state.set('isBreakAway', action.payload.isBreakAway);
     }
 
     default:

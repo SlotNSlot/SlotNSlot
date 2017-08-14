@@ -108,6 +108,7 @@ class PlaySlot extends React.PureComponent {
     return (
       <div className={styles.playSlotSection}>
         <Prompt
+          when={playSlotState.get('isBreakAway')}
           message={() =>
             'Do you really want to leave this slot? When you leave, your balance in the current slot is automatically cashed out to your wallet'}
         />
@@ -298,8 +299,18 @@ class PlaySlot extends React.PureComponent {
       betSize: playSlotState.get('betSize'),
       lineNum: playSlotState.get('lineNum'),
     };
-
-    dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
+    if (playSlotState.get('betSize').times(playSlotState.get('lineNum')) > playSlotState.get('deposit')) {
+      Toast.notie.alert({
+        type: 'error',
+        text: "You don't have enough stake. Deposit more eth!",
+      });
+    } else if (playSlotState.get('deposit') <= 0) {
+      Toast.notie.alert({
+        text: 'SlotMachine was bankrupted!! Congraturations!!',
+      });
+    } else {
+      dispatch(Actions.requestToPlayGame(gameInfo, this.slotGame.stopSpin));
+    }
   }
 
   getSlotMachine(slotAddress, playerAddress) {

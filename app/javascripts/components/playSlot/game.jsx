@@ -280,10 +280,16 @@ export default class SlotGame {
 
   startSpin() {
     if (this.gameState !== STATE_WAITING) return;
-    if (this.yourStake < this.betSize * this.lineNum) {
+    if (this.yourStake < this.betSize.times(this.lineNum)) {
       Toast.notie.alert({
         type: 'error',
         text: "You don't have enough stake. Deposit more eth!",
+      });
+      this.autoSpinSwitch();
+      return;
+    } else if (this.bankRoll <= 0) {
+      Toast.notie.alert({
+        text: 'SlotMachine was bankrupted!! Congraturations!!',
       });
       this.autoSpinSwitch();
       return;

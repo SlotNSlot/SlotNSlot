@@ -406,7 +406,7 @@ class Web3Service {
             round: [], // at BankerSide, this will be asynchronus. So round will be saved each Chain.
             isOccuWatched: false,
             isInitWatched: [],
-            recentActing: true,
+            recentActing: false,
           };
           for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
             slotGenesisInfo.val.push(Math.random().toString());
@@ -670,11 +670,13 @@ class Web3Service {
       });
 
       const timerId = setInterval(() => {
+        console.log('kick Interal is on');
         addressList.forEach(slotMachineContractAddress => {
           if (Store.get(slotMachineContractAddress).recentActing !== true) {
             const slotMachineContract = slotMachineContracts.find(
               slotMachine => slotMachine.get('contract').address === slotMachineContractAddress,
             );
+            console.log(`Kick ${slotMachineContract.get('meta').get('slotName')}'s player`);
             Toast.notie.alert({
               text: `Kick ${slotMachineContract.get('meta').get('slotName')}'s player`,
             });

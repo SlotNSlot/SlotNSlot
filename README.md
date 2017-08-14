@@ -51,7 +51,7 @@ After finishing installation, do NOT turn on the Geth client (geth.exe) directly
 
 1. Open Terminal
  - Run terminal from Spotlight [Command (⌘)-Space bar] if you use Mac
- - Open up the start menu [⊞ Win] or the run dialog box [⊞ Win+R], and run CMD if you use Windows]
+ - Open up the start menu [⊞ Win] or the run dialog box [⊞ Win+R], and run CMD if you use Windows
 2. Paste and execute below code
 
 ```bash

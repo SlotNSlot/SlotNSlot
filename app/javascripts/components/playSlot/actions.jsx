@@ -238,7 +238,6 @@ export function requestToPlayGame(playInfo, stopSpinFunc) {
           profit: `${diffMoney.valueOf()} ETH`,
         };
         stopSpinFunc(ethReward);
-        dispatch(updateBalance(diffMoney));
         dispatch({
           type: ACTION_TYPES.SUCCEEDED_TO_PLAY_GAME,
           payload: {

@@ -127,7 +127,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "store": "^2.0.12",
-    "svg-inline-react": "^1.0.2"
+    "svg-inline-react": "^1.0.2",
+    "ua-parser-js": "^0.7.14"
   },
   "jest": {
     "automock": true,

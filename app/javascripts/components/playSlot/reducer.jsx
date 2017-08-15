@@ -153,7 +153,9 @@ export function reducer(state = PLAY_SLOT_INITIAL_STATE, action) {
     }
 
     case ACTION_TYPES.UPDATE_BREAK_AWAY_TRY: {
-      return state.set('isBreakAway', action.payload.isBreakAway);
+      return state.withMutations(currentState => {
+        currentState.set('isBreakAway', action.payload.isBreakAway).set('isOccupied', action.payload.isOccupied);
+      });
     }
 
     case ACTION_TYPES.INITIALIZE_PLAY_SLOT_STATE: {

@@ -55,7 +55,7 @@ After finishing installation, do NOT turn on the Geth client (geth.exe) directly
 2. Paste and execute below code
 
 ```bash
- $ geth --rinkeby --syncmode=fast --cache=1024 --rpc --rpccorsdomain "*" --rpcapi personal,eth,net,web3 --bootnodes=“enode://6853f434735e540f0fcd85ffebcaa75280d1171ca9a205e8c41d87428d71b07ad14ab266236b64268467ccc462679edc888f76326418d18d7bcfe8d1159391aa@51.15.61.194:30379” console
+ $ geth --rinkeby --fast --cache=1024 --rpc --rpccorsdomain "*" --rpcapi personal,eth,net,web3 --bootnodes="enode://6853f434735e540f0fcd85ffebcaa75280d1171ca9a205e8c41d87428d71b07ad14ab266236b64268467ccc462679edc888f76326418d18d7bcfe8d1159391aa@51.15.61.194:30379" console
  ```
 
 Then, Geth client should begin synchronization.

@@ -328,7 +328,7 @@ class Web3Service {
     });
 
     const contractFilter = this.web3.eth.filter({
-      fromBlock: 'pending',
+      fromBlock: 'latest',
       toBlock: 'pending',
     });
 
@@ -477,7 +477,7 @@ class Web3Service {
     return await new Promise((resolve, reject) => {
       console.log(`${eventName} watcher is on`);
       const contractFilter = this.web3.eth.filter({
-        fromBlock: 'pending',
+        fromBlock: 'latest',
         toBlock: 'pending',
       });
       contractFilter.watch((err, result) => {
@@ -661,7 +661,7 @@ class Web3Service {
   setPlayerKickedByWatcher(slotMachineContractAddress) {
     return new Promise(resolve => {
       const kickFilter = this.web3.eth.filter({
-        fromBlock: 'pending',
+        fromBlock: 'latest',
         toBlock: 'pending',
       });
       kickFilter.watch((err, result) => {
@@ -684,7 +684,7 @@ class Web3Service {
   makerPendingWatcher(slotMachineContracts, bankerAddress) {
     return new Promise(resolve => {
       const contractFilter = this.web3.eth.filter({
-        fromBlock: 'pending',
+        fromBlock: 'latest',
         toBlock: 'pending',
       });
 

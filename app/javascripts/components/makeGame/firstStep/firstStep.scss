@@ -111,3 +111,108 @@
   color: #c6c4df;
   text-align: left;
 }
+
+.blockModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+}
+
+.blockModal {
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 2px;
+}
+
+.modalContainer {
+  max-width: 600px;
+  text-align: center;
+  padding: 70px 50px 45px 50px;
+  position: relative;
+
+  .closeBtn {
+    position: absolute;
+    top: 25px;
+    right: 36px;
+    cursor: pointer;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  .modalTitle {
+    color: #f7485f;
+    letter-spacing: -0.1px;
+    line-height: 0.86;
+    font-weight: 500;
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .modalContent {
+    color: #5b5b5b;
+    line-height: 1.41;
+    font-size: 16px;
+    margin-bottom: 37.5px;
+  }
+
+  .noBtn {
+    margin-top: 15px;
+    color: #8f8fa8;
+    line-height: 1.63;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.emailInput {
+  font-size: 18px;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-color: #fff;
+  padding-left: 23px;
+  border: solid 1.2px #c3c3c3;
+  outline: none;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 408.5px;
+  height: 50.5px;
+  border-radius: 100.2px;
+}
+
+.emailForm {
+  display: flex;
+  justify-content: center;
+}
+
+.subscribeBtn {
+  font-weight: 300;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 143.2px;
+  font-size: 18px;
+  text-align: center;
+  color: #fff;
+  height: 50.5px;
+  border-radius: 100.2px;
+  background-image: linear-gradient(125deg, #7a48ca, #60aedc);
+  box-shadow: 2px 3px 24px 0 #2b1c45;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}

@@ -219,6 +219,7 @@ export function cashOutSlotMachine(slotContract, playerAddress) {
         type: ACTION_TYPES.UPDATE_BREAK_AWAY_TRY,
         payload: {
           isBreakAway: false,
+          isOccupied: false,
         },
       });
     } catch (err) {

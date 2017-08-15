@@ -53,18 +53,20 @@ class Web3Service {
   }
 
   makeS3Sha(recursiveLength, genesisRandomNumber = Math.random().toString()) {
-    const originalString = genesisRandomNumber;
+    return new Promise(resolve => {
+      const originalString = genesisRandomNumber;
 
-    let shaValue;
-    for (let i = 0; i < recursiveLength; i += 1) {
-      if (shaValue) {
-        shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
-      } else {
-        shaValue = this.web3.sha3(originalString, { encoding: 'hex' });
+      let shaValue;
+      for (let i = 0; i < recursiveLength; i += 1) {
+        if (shaValue) {
+          shaValue = this.web3.sha3(shaValue, { encoding: 'hex' });
+        } else {
+          shaValue = this.web3.sha3(originalString, { encoding: 'hex' });
+        }
       }
-    }
 
-    return shaValue;
+      resolve(shaValue);
+    });
   }
 
   async initializeStorageContract() {
@@ -431,45 +433,47 @@ class Web3Service {
   occupySlotMachine(slotMachineContract, playerAddress, weiValue) {
     return new Promise((resolve, reject) => {
       console.log('Start to Occupy slot machine');
-      const shaArr = [];
+      const shaPromiseArr = [];
       const slotMachineContractAddress = slotMachineContract.address;
       Store.update(slotMachineContractAddress, slotGenesisInfo => {
         for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
-          shaArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
+          shaPromiseArr.push(this.makeS3Sha(INIT_ROUND, slotGenesisInfo.val[i]));
         }
+      });
+      Promise.all(shaPromiseArr).then(shaArr => {
         console.log('shaCount is ', INIT_ROUND);
         console.log('start sha is ', shaArr);
-      });
-      this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedInitialized')
-        .then(result => {
-          console.log('bankerSeedInitialized result is ', result);
-          const bankerShaData = result.data;
-          let initIndex = 2;
-          const bankerShaArr = [];
-          Store.update(slotMachineContractAddress, slotGenesisInfo => {
-            for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
-              bankerShaArr.push(bankerShaData.substr(initIndex, 64));
-              initIndex += 64;
-            }
-            slotGenesisInfo.bankerShaArr = bankerShaArr;
+        this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedInitialized')
+          .then(result => {
+            console.log('bankerSeedInitialized result is ', result);
+            const bankerShaData = result.data;
+            let initIndex = 2;
+            const bankerShaArr = [];
+            Store.update(slotMachineContractAddress, slotGenesisInfo => {
+              for (let i = 0; i < SHA_CHAIN_NUM; i += 1) {
+                bankerShaArr.push(bankerShaData.substr(initIndex, 64));
+                initIndex += 64;
+              }
+              slotGenesisInfo.bankerShaArr = bankerShaArr;
+            });
+            console.log('bankerShaArr is ', bankerShaArr);
+            console.log('Success to all of the occupy slot machine step. bankerSeedInitialized');
+            resolve(result);
+          })
+          .catch(error => {
+            logException(error);
+            reject(error);
           });
-          console.log('bankerShaArr is ', bankerShaArr);
-          console.log('Success to all of the occupy slot machine step. bankerSeedInitialized');
-          resolve(result);
-        })
-        .catch(error => {
-          logException(error);
-          reject(error);
-        });
-      slotMachineContract.occupy(
-        shaArr,
-        { from: playerAddress, value: weiValue, gas: 2200000, gasPrice: GAS_PRICE },
-        err => {
-          if (err) {
-            reject(err);
-          }
-        },
-      );
+        slotMachineContract.occupy(
+          shaArr,
+          { from: playerAddress, value: weiValue, gas: 2200000, gasPrice: GAS_PRICE },
+          err => {
+            if (err) {
+              reject(err);
+            }
+          },
+        );
+      });
     });
   }
 
@@ -521,7 +525,7 @@ class Web3Service {
       console.log('chainIndex is ', chainIndex);
       console.log('store is ', Store.get(slotMachineContractAddress));
       if (Store.get(slotMachineContractAddress).bankerShaArr === undefined) {
-        throw new Error('Fatal Error. You have to cash out this slotMachine.');
+        reject('Fatal Error. You have to cash out this slotMachine.');
       }
       this.getContractPendingTransaction(slotMachineContractAddress, 'bankerSeedSet', chainIndex)
         .then(result => {
@@ -532,44 +536,45 @@ class Web3Service {
             const eventResultSha = result.data.substr(2, 64); // 3332
             console.log('eventResultSha is ', eventResultSha);
             console.log('beforeSha is ', beforeSha);
-            if (this.makeS3Sha(1, eventResultSha).substr(2, 64) !== beforeSha) {
-              // TODO : cash out & return to play List.
-              throw new Error('Banker throw invalid seed');
-            }
-            let sha;
-            Store.update(slotMachineContractAddress, slotGenesisInfo => {
-              const shaVal = slotGenesisInfo.val[chainIndex];
-              const shaCount = Math.ceil(slotGenesisInfo.round / 3);
-              sha = this.makeS3Sha(shaCount, shaVal);
-              console.log(`round is ${round}, chainIndex is ${chainIndex}, sha is ${sha}`);
-              slotGenesisInfo.round -= 1;
-              slotGenesisInfo.isBankerSeedSet.push(result.transactionHash);
-              slotGenesisInfo.bankerShaArr[chainIndex] = eventResultSha;
+            this.makeS3Sha(1, eventResultSha).then(resultSha => {
+              if (resultSha.substr(2, 64) !== beforeSha) {
+                // TODO : cash out & return to play List.
+                reject('Banker throw invalid seed');
+              } else {
+                const prevSlotGenesisInfo = Store.get(slotMachineContractAddress);
+                const shaVal = prevSlotGenesisInfo.val[chainIndex];
+                const shaCount = Math.ceil(prevSlotGenesisInfo.round / 3);
+                this.makeS3Sha(shaCount, shaVal).then(sha => {
+                  Store.update(slotMachineContractAddress, slotGenesisInfo => {
+                    console.log(`round is ${round}, chainIndex is ${chainIndex}, sha is ${sha}`);
+                    slotGenesisInfo.round -= 1;
+                    slotGenesisInfo.isBankerSeedSet.push(result.transactionHash);
+                    slotGenesisInfo.bankerShaArr[chainIndex] = eventResultSha;
+                  });
+                  slotMachineContract.setPlayerSeed(
+                    sha,
+                    chainIndex,
+                    {
+                      from: playInfo.playerAddress,
+                      gas: 1000000,
+                      gasPrice: GAS_PRICE,
+                    },
+                    async (err2, result3) => {
+                      if (err2) {
+                        reject(err2);
+                      } else {
+                        resolve(result3);
+                      }
+                    },
+                  );
+                });
+              }
             });
-            slotMachineContract.setPlayerSeed(
-              sha,
-              chainIndex,
-              {
-                from: playInfo.playerAddress,
-                gas: 1000000,
-                gasPrice: GAS_PRICE,
-              },
-              async (err2, result3) => {
-                if (err2) {
-                  reject(err2);
-                } else {
-                  resolve(result3);
-                }
-              },
-            );
           }
         })
         .catch(err2 => {
-          logException(err2);
-          console.log(err2);
           reject(err2);
         });
-      console.log('initGameForPlayer start');
       slotMachineContract.initGameForPlayer(
         this.makeWeiFromEther(parseFloat(playInfo.betSize, 10)),
         playInfo.lineNum,

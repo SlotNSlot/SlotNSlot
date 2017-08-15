@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styles from './readme.scss';
+
 const readmeHTML = require('../../../../README.md');
 
 function createMarkup() {
@@ -8,13 +10,13 @@ function createMarkup() {
 
 const Readme = () => {
   return (
-    <div className="container">
+    <div className={styles.readmeContainer}>
       <div style={{ textAlign: 'right', marginTop: 50 }}>
         <Link style={{ color: 'blue', fontSize: 20 }} to="/slot/play">
           Back to Play Page
         </Link>
       </div>
-      <div dangerouslySetInnerHTML={createMarkup()} />
+      <div className={styles.markDownContainer} dangerouslySetInnerHTML={createMarkup()} />
     </div>
   );
 };

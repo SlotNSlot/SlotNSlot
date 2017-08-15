@@ -475,7 +475,7 @@ class Web3Service {
 
   async getContractPendingTransaction(slotMachineContractAddress, eventName, chainIndex = null) {
     return await new Promise((resolve, reject) => {
-      console.log('eventName is ', eventName);
+      console.log(`${eventName} watcher is on`);
       const contractFilter = this.web3.eth.filter({
         fromBlock: 'pending',
         toBlock: 'pending',
@@ -487,6 +487,8 @@ class Web3Service {
         } else {
           const encodedSha = SLOT_TOPICS_ENCODED[eventName];
           if (result.address === slotMachineContractAddress) {
+            console.log('eventName is ', eventName);
+            console.log('result is ', result);
             for (let i = 0; i < result.topics.length; i += 1) {
               if (result.topics[i] === encodedSha) {
                 if (chainIndex != null) {

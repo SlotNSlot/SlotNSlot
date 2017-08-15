@@ -3,7 +3,13 @@
   margin: 0 auto;
   background-color: #fff;
   padding-bottom: 32px;
-  blockquote {
-    color: #333;
+}
+.markDownContainer {
+  pre code {
+    font-size: 120%;
+    font-weight: 500;
+    color: #bd4147;
+    background-color: #f7f7f9;
+    border-radius: 0.25rem;
   }
 }

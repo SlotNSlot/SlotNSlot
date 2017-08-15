@@ -16,9 +16,7 @@ const Readme = () => {
           Back to Play Page
         </Link>
       </div>
-      <blockquote>
-        <div dangerouslySetInnerHTML={createMarkup()} />
-      </blockquote>
+      <div className={styles.markDownContainer} dangerouslySetInnerHTML={createMarkup()} />
     </div>
   );
 };

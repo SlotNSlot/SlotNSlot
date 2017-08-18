@@ -38,7 +38,6 @@ class Root extends React.PureComponent {
         <UpdateBlocker location={location}>
           <Switch>
             <Route path="/slot" component={Slot} />
-            <Route path="/contribute" component={ContributePage} />
             <Route path="/instruction" component={Readme} />
             <Route component={About} />
           </Switch>

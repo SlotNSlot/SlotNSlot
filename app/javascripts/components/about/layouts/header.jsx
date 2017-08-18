@@ -102,15 +102,9 @@ class Header extends React.PureComponent {
               </a>
             </li>
             <li className={styles.rightNavItem}>
-              <Link
-                onClick={() => {
-                  this.trackWordsOnly('/contribute');
-                }}
-                className={styles.crowdsaleBtn}
-                to="/contribute"
-              >
+              <a onClick={this.props.openModal} className={styles.crowdsaleBtn}>
                 Contribution
-              </Link>
+              </a>
             </li>
           </ul>
         </div>

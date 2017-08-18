@@ -108,7 +108,7 @@ class EmailContainer extends React.PureComponent {
             </div>
           </div>
         </div>
-        <CrowdSaleContainer />
+        {/* <CrowdSaleContainer /> */}
       </div>
     );
   }

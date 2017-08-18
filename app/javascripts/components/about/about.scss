@@ -1,2 +1,97 @@
 .aboutComponent {
+  position: relative;
+}
+
+.abortModalBody {
+  overflow: hidden;
+}
+
+.abortModalOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.abortModal {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  overflow: auto;
+}
+
+.modalContainer {
+  padding: 30px;
+  text-align: center;
+
+  .closeBtn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  .modalTitle {
+    font-size: 30px;
+    color: #595959;
+    text-align: left;
+    vertical-align: middle;
+    margin-bottom: 25px;
+
+    img {
+      width: 61px;
+      vertical-align: middle;
+      margin-right: 15px;
+    }
+  }
+
+  .modalDetail {
+    font-size: 18px;
+    line-height: 1.25;
+    text-align: left;
+    color: #595959;
+
+    a {
+      color: #5bd8de;
+    }
+  }
+
+  .confirmBtn {
+    width: 240px;
+    height: 60px;
+    border-radius: 120.3px;
+    background-image: linear-gradient(117deg, #851dc2, #51e9e7);
+    cursor: pointer;
+    font-size: 24px;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .moreInfo {
+    font-size: 15px;
+    color: #41404b;
+    letter-spacing: -0.2px;
+    text-align: center;
+    line-height: 1.4;
+    font-weight: 500;
+
+    a {
+      color: #5bd8de;
+      margin-top: 5px;
+    }
+  }
 }

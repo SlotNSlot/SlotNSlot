@@ -41,7 +41,7 @@ class About extends React.PureComponent {
         <EmailContainer />
         <MakeAndPlayContainer />
         <FeatureContainer />
-        <RoadmapContainer />
+        {/* <RoadmapContainer /> */}
         <SliderContainer />
         <DemoContainer />
         <MailingContainer />
